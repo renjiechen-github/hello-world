@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>房源抓取信息</title>
+<style type="text/css">
+.paddingClass {
+	padding: 1px 10px !important;
+}
+
+.ulClass {
+	min-width: 10px;
+}
+.head{ display: flex;height: 50px;line-height: 50px;background-color: #ecb292;width: 80%; margin: 20px auto;}
+.leftdiv{ flex: 1;text-align: center; cursor: pointer;border-right: 1px solid white;color:white;background-color: #ecb292;}
+.rightdiv{ flex: 1;text-align: center; cursor: pointer;color:white;background-color: #ecb292;}
+.movediv
+{
+	color:black;
+	background-color:#A0443F;
+}
+
+</style>
+</head>
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+					<form class="form-inline" role="form">
+						<div class="form-group">
+							<label for="exampleInputEmail2">所属区域:</label> 
+								<select class="form-control" id="areaId">
+									<option value="">请选择...</option>
+								</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">商圈:</label> 
+							<select id="businessCenter" class="form-control">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">网站:</label> 
+							<select id="source" class="form-control">
+								<option value="">请选择...</option>
+								<option value="1">house365</option>
+								<option value="2">58同城</option>								
+							</select>
+						</div>
+						<span class="form-group tools"> 
+							<a href="javascript:;" class="fa fa-search yc_seach" table="basehouse_table" id="serach">查询</a>
+						</span> &nbsp;&nbsp;
+					</form>
+				</div>
+			</section>
+			<div class="adv-table">
+				<table id="basehouse_table" class="display tablehover table table-bordered dataTable"
+					cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+							<th>房源标题</th>
+							<th>信息来源</th>
+							<th>月租</th>
+							<th>联系人</th>
+							<th>联系方式</th>
+							<th>区域</th>
+							<th>商圈</th>
+							<th>小区</th>
+							<th>类型</th>
+							<th>户型</th>
+							<th>面积(㎡)</th>
+							<th>装修</th>
+							<th>发布时间</th>
+							<th></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+
+</body>
+<script type="text/javascript" src="/html/js/house/spiderinfo/spiderInfo.js"></script>
+</html>

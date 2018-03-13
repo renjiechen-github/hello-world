@@ -1,0 +1,87 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+body {
+	background: #efefee;
+	font-family: 微软雅黑;
+}
+hr{
+	width: 100%;
+    position: absolute;
+    margin-top: 55px;
+    border: none; 
+    border-top: thin solid #ffffff;
+}
+#header {
+	/*width:auto;*/
+	/*border-bottom:1px solid #c7c3c1;*/
+	padding: 10px;
+	color: #fff;
+	position: absolute;
+	text-align: center;
+	left: 0;
+	right: 0;
+	border-bottom:thin solid rgba(255, 255, 255, 0.1);
+}
+#info {
+	width: 100%;
+	height: auto;
+	background: #fff;
+}
+#name {
+	font-size: 30px;
+	font-weight: bold;
+	margin-bottom: 9px;
+}
+#myinfo {
+	width: 100%;
+	height: 55px;
+	background: #fff;
+	line-height: 55px;
+}
+#myinfos {
+	width: 100%;
+	height: 55px;
+	background: #fff;
+	line-height: 55px;
+	margin: 1px auto 1px auto;
+}
+#logoa {
+	float: left;
+	width: 20px;
+	height: 22px;
+	position: relative;
+	top: 6px;
+}
+#logob {
+	float: left;	
+	width: 20px;
+	height: 22px;
+	position: relative;
+	top: 6px;
+	
+}
+#logoc {
+	float: left;
+	width: 20px;
+	height: 22px;
+	position: relative;
+	top: 5px;
+}
+#tit {
+	float: left;
+	color: #8b8a8a;
+	margin-left: 10px;
+}
+#mark {
+	float: right;
+	background-image: url(../images/btny.png);
+	width: 11px;
+	height: 20px;
+	margin-top: 18px;
+}
+#set {
+	margin-left: 8px;
+	margin-right: 8px;
+}

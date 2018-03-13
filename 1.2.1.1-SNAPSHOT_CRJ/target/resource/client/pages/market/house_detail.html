@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>房源管理</title>
+    <link rel="stylesheet" type="text/css" href="../../css/normalize.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/market/house_detail.min.css?1=2"/>
+    <link rel="stylesheet" type="text/css" href="../../css/uploadImage/uploadImage.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/xcConfirm/xcConfirm.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/preImage/lightbox.min.css"/>    
+</head>
+
+<body>
+	<div class="divCenter">
+		<div id="banner">
+			<div class="inpy" >
+				<div class="button-group">
+					<select id="groupAreaid" name="groupAreaid">
+						<option value="">区域不限</option>
+					</select>				
+				</div>
+				<div class="inputdiv">
+					<input type="text" id="keyWord" >
+				</div>
+				<div class="buttondiv">
+					<button id="sreachBut" type="button" placeholder="模糊查询名称，编码，地址，业主姓名" class="button">搜索</button>
+				</div>
+				<div class="img">
+					<img class="close" alt="" src="../../images/ic_close.png">
+				</div>
+			</div>
+		</div>
+		<div class="body1" id="areaList">
+			  <div class="arearDiv">加载更多</div>
+		</div>
+	</div>
+	<form action="" id="form2">
+	<div class="body">	
+		<div class="row">
+				<div class="weui_cells">
+			     	<div class="weui_cell">
+			     		<div class="weui_cell_bd weui_cell_primary">
+			               <p>小区地址</p>
+			            </div>
+			            <div class="weui_cell_bd weui_cell_primary1" id="groupName">
+			               <p>选择小区</p>
+			            </div>
+			        	<div class="weui_cell_ft1"><div id="mark"></div></div>
+			        	<input type="hidden" id="group_id" dataType="Require" msg="请选择小区" name="group_id" />
+				        <input type="hidden" value="" id="regionId" readonly="readonly" />
+			     	</div>
+				</div>
+			<div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>房源名称</p>
+		            </div>
+		        	<div class="weui_cell_ft"><input type="text" placeholder='请输入房源名称' class="changeInput" dataType="Require" msg="请输入房源名称" id="house_name"></div>
+		        </div>
+		    </div>
+		    <div class="weui_cells" id="houseCodeDiv" style="display: none;">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>房源编码</p>
+		            </div>
+		        	<div class="weui_cell_ft"><span id="house_code_span"></span></div>
+		        </div>
+		    </div>
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>房源类型</p>
+		            </div>
+		        	<div class="weui_cell_ft"><select id="house_type" name="house_type" dataType="Require" msg="请选择房源类型！">
+						</select></div>
+		        </div>
+		    </div>
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>业主号码</p>
+		            </div>
+		        	<div class="weui_cell_ft"><input type="number" id="userMobile" class="changeInput" name="userMobile" dataType="Mobile" msg="请输入11位数字格式的手机号码！" placeholder='请输入业主号码' ></div>
+		        </div>
+		    </div>
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>业主姓名</p>
+		            </div>
+		        	<div class="weui_cell_ft"><input type="text" id="userName" class="changeInput" name="userName" dataType="Require" msg="请填写业主姓名！" placeholder='请输入业主姓名' ></div>
+		        </div>
+		    </div>
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>装修类型</p>
+		            </div>
+		        	<div class="weui_cell_ft2">
+		        		<select id="decorate" name="decorate"  dataType="Require" msg="请选择装修类型！">
+						</select>
+		        	</div>
+		        	<div class="weui_cell_bd weui_cell_primary">
+		               <p>是否可隔</p>
+		            </div>
+		        	<div class="weui_cell_ft2">
+		        		<select id="is_cubicle" name="is_cubicle" dataType="Require" msg="请选择是否可隔！">
+							<option value="">请选择…</option>
+							<option value="1">是</option>
+							<option value="0">否</option>
+						</select>
+		        	</div>
+		        </div>
+		    </div>
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>房　　型</p>
+		            </div>
+		        	<div class="weui_cell_ft2">
+	        			<select id="shi" name="shi" dataType="Require" msg="请选择房型！">
+						</select>
+		        	</div>
+		        	<div class="weui_cell_ft2">
+	        			<select id="ting" name="ting" dataType="Require" msg="请选择房型！">
+						</select>
+		        	</div>
+		        	<div class="weui_cell_ft2">
+	        			<select id="wei" name="wei" dataType="Require" msg="请选择房型！">
+						</select>        		
+		        	</div>
+	        	</div>
+	        </div>
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>房屋面积</p>
+		            </div>
+		        	<div class="weui_cell_ft2"><input type="number" class="changeInput" maxlength="4" id="area" placeholder='面积' dataType="Double" msg="请填写数字格式的房屋面积！" ></div>
+		        	<div class="weui_cell_bd weui_cell_primary">
+		               <p>楼　　层</p>
+		            </div>
+		        	<div class="weui_cell_ft2"><input type="number" class="changeInput" maxlength="4" id="floor" dataType="Require" msg="请填写数字格式的楼层！" placeholder='5' ></div>
+		        </div>
+		    </div>		    
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		        	<div class="weui_cell_bd weui_cell_primary">
+		               <p>　免租期</p>
+		            </div>
+		        	<div class="weui_cell_ft2"><input type="number" class="changeInput" maxlength="4" id="free_rent" dataType="Require" msg="请填写免租期限！" placeholder='30' ></div>
+		        	<div class="weui_cell_bd weui_cell_primary">
+		               <p>付款方式</p>
+		            </div>
+		        	<div class="weui_cell_ft2">
+		        		<select id="payment" name="payment" dataType="Require" msg="请选择付款方式！">
+							<option value="">请选择…</option>
+						</select>
+		        	</div>
+		        </div>
+		    </div>    
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>可租年限</p>
+		            </div>
+		        	<div class="weui_cell_ft">
+		        		<select id="lease_period" name="lease_period" dataType="Require" msg="请选择时间！">
+						</select>
+		        	</div>
+		        </div>	        
+		    </div>
+		    <div id="div_rent">
+			    <div class="weui_cells1">
+		            <div class="weui_cell_ft3 right">
+		               <input type="number"  dataType="Integer3" msg="请输入第1年房租！"  id="" name="rentMonth" placeholder="第一年房租">
+		            </div>
+		        	<div class="weui_cell_ft3 right">
+						<input type="number"  dataType="Integer3" msg="请输入第2年房租！"  id="" name="rentMonth" placeholder="第二年房租">
+		        	</div>
+		        	<div class="weui_cell_ft3 right">
+						<input type="number"  dataType="Integer3" msg="请输入第3年房租！"  id="" name="rentMonth" placeholder="第三年房租">
+		        	</div>
+		        	<div class="weui_cell_ft3">
+						<input type="number"  dataType="Integer3" msg="请输入第4年房租！"  style="opacity: 0;" disabled="disabled" name="rentMonth" placeholder="第四年房租">
+		        	</div>
+		        </div>
+	        </div>
+	        <div class="weui_cells2">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		            	地址
+		               	<!-- <img src="../../images/market/5.png" alt="" /> -->
+		            </div>
+		        	<div class="addr">
+		        		<input type="text" class="changeInput"  placeholder="请填写房源地址" dataType="Require" id="groupAddress"  maxlength='50' msg="请填写房源地址！">
+		        		<input type="" id="groupCoordinate" readonly="readonly" dataType="Require" msg="请选择房源坐标！"  name="groupCoordinate" />
+		        	</div>
+		        	<div class="satnav navMap"><img src="../../images/market/5.png" alt="" /></div>
+		       <!-- 	<div class="rightdiv" id="refreshDiv">
+		        		<img src="../../images/market/6.png" alt="" />
+		        	</div> --> 
+		        </div>
+		    </div>
+		    <div class="map">
+		    	<div id="houseMap" title="请选择房源信息"></div>
+		    </div>
+		    <div class="textarea">
+		    	<textarea  class="weui_textarea changeInput" name="descInfo" id="descInfo" placeholder="请输入房源说明" rows="5"></textarea>
+			</div>
+			<div class="upload">
+				<input type="hidden" value="4" name="picSize" id="picSize" />			
+				<a href="" class="file" id="selectImage">选择文件上传<input id="uploadBut" type="button" accept="image/*"></a>
+			</div>
+			<div  class="upload">
+		    	<ul class="ipost-list ui-sortable js_fileList"></ul>
+		    </div>  
+		</div>
+		 
+	<!-- 	<div class="division">
+			<div class="left">
+			<hr>
+			</div>
+			<div class="center">
+				<b class="plus">＋</b>&nbsp;租赁房源
+			</div>
+			<div class="right">
+			<hr>
+			</div>
+		</div> -->
+		<!--  
+		 
+			<div class="titleDiv" onclick="house_detail.openOrHidden(this,'div0')">
+				<img src="../../images/up.png" width="25px" height="25px"> 
+				<input type="hidden" value="5507" name="id">
+				<input type="hidden" value="" name="images">
+				<input type="hidden" value="0" name="numberInput"> 
+				<span class="leftSpan"><p>尚贤苑_A</p><p>16FP025XW03184A5507</p></span> 
+				<span class="rightSpan"><p>合租</p><p class="color1">签约中</p></span>&nbsp;&nbsp;
+			</div>
+			<div id="div0" style="display: block;">
+				<div class="divPadding">
+					<div class="textDiv">
+						<div class="lefeDiv">面积</div>
+						<div class="rightDiv">
+							<input type="number" readonly="readonly" value="4"
+								datatype="Integer3" msg="请输入房源面积！" placeholder="20"
+								maxlength="5" name="areaid">
+						</div>
+						<div class="lefeDiv">价格</div>
+						<div class="rightDiv">
+							<input type="number" readonly="readonly" datatype="Integer3"
+								msg="请输入房源价格！" placeholder="2000" value="4" maxlength="5"
+								name="price">
+						</div>
+						<div class="rightbtn">
+							<button id="signRankHouse" type="button" class="">出租签约</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<hr> -->
+			<!-- 	<div class="titleDiv"
+					onclick="house_detail.openOrHidden(this,'div1')">
+					<img src="../../images/up.png" width="30px" height="30px"> <input
+						type="hidden" value="5508" name="id"><input type="hidden"
+						value="" name="images"><input type="hidden" value="1"
+						name="numberInput"> <span class="leftSpan"><p>尚贤苑</p>
+						<p>16FP025XW03184Z5508</p></span> <span class="rightSpan"><p>整租</p>
+						<p class="color1">失效</p></span>&nbsp;&nbsp;
+				</div>
+				<div id="div1">
+					<div class="divPadding">
+						<div class="textDiv">
+							<div class="lefeDiv">面积</div>
+							<div class="rightDiv">
+								<input type="number" readonly="readonly" value="5888"
+									datatype="Integer3" msg="请输入房源面积！" placeholder="20"
+									maxlength="5" name="areaid">
+							</div>
+							<div class="lefeDiv">价格</div>
+							<div class="rightDiv">
+								<input type="number" readonly="readonly" datatype="Integer3"
+									msg="请输入房源价格！" placeholder="2000" value="46" maxlength="5"
+									name="price">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>  -->
+			<div class="sf_contract" id="constructionDiv" style="display: none;" >
+				<div class="division">
+					<div class="left">
+					<hr>
+					</div>
+					<div class="center">
+						&nbsp;工程信息
+					</div>
+					<div class="right">
+					<hr>
+					</div>			
+				</div>
+				<div style="text-align: center; padding-bottom: 20px;">点击查看工程信息</div>
+			</div>
+			<div class="sf_contract" id="agreementInfoDiv" style="display: none;" onclick="house_detail.showAgreementInfo();return false;">
+				<div class="division">
+					<div class="left">
+					<hr>
+					</div>
+					<div class="center">
+						↓&nbsp;收房合同
+					</div>
+					<div class="right">
+					<hr>
+					</div>			
+				</div>
+				<div class="divPadding">
+					<div class="titleDiv1">	
+						<input type="hidden" value="" id="agreementId" name="agreementId">  
+						<span class="leftSpan"><p id="agreementName"></p></span> 
+						<span class="rightSpan color1"><p id="agreementStatus"></p></span>&nbsp;&nbsp;						
+					</div>
+					<p class="color2" id="agreementCode"></p>
+					<div class="textDiv">
+						<div class=""><input type="text"  readonly="readonly" value="" id="owerInfo" /></div> 
+						<div class="lefeDiv ">管家</div>
+						<div class="rightDiv"><input type="text" readonly="readonly" value="" id="agentsID"></div>
+			    	</div>
+					<div class="textDiv1">
+						<div class="lefeDiv" style="padding: 0 0">时间</div>
+						<div class="rightDiv"><input type="text" readonly="readonly" value="" id="cz_time"></div>
+			    	</div>
+					<div class="textDiv1">
+						<div class="lefeDiv" style="padding: 0 0">租金</div>
+						<div class="rightDiv"><input type="text" readonly="readonly" value="" id="agreement_zj"></div>
+			    	</div>
+		    	</div>	
+			</div>
+		 <div id="contentDiv">	    	
+	 		 <div id="agreenmentList"></div>
+		</div>		
+	</div>
+	<div class="common_button">
+    	<div class="right3">
+    		<button id="saveBtn" type="button" class="">保存</button>
+    	</div>
+    	<div class="left3">
+    		<button id="submitBtn" type="button" class="">提交</button>
+    	</div>	    	
+	</div>
+</form>
+ 
+<script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="../../js/preImage/lightbox-2.6.js"></script>
+<script type="text/javascript" src="../../js/xcConfirm/xcConfirm.js"></script>  
+<script type="text/javascript" src="../../js/common.client.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script  type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=evk128VzLcjxdpLN2mA8nwSm"></script>
+<script type="text/javascript" src="../../js/house_info/house_detail.js"></script> 
+</body>
+</html>

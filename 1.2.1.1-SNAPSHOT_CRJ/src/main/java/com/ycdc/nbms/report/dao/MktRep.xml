@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.nbms.report.dao.IMktRepDao">
+
+  <!-- 当月收房量 -->
+  <select id="selectMp" resultType="map">
+    select '全市' as area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      ifnull(sum(case when adddate(a.begin_time,interval -a.free_period day) like
+      '${date}%' then left(b.spec, 1) else 0 end),0) as 'mp_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    union all
+    select c.area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      ifnull(sum(case when adddate(a.begin_time,interval -a.free_period day) like
+      '${date}%' then left(b.spec, 1) else 0 end),0) as 'mp_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    group by c.area_name
+  </select>
+
+  <!-- 当月已出租房间的收房总价 -->
+  <select id="selectMcr" resultType="map">
+    select '全市' as area_name,
+    ifnull(sum(substring_index(substring_index(a.cost_a,'|',abs(timestampdiff(year,'${time}',
+    adddate(a.begin_time,interval -a.free_period day)))+1),'|',-1)),0) as
+    'mcr_${date}'
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    and a.id in (
+    select
+    distinct a.father_id
+    from
+    yc_agreement_tab a
+    where a.type=2 and a.begin_time like '${date}%'
+    )
+  </select>
+
+  <!-- 当月已出租房间的收房间数 -->
+  <select id="selectMsf" resultType="map">
+    select '全市' as area_name,
+    ifnull(sum(left(b.spec, 1)),0) as 'msf_${date}'
+    from yc_agreement_tab a left join
+    yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where
+    a.areaid=c.id and b.is_work=1 and a.type=1
+    and a.id in (
+    select
+    distinct
+    a.father_id
+    from yc_agreement_tab a
+    where a.type=2 and a.begin_time like
+    '${date}%'
+    )
+  </select>
+
+  <!-- 当月出租量 -->
+  <select id="selectMr" resultType="map">
+    select '全市' as area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      ifnull(sum(case when a.begin_time like '${date}%' then left(b.rank_spec, 1) else 0 end),0) as 'mr_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    union all
+    select c.area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      ifnull(sum(case when a.begin_time like '${date}%' then left(b.rank_spec, 1) else 0 end),0) as 'mr_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    group by
+    c.area_name
+  </select>
+
+  <!-- 当月出租总价 -->
+  <select id="selectMra" resultType="map">
+    select '全市' as area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      ifnull(sum(case when a.begin_time like '${date}%' then a.cost_a else 0 end),0) as 'mra_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    union all
+    select c.area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      ifnull(sum(case when a.begin_time like '${date}%' then a.cost_a else 0 end),0) as 'mra_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    group by
+    c.area_name
+  </select>
+  
+  <!-- 当前房源量 -->
+  <select id="selectYp" resultType="map">
+    select '全市' as area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+  <![CDATA[
+    ifnull(sum(case when adddate(a.begin_time,interval -a.free_period day)<=last_day('${date}-01') and a.end_time>='${date}-01' 
+  then left(b.spec, 1) else 0 end),0) as 'yp_${date}'
+  ]]>
+    </foreach>
+    from yc_agreement_tab a left join yc_onstruction_tab b on a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    union all
+    select c.area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+  <![CDATA[
+  ifnull(sum(case when adddate(a.begin_time,interval -a.free_period day)<=last_day('${date}-01') and a.end_time>='${date}-01' 
+  then left(b.spec, 1) else 0 end),0) as 'yp_${date}'
+  ]]>
+    </foreach>
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    group by c.area_name
+  </select>
+
+  <!-- 当前出租量 -->
+  <select id="selectYr" resultType="map">
+    select '全市' as area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+  <![CDATA[
+  ifnull(sum(case when a.begin_time<=last_day('${date}-01') and a.end_time>='${date}-01' 
+  then left(b.rank_spec, 1) else 0 end),0) as 'yr_${date}'
+  ]]>
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    union all
+    select c.area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+  <![CDATA[
+  ifnull(sum(case when a.begin_time<=last_day('${date}-01') and a.end_time>='${date}-01' 
+  then left(b.rank_spec, 1) else 0 end),0) as 'yr_${date}'
+  ]]>
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    group by
+    c.area_name
+  </select>  
+
+  <!-- 当前有效房源量（收房） -->
+  <select id="selectYpValid" resultType="map">
+		select '全市' as area_name,
+		ifnull(sum(left(b.spec, 1)),0) as "yp_valid"
+		from yc_agreement_tab a 
+		left join yc_onstruction_tab b on a.id=b.agreementid
+		where a.type=1 and a.status=2 and b.is_work=1
+  </select>
+
+  <!-- 当前有效出租量 -->
+  <select id="selectYrValid" resultType="map">
+		select '全市' as area_name,
+		ifnull(sum(left(b.rank_spec, 1)),0) as 'yr_valid'
+		from (
+		select distinct a.house_id from yc_agreement_tab a 
+		where a.isdelete=1 and a.type=2 and a.status=2) a 
+		left join yc_houserank_tab b on a.house_id=b.id
+		where b.isdelete=1
+  </select>
+
+  <!-- 收房总价 -->
+  <select id="selectYcr" resultType="map">
+    select '全市' as area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+  <![CDATA[
+  ifnull(sum(case when adddate(a.begin_time,interval -a.free_period day)<=last_day('${date}-01') and a.end_time>='${date}-01' 
+  then substring_index(substring_index(a.cost_a,'|',abs(timestampdiff(year,'${time}',adddate(a.begin_time,interval -a.free_period day)))+1),'|',-1) 
+  else 0 end),0) as 'ycr_${date}'
+  ]]>
+    </foreach>
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    union all
+    select c.area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+  <![CDATA[
+  ifnull(sum(case when adddate(a.begin_time,interval -a.free_period day)<=last_day('${date}-01') and a.end_time>='${date}-01' 
+  then substring_index(substring_index(a.cost_a,'|',abs(timestampdiff(year,'${time}',adddate(a.begin_time,interval -a.free_period day)))+1),'|',-1) 
+  else 0 end),0) as 'ycr_${date}'
+  ]]>
+    </foreach>
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    group by c.area_name
+  </select>
+
+  <!-- 出租总价 -->
+  <select id="selectYra" resultType="map">
+    select '全市' as area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+  <![CDATA[
+  ifnull(sum(case when a.begin_time<=last_day('${date}-01') and a.end_time>='${date}-01' 
+  then a.cost_a else 0 end),0) as 'yra_${date}'
+  ]]>
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    union all
+    select c.area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+  <![CDATA[
+  ifnull(sum(case when a.begin_time<=last_day('${date}-01') and a.end_time>='${date}-01' 
+  then a.cost_a else 0 end),0) as 'yra_${date}'
+  ]]>
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    group by
+    c.area_name
+  </select>
+
+  <!-- 获取收房同比、环比 -->
+  <select id="getHousingRes" resultType="map">
+    select
+    '全市' as area_name,
+  <![CDATA[
+  sum(case when adddate(a.begin_time,interval -a.free_period day) like '${date}%' 
+  then left(b.spec, 1) else 0 end) as pur,
+  sum(case when adddate(a.begin_time,interval -a.free_period day)>=adddate('${date}-01',interval -1 month)
+  and adddate(a.begin_time, interval - a.free_period day)<=last_day(adddate('${date}-01',interval -1 month))
+  then left(b.spec, 1) else 0 end) as purmonth,
+  sum(case when adddate(a.begin_time,interval -a.free_period day)>=adddate('${date}-01',interval -1 year)
+  and adddate(a.begin_time, interval - a.free_period day)<=last_day(adddate('${date}-01',interval -1 year))
+  then left(b.spec, 1) else 0 end) as puryear
+  ]]>
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    union all
+    select
+    c.area_name,
+  <![CDATA[
+  sum(case when adddate(a.begin_time,interval -a.free_period day) like '${date}%' 
+  then left(b.spec, 1) else 0 end) as pur,
+  sum(case when adddate(a.begin_time,interval -a.free_period day)>=adddate('${date}-01',interval -1 month)
+  and adddate(a.begin_time, interval - a.free_period day)<=last_day(adddate('${date}-01',interval -1 month))
+  then left(b.spec, 1) else 0 end) as purmonth,
+  sum(case when adddate(a.begin_time,interval -a.free_period day)>=adddate('${date}-01',interval -1 year)
+  and adddate(a.begin_time, interval - a.free_period day)<=last_day(adddate('${date}-01',interval -1 year))
+  then left(b.spec, 1) else 0 end) as puryear
+  ]]>
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    group by c.area_name
+  </select>
+
+  <!-- 出租同比、环比 -->
+  <select id="getRentRes" resultType="map">
+    select
+    '全市' as area_name,
+  <![CDATA[
+  sum(case when a.begin_time like '${date}%' then left(b.rank_spec, 1) else 0 end) as rent,
+  sum(case when a.begin_time>=adddate('${date}-01',interval -1 month)          
+  and a.begin_time<=last_day(adddate('${date}-01',interval -1 month))
+  then left(b.rank_spec, 1) else 0 end) as rentmonth,
+  sum(case when a.begin_time>=adddate('${date}-01',interval -1 year)         
+  and a.begin_time<=last_day(adddate('${date}-01',interval -1 year))
+  then left(b.rank_spec, 1) else 0 end) as rentyear
+  ]]>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    union all
+    select
+    c.area_name,
+  <![CDATA[
+  sum(case when a.begin_time like '${date}%' then left(b.rank_spec, 1) else 0 end) as rent,
+  sum(case when a.begin_time>=adddate('${date}-01',interval -1 month)          
+  and a.begin_time<=last_day(adddate('${date}-01',interval -1 month))
+  then left(b.rank_spec, 1) else 0 end) as rentmonth,
+  sum(case when a.begin_time>=adddate('${date}-01',interval -1 year)         
+  and a.begin_time<=last_day(adddate('${date}-01',interval -1 year))
+  then left(b.rank_spec, 1) else 0 end) as rentyear
+  ]]>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    group by
+    c.area_name
+  </select>
+
+  <!-- 收房总天间 -->
+  <select id="selectYpTotal" resultType="map">
+    select
+    '全市' as area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      sum(case
+      when <![CDATA[a.begin_time<=last_day('${date}-01')]]>
+      then if(a.status=2,datediff(last_day('${date}-01'),a.begin_time) *
+      left(b.spec, 1),
+      if(<![CDATA[date_format(a.checkouttime, '%Y-%m-%d')<=last_day('${date}-01')]]>
+      ,
+      datediff(date_format(a.checkouttime, '%Y-%m-%d'),a.begin_time) *
+      left(b.spec, 1),
+      datediff(last_day('${date}-01'),a.begin_time) *
+      left(b.spec, 1))
+      ) else 0 end) as 'ypTotal_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    union all
+    select
+    c.area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      sum(case
+      when <![CDATA[a.begin_time<=last_day('${date}-01')]]>
+      then if(a.status=2,datediff(last_day('${date}-01'),a.begin_time) *
+      left(b.spec, 1),
+      if(<![CDATA[date_format(a.checkouttime, '%Y-%m-%d')<=last_day('${date}-01')]]>
+      ,
+      datediff(date_format(a.checkouttime, '%Y-%m-%d'),a.begin_time) *
+      left(b.spec, 1),
+      datediff(last_day('${date}-01'),a.begin_time) *
+      left(b.spec, 1))
+      ) else 0 end) as 'ypTotal_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_onstruction_tab b on
+    a.id=b.agreementid,yc_area_tab c
+    where a.areaid=c.id and b.is_work=1
+    and a.type=1
+    group by c.area_name
+  </select>
+
+  <!-- 出租总天间 -->
+  <select id="selectYrTotal" resultType="map">
+    select
+    '全市' as area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      sum(case
+      when <![CDATA[a.begin_time<=last_day('${date}-01')]]>
+      then if(a.status=2,datediff(last_day('${date}-01'),a.begin_time) *
+      left(b.rank_spec, 1),
+      if(<![CDATA[date_format(a.checkouttime, '%Y-%m-%d')<=last_day('${date}-01')]]>,
+      datediff(date_format(a.checkouttime, '%Y-%m-%d'),a.begin_time) *
+      left(b.rank_spec, 1),
+      datediff(last_day('${date}-01'),a.begin_time) *
+      left(b.rank_spec,
+      1))
+      ) else 0 end) as 'yrTotal_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    union all
+    select
+    c.area_name,
+    <foreach collection="dates" index="id" item="date" separator=",">
+      sum(case
+      when <![CDATA[a.begin_time<=last_day('${date}-01')]]>
+      then if(a.status=2,datediff(last_day('${date}-01'),a.begin_time) *
+      left(b.rank_spec, 1),
+      if(<![CDATA[date_format(a.checkouttime, '%Y-%m-%d')<=last_day('${date}-01')]]>,
+      datediff(date_format(a.checkouttime, '%Y-%m-%d'),a.begin_time) *
+      left(b.rank_spec, 1),
+      datediff(last_day('${date}-01'),a.begin_time) *
+      left(b.rank_spec,
+      1))
+      ) else 0 end) as 'yrTotal_${date}'
+    </foreach>
+    from yc_agreement_tab a left join yc_houserank_tab b on
+    a.house_id=b.id,yc_area_tab c
+    where a.areaid=c.id and a.type=2
+    group by
+    c.area_name
+  </select>
+
+  <!-- 根据网格ID，获取当前收房 -->
+  <select id="selectYpById" resultType="map">
+    select a.agents,
+    ifnull(sum(left(b.spec, 1)),0) as 'yp'
+    from yc_agreement_tab a left join yc_onstruction_tab b on a.id=b.agreementid
+    left join yc_house_tab c on b.houseid=c.id
+    left join yc_group_tab d on c.group_id=d.id
+    where b.is_work=1 and a.type=1 
+    and a.id in (
+    select a.father_id
+    from yc_agreement_tab a 
+    left join yc_houserank_tab b on a.house_id=b.id
+    left join yc_house_tab c on b.house_id=c.id
+    left join yc_group_tab d on c.group_id=d.id
+			<if test="teamIds != null and teamIds != ''">
+				left join cf_team_rel_area tra on tra.area_id = c.`group_id`
+			</if>
+			<if test="user_id != null and user_id != ''">
+				left join cf_team_member_area tma on tma.area_id = d.id
+			</if>
+    where a.type=2 and a.begin_time like '${date}%'
+    	<if test='teamIds != null and teamIds != ""'>
+    		and tra.team_id in (${teamIds})
+    	</if>
+    	<if test="user_id != null and user_id != ''">
+    		and tma.user_id = #{user_id}
+    	</if>
+    )
+  </select>
+
+  <!-- 根据网格ID，获取当前出租 -->
+  <select id="selectYrById" resultType="map">
+    select #{user_id} user_id,
+    ifnull(sum(case when a.begin_time like '${date}%' then left(b.rank_spec, 1) else 0
+    end),0) as 'yr'
+    from yc_agreement_tab a 
+    left join yc_houserank_tab b on a.house_id=b.id
+    left join yc_house_tab c on b.house_id=c.id
+    left join yc_group_tab d on c.group_id=d.id
+			<if test="teamIds != null and teamIds != ''">
+				left join cf_team_rel_area tra on tra.area_id = c.`group_id`
+			</if>
+			<if test="user_id != null and user_id != ''">
+				left join cf_team_member_area tma on tma.area_id = d.id
+			</if>
+    where a.type=2
+    	<if test='teamIds != null and teamIds != ""'>
+    		and tra.team_id in (${teamIds})
+    	</if>
+    	<if test="user_id != null and user_id != ''">
+    		and tma.user_id = #{user_id}
+    	</if>
+  </select>
+
+  <!-- 根据网格ID，获取收房总价 -->
+  <select id="selectYcrById" resultType="map">
+  	<![CDATA[
+  select ifnull(round(a.chu-b.shou,2),0) as diff from (  
+  SELECT
+      sum(a.cost_a)/sum(left(d.rank_spec,1)) as chu
+    FROM
+      yc_agreement_tab a
+    LEFT JOIN yc_account_tab b ON a.agents = b.id
+    LEFT JOIN yc_houserank_tab d ON a.house_id = d.id
+    LEFT JOIN yc_house_tab ho on ho.id = d.house_id
+    ]]>
+   			<if test="teamIds != null and teamIds != ''">
+				left join cf_team_rel_area tra2 on tra2.area_id = ho.`group_id`
+			</if>
+			<if test="userId != null and userId != ''">
+				left join cf_team_member_area tma2 on tma2.area_id = ho.`group_id`
+			</if>
+    <![CDATA[
+    WHERE a.begin_time < date_sub(#{date},interval -1 day) 
+      and a.end_time >= date_sub(#{date},interval -1 day) 
+      and (a.checkouttime >= date_sub(#{date},interval -1 day) or a.checkouttime is null)
+      AND a.type = 2 and a.isdelete=1
+      AND a.begin_time >= date_sub(date_sub(#{date},interval extract(day from #{date}) day),interval 0 month)
+      ]]>
+      <if test='teamIds != null and teamIds != ""'>
+    		and tra2.team_id in (${teamIds})
+    	</if>
+    	<if test="userId != null and userId != ''">
+    		and tma2.user_id = #{userId}
+    	</if>
+    <![CDATA[
+      ) a,  
+  (SELECT
+    sum(substring_index(substring_index(a.cost_a,'|',abs(timestampdiff(year,#{date},adddate(a.begin_time,interval - a.free_period day))) + 1),'|',-1))/ 
+    sum(LEFT (d.rank_spec, 1)) as shou
+  FROM
+    yc_agreement_tab a
+  LEFT JOIN yc_houserank_tab d ON a.house_id = d.house_id
+  AND d.rank_type = 0
+  AND a.type = 1 and a.isdelete=1
+  WHERE
+    a.id IN (
+      SELECT
+        a.father_id
+      FROM
+        yc_agreement_tab a
+      LEFT JOIN yc_houserank_tab d ON a.house_id = d.id
+      left join yc_house_tab c on d.house_id=c.id
+      left join yc_group_tab gd on c.group_id=gd.id
+      ]]>
+      <if test="teamIds != null and teamIds != ''">
+				left join cf_team_rel_area tra1 on tra1.area_id = c.`group_id`
+		</if>
+			<if test="userId != null and userId != ''">
+				left join cf_team_member_area tma1 on tma1.area_id = gd.id
+			</if>
+		
+	<![CDATA[
+      WHERE a.begin_time < date_sub(#{date},interval -1 day) and a.end_time >= #{date} and (a.checkouttime >= #{date} or a.checkouttime is null)
+      AND a.type = 2 and a.isdelete=1
+      AND a.begin_time >= date_sub(date_sub(#{date},interval extract(day from #{date}) day),interval 0 month) 
+    ]]>
+    <if test='teamIds != null and teamIds != ""'>
+    		and tra1.team_id in (${teamIds})
+    	</if>
+    	<if test="userId != null and userId != ''">
+    		and tma1.user_id = #{userId}
+    	</if>
+    	))b
+  </select>
+
+  <!-- 根据网格ID，获取出租总价 -->
+  <select id="selectYraById" resultType="map">
+    select #{user_id} user_id,
+    ifnull(sum(case when a.begin_time like '${date}%' then a.cost_a else 0 end),0) as 'yra'
+    from yc_agreement_tab a left join yc_houserank_tab b on a.house_id=b.id
+    left join yc_house_tab c on b.house_id=c.id
+    left join yc_group_tab d on c.group_id=d.id 
+			<if test="teamIds != null and teamIds != ''">
+				left join cf_team_rel_area tra on tra.area_id = c.`group_id`
+			</if>
+			<if test="user_id != null and user_id != ''">
+				left join cf_team_member_area tma on tma.area_id = d.id
+			</if>
+    where a.type=2
+    	<if test='teamIds != null and teamIds != ""'>
+    		and tra.team_id in (${teamIds})
+    	</if>
+    	<if test="user_id != null and user_id != ''">
+    		and tma.user_id = #{user_id}
+    	</if>
+  </select>
+
+  <!-- 根据网格ID，获取收房总天间 -->
+  <select id="selectYpTotalById" resultType="map">
+    select #{user_id} user_id,
+  <![CDATA[
+  sum(case when a.begin_time like '${date}%'
+  then if(a.status=2,datediff(last_day('${date}-01'),a.begin_time) * left(b.spec, 1),
+  if(date_format(a.checkouttime, '%Y-%m-%d')<=last_day('${date}-01'),
+  datediff(date_format(a.checkouttime, '%Y-%m-%d'),a.begin_time) * left(b.spec, 1),
+  datediff(last_day('${date}-01'),a.begin_time) * left(b.spec, 1))
+  ) else 0 end) as 'ypTotal'
+  ]]>
+    from yc_agreement_tab a left join yc_onstruction_tab b on a.id=b.agreementid
+    left join yc_house_tab c on b.houseid=c.id
+    left join yc_group_tab d on c.group_id=d.id
+    left join cf_team_member_area tma on tma.area_id = d.id
+    where b.is_work=1 
+    and a.type=1 
+    and tma.user_id=#{user_id}
+  </select>
+
+  <!-- 根据网格ID，获取出租总天间 -->
+  <select id="selectYrTotalById" resultType="map">
+    select #{user_id} user_id,
+  <![CDATA[
+  sum(case when a.begin_time like '${date}%' 
+  then if(a.status=2,datediff(last_day('${date}-01'),a.begin_time) * left(b.rank_spec, 1),
+  if(date_format(a.checkouttime, '%Y-%m-%d')<=last_day('${date}-01'),
+  datediff(date_format(a.checkouttime, '%Y-%m-%d'),a.begin_time) * left(b.rank_spec, 1),
+  datediff(last_day('${date}-01'),a.begin_time) * left(b.rank_spec, 1))
+  ) else 0 end) as 'yrTotal'
+  ]]>
+    from yc_agreement_tab a left join yc_houserank_tab b on a.house_id=b.id
+    left join yc_house_tab c on b.house_id=c.id
+    left join yc_group_tab d on c.group_id=d.id
+    left join cf_team_member_area tma on tma.area_id = d.id
+    where a.type=2 and tma.user_id=#{user_id}
+  </select>
+
+  <!-- 更改合约区域信息 -->
+  <update id="updateAreaId" parameterType="map">
+    update
+    yc_agreement_tab a
+    set a.areaid = #{areaid}
+    where instr(a.code,#{code}) > 0 and a.areaid
+    is null
+  </update>
+
+  <select id="getAllAreaName" resultType="map">
+    select a.area_name
+    from
+    yc_area_tab a
+    where a.area_type=3
+  </select>
+
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.nbms.report.dao.ProRepDao">
+
+  <!-- 管家数量（当前激活可用帐号数） -->
+  <select id="getManTotal" resultType="string">
+	select count(1) from yc_account_tab a, yc_account_role_tab b 
+	where a.id=b.user_id and a.is_delete=1 and a.state=1 and b.state=1 and b.role_id=22
+  </select>
+  
+  <!-- 全公司当前激活可用帐号数 -->
+  <select id="getManAll" resultType="string">
+    select count(1) from yc_account_tab a
+    where a.is_delete=1 and a.state=1 and <![CDATA[a.roleid <> 28]]>
+  </select>
+
+  <!-- 房子总套数 -->
+  <select id="getHouseSets" resultType="string">
+    select count(1) from yc_agreement_tab a
+    where a.type=1 and a.isdelete=1 and a.status=2
+  </select>
+
+  <select id="getTotalDay" resultType="string">
+    select ifnull(sum(datediff(a.checktime,a.constructiontime)),0)
+    from yc_onstruction_tab a
+    where <![CDATA[date_format(a.constructiontime,'%Y-%m') >= '2016-07']]>
+  </select>
+
+  <select id="getTotalMoney" resultType="string">
+    select ifnull(format(sum(a.money + b.cost), 2), 0)
+    from yc_onstruction_tab a,purchase_items_tab b,yc_agreement_tab c
+    where a.agreementid=b.agree_id and b.agree_id=c.id 
+		<![CDATA[and a.status>2]]>
+    and b.status=1 and c.status=2
+    and c.isdelete=1 and c.type=1
+  </select>
+
+</mapper>

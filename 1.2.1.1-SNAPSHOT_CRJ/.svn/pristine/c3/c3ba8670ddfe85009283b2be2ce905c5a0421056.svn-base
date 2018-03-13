@@ -1,0 +1,110 @@
+package com.ycdc.util;
+
+public class WegBean {
+	private String id;
+	private String handleId;
+	private String importId;
+	private String roomName;
+	private String agerId;
+	private String year;
+	private String month;
+	private String startMeter;
+	private String endMeter;
+	private String amount;
+	private String cost;
+	private String type;
+	private String state;
+	private String faildReson;
+	private String remark;
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getHandleId() {
+		return handleId;
+	}
+	public void setHandleId(String handleId) {
+		this.handleId = handleId;
+	}
+	public String getImportId() {
+		return importId;
+	}
+	public void setImportId(String importId) {
+		this.importId = importId;
+	}
+	public String getRoomName() {
+		return roomName;
+	}
+	public void setRoomName(String roomName) {
+		this.roomName = roomName;
+	}
+	public String getAgerId() {
+		return agerId;
+	}
+	public void setAgerId(String agerId) {
+		this.agerId = agerId;
+	}
+	public String getYear() {
+		return year;
+	}
+	public void setYear(String year) {
+		this.year = year;
+	}
+	public String getMonth() {
+		return month;
+	}
+	public void setMonth(String month) {
+		this.month = month;
+	}
+	public String getStartMeter() {
+		return startMeter;
+	}
+	public void setStartMeter(String startMeter) {
+		this.startMeter = startMeter;
+	}
+	public String getEndMeter() {
+		return endMeter;
+	}
+	public void setEndMeter(String endMeter) {
+		this.endMeter = endMeter;
+	}
+	public String getAmount() {
+		return amount;
+	}
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+	public String getCost() {
+		return cost;
+	}
+	public void setCost(String cost) {
+		this.cost = cost;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public String getFaildReson() {
+		return faildReson;
+	}
+	public void setFaildReson(String faildReson) {
+		this.faildReson = faildReson;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	
+}

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ycdc.appserver.bus.dao.syscfg.SyscfgMapper">
+
+	<!-- 根据发布表主键id，获取可出租天数 -->
+	<select id="getLeaseDay" resultType="map">
+		select 
+		ifnull(c.watercard, "") as "watercard",
+		ifnull(e.text_input,"") as "water_from",
+		ifnull(f.text_input,"") as "water_to",
+		ifnull(c.electriccard,"") as "electriccard",
+		ifnull(i.text_input,"") as "electric_from",
+		ifnull(j.text_input,"") as "electric_to",
+		ifnull(c.gascard,"") as "gascard",
+		ifnull(g.text_input,"") as "gas_from",
+		ifnull(h.text_input,"") as "gas_to",
+		date_format(b.end_time,'%Y-%m-%d') as "houseExpireDate",
+		case when b.end_time is null then "" else 
+		timestampdiff(day,date_format(now(),'%Y-%m-%d'),date_format(b.end_time,'%Y-%m-%d'))
+		end as "mayLeaseDay"
+		from yc_houserank_tab a
+		left join yc_agreement_tab b on a.house_id=b.house_id
+		left join yc_agreement_tab c on b.id=c.father_id and c.status in (3,7) and c.checkouttime is not null
+		left join cancel_lease_order d on c.id=d.rental_lease_order_id and d.work_order_id is not null
+		left join cancel_lease_order_value e on d.id=e.sub_order_id and e.attr_path='CANCEL_LEASE_ORDER_PROCESS.BUTLER_GET_HOME.WATER_NBR_FROM'
+		left join cancel_lease_order_value f on d.id=f.sub_order_id and f.attr_path='CANCEL_LEASE_ORDER_PROCESS.BUTLER_GET_HOME.WATER_NBR_TO'
+		and f.text_input!='' and f.text_input is not null
+		left join cancel_lease_order_value g on d.id=g.sub_order_id and g.attr_path='CANCEL_LEASE_ORDER_PROCESS.BUTLER_GET_HOME.GAS_NBR_FROM'
+		left join cancel_lease_order_value h on d.id=h.sub_order_id and h.attr_path='CANCEL_LEASE_ORDER_PROCESS.BUTLER_GET_HOME.GAS_NBR_TO'
+		left join cancel_lease_order_value i on d.id=i.sub_order_id and i.attr_path='CANCEL_LEASE_ORDER_PROCESS.BUTLER_GET_HOME.AMMETER_NBR_FROM'
+		left join cancel_lease_order_value j on d.id=j.sub_order_id and j.attr_path='CANCEL_LEASE_ORDER_PROCESS.BUTLER_GET_HOME.AMMETER_NBR_TO'
+		and j.text_input!='' and j.text_input is not null 
+		where b.type=1 and b.status=2 and b.isdelete=1 and a.id=#{id} 
+		order by c.checkouttime desc
+	</select>
+
+  <select id="getManagerList" resultType="com.ycdc.appserver.model.user.User">
+  	 SELECT a.`id`, a.`name`, group_concat(distinct g.`areaid`) areaid, fn_getarearname(g.`areaid`) areaname, a.g_id FROM yc_account_tab a left join cf_team_member_area b on a.`id` = b.`user_id` left join yc_group_tab g on g.id = b.area_id   
+  	  WHERE EXISTS(SELECT 1 FROM yc_account_role_tab b
+  	  			    WHERE a.`id` = b.`user_id`
+  	  			      AND b.`role_id` = #{role_id}
+  	  			      AND b.`state` = 1) 
+  	   AND a.`is_delete` = 1 
+  	   group by a.`id`
+   </select>
+   <select id="getAreaList" resultType="com.ycdc.appserver.model.syscfg.Area">
+   		select a.id, a.area_name, a.area_type from yc_area_tab a
+   		<where>
+	   		<if test="fatherid != null and fatherid != '' ">
+	   			and fatherid = #{fatherid}
+	   		</if>
+	   		<if test="area_type != null and area_type != '' ">
+	   			and area_type = #{area_type}
+	   		</if>
+   		</where>
+   </select>
+   
+   <select id="getDictit" resultType="com.ycdc.appserver.model.syscfg.DictiItem">
+		SELECT a.`item_id`,a.`item_name`,a.`item_value`, a.remark
+		  FROM yc_dictionary_item a 
+		 WHERE a.`group_id` = #{group_id}
+		   and a.`status` = 1
+      order by item_order
+   </select>
+   
+   <select id="getDictitAll" resultType="com.ycdc.appserver.model.syscfg.DictiItem">
+		SELECT a.`item_id`,a.`item_name`,a.`item_value`, a.remark
+		  FROM yc_dictionary_item a 
+		 WHERE a.`group_id` = #{group_id}
+      order by item_order
+   </select>
+   
+   <select id="getUserInfoByMobile" resultType="com.ycdc.appserver.model.user.User">
+   		SELECT a.`id`, a.`mobile`, a.`certificateno`, a.username name, ca_author, email, desc_text FROM yc_userinfo_tab a
+   		 WHERE a.`mobile` = #{mobile} 
+   		   AND a.`is_delete` = 1
+   </select>
+   
+   <insert id="saveUserInfo" parameterType="com.ycdc.appserver.model.user.User"  useGeneratedKeys="true" keyProperty="id">
+   		INSERT INTO yc_userinfo_tab(username,certificateno,sex,birthday,province,mobile,email,desc_text,password) values (#{name},#{certificateno},#{sex},#{birthday},#{province},#{mobile},#{email},#{address},#{pwd})
+   </insert>
+   
+   <update id="updateUserInfo" parameterType="com.ycdc.appserver.model.user.User">
+   		update yc_userinfo_tab  
+   			 <trim prefix="set" suffixOverrides=",">
+	   			<if test="name != null and name != ''">
+	   				 username = #{name}, 
+	   			</if>
+	   			<if test="certificateno != null and certificateno != '' ">
+	   				 certificateno = #{certificateno}, 
+	   			</if>
+	   			<if test="ca_author != null and ca_author != '' ">
+	   				 ca_author = #{ca_author}, 
+	   			</if>
+	   			<if test="email != null and email != '' ">
+	   				 email = #{email}, 
+	   			</if>
+	   			<if test="address != null and address != '' ">
+	   				 desc_text = #{address}, 
+	   			</if>
+	   			<if test="birthday != null and birthday != '' ">
+	   				 birthday = #{birthday}, 
+	   			</if>
+	   			<if test="sex != null and sex != '' ">
+	   				 sex = #{sex}, 
+	   			</if>
+	   			<if test="province != null and province != '' ">
+	   				 province = #{province},
+	   			</if>
+   			 </trim>
+   			where mobile = #{mobile}
+   </update>
+   <select id="checkUrlExists" resultType="map">
+   		select a.`power_id`,a.`menu_id` from yc_power_new_tab a where a.`power_url` = #{power_url}
+   </select>
+   <select id="checkUserPower" resultType="java.lang.Integer">
+   		select count(1) from yc_role_menu_tab a, yc_account_role_tab b 
+		 where a.`role_id` = b.`role_id` 
+		   and b.`state` = 1 
+		   and b.`user_id` = #{user_id}
+		   and a.`state` = 1 
+           and a.`power_id` = #{power_id}
+   </select>
+   <insert id="addHistory">
+   		insert into yc_log_mp_visit (`ip`,`oper_id`,`heads`,`power_id`,`menu_id`,url)
+   			VALUES(#{ip},#{user_id},#{heads},#{powerId},#{menu_id},#{url})
+   </insert>
+   <select id="getMaxVesion" resultType="map">
+   		select max(a.`version_code`) version_code from yc_version_log a where a.`terminaltype` = #{terminaltype} and a.`status` = 1
+   </select>
+   <select id="getBankList" resultType="map">
+   		select * from (select a.name, a.code, a.father_id, a.id from financial_banks_tab a 
+   		<where>
+   			<if test="area_id != null and area_id != '' ">
+   				and area_id = #{area_id}
+   			</if>
+   			<if test="father_id != null and father_id != '' ">
+   				and father_id = #{father_id}
+   			</if>
+   			<if test="bankName != null and bankName != '' ">
+   				and name like concat('%',#{bankName},'%')
+   			</if>
+   		</where>
+   		order by a.id ) a
+   		limit #{startPage} , #{pageSize}
+   </select>
+</mapper>

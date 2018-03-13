@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.nbms.report.dao.QARepDao">
+
+  <!-- 每月看房预约量 -->
+  <select id="getMonthReserve" resultType="int">
+    select count(1) from
+    order_tab a
+    where a.order_type=0 and a.create_time like '${date}%'
+  </select>
+
+  <!-- 每月报修量 -->
+  <select id="getMonthMaintenance" resultType="int">
+    select count(1)
+    from order_tab a
+    where a.order_type=1 and a.create_time like '${date}%'
+  </select>
+
+  <!-- 每月投诉量 -->
+  <select id="getMonthComplaint" resultType="int">
+    select count(1) from
+    order_tab a
+    where a.order_type=3 and a.create_time like '${date}%'
+  </select>
+
+  
+  
+  <!-- 每月闭环量 -->
+  <select id="getMonthCloseCycle" resultType="int">
+    select count(1) from order_tab a
+    where <![CDATA[a.order_type <> 9]]>
+    and a.order_status in (200, -1)
+    and a.create_time like '${date}%'
+  </select>
+
+  <!-- 订单总数（过滤例行保洁） -->
+  <select id="getOrderTotal" resultType="int">
+    select count(1) from order_tab a
+    where <![CDATA[a.order_type <> 9]]> and a.create_time like '${date}%'
+  </select>
+
+  <!-- 服务处理总天数（过滤例行保洁） -->
+  <select id="getMonthPeriod" resultType="int">
+    select ifnull(sum(bb.days),0) as "day" from
+    (
+    select
+    sum(datediff(aa.oper_date,a.create_time)) as "days"
+    from order_tab a,
+    (
+    select a.id,max(c.oper_date) as "oper_date"
+    from order_tab a,yc_task_info_tab b,yc_task_step_info_tab c
+    where a.id=b.resource_id and b.task_id=c.task_id
+    and a.order_status in (200,-1) and a.create_time like '${date}%' and <![CDATA[a.order_type <> 9]]>
+    group by a.id
+    ) aa
+    where a.id=aa.id
+    union all
+    select
+    sum(datediff(now(),a.create_time)) as "days"
+    from order_tab a
+    where a.order_status not in (200,-1) and <![CDATA[a.order_type <> 9]]>
+    and a.create_time like '${date}%'
+    ) bb
+  </select>
+
+  <!-- 未收款合同数 -->
+  <select id="getNoGatherAgreement" resultType="int">
+    select count(distinct b.id) from financial_receivable_tab
+    a,yc_agreement_tab b
+    where a.secondary=b.id and a.category=1 and
+    a.secondary_type=1
+    and a.status=0 and a.isdelete=1 and b.status=2 
+	<![CDATA[and a.start_time<now()]]>
+  </select>
+
+  <!-- 看房订单（预约订单） -->
+  <select id="getReserves" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+    count(1) as
+    "reserve_total"
+    from order_tab a
+    <where>
+      order_type=0
+      <if test="order_status != null and order_status != ''">
+        and order_status=#{order_status}
+      </if>
+	<![CDATA[
+	and date_format(a.create_time, '%Y-%m')>=#{start_date}
+	and date_format(a.create_time, '%Y-%m')<=#{end_date}
+	]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 维修订单 -->
+  <select id="getMaintenances" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+    count(1) as
+    "maintenance_total"
+    from order_tab a
+    <where>
+      order_type=1
+      <if test="order_status != null and order_status != ''">
+        and order_status=#{order_status}
+      </if>
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date} 
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 保洁订单 -->
+  <select id="getCleanings" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+    count(1) as
+    "cleaning_total"
+    from order_tab a
+    <where>
+      order_type=2
+      <if test="order_status != null and order_status != ''">
+        and order_status=#{order_status}
+      </if>
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date} 
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 例行保洁 -->
+  <select id="getRoutineCleanings" parameterType="map"
+    resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+    count(1) as
+    "routine_cleaning_total"
+    from order_tab a
+    <where>
+      order_type=9
+      <if test="order_status != null and order_status != ''">
+        and order_status=#{order_status}
+      </if>
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date} 
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 投诉订单 -->
+  <select id="getComplaints" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+    count(1) as
+    "complaint_total"
+    from order_tab a
+    <where>
+      order_type=3
+      <if test="order_status != null and order_status != ''">
+        and order_status=#{order_status}
+      </if>
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date} 
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 其他订单 -->
+  <select id="getOthers" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+    count(1) as
+    "other_total"
+    from order_tab a
+    <where>
+      order_type=4
+      <if test="order_status != null and order_status != ''">
+        and order_status=#{order_status}
+      </if>
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date} 
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 入住问题 -->
+  <select id="getCheckIns" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+    count(1) as
+    "checkIn_total"
+    from order_tab a
+    <where>
+      order_type=6
+      <if test="order_status != null and order_status != ''">
+        and order_status=#{order_status}
+      </if>
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date} 
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 退租订单 -->
+  <select id="getRefunds" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+    count(1) as
+    "refund_total"
+    from order_tab a
+    <where>
+      order_type=7
+      <if test="order_status != null and order_status != ''">
+        and order_status=#{order_status}
+      </if>
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date} 
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 处理周期 -->
+  <select id="getPeriods" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+		<![CDATA[
+		round(sum(case when datediff(a.action_time,a.service_time) < 0 
+		then 0 else datediff(a.action_time,a.service_time) end) / count(1)) as "period_day"
+		]]>
+    from order_tab a
+    <where>
+      a.order_type in (1,2) and a.action_time is not null	
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date}
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 按分类查询订单 -->
+  <select id="getCategoryData" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+    count(1) as
+    #{key}
+    from order_tab a
+    <where>
+      <if test="order_type != null and order_type != ''">
+        and order_type=#{order_type}
+      </if>
+      <if test="order_status != null and order_status != ''">
+        and order_status=#{order_status}
+      </if>
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date} 
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+  <!-- 分类查询出来周期 -->
+  <select id="getCategoryPeriod" parameterType="map" resultType="map">
+    select
+    date_format(a.create_time, '%Y-%m') as "time",
+		<![CDATA[
+		round(sum(case when datediff(a.action_time,a.service_time) < 0 
+		then 0 else datediff(a.action_time,a.service_time) end) / count(1)) as "period_day"
+		]]>
+    from order_tab a
+    <where>
+      <if test="order_type != null and order_type != ''">
+        and a.order_type=#{order_type}
+      </if>
+      and a.action_time is not null	
+		<![CDATA[
+		and date_format(a.create_time, '%Y-%m')>=#{start_date}
+		and date_format(a.create_time, '%Y-%m')<=#{end_date} 
+		]]>
+    </where>
+    group by date_format(a.create_time, '%Y-%m')
+    order by
+    date_format(a.create_time, '%Y-%m')
+  </select>
+
+</mapper>

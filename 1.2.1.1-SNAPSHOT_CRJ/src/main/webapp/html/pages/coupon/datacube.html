@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>卡券信息统计</title>
+  <style type="text/css">
+  	.bzh{
+  		background-color: #e68d8d !important;
+  	}
+  	.bzh td{
+  		background-color: #e68d8d !important;
+  		color: #fff;
+  	}
+  	.panel-body .form-group{
+  		margin-top: 5px;
+  	}
+  </style>
+</head>
+
+<body>
+       <section class="panel">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+		        		卡券名称：<b id="card_name"></b>  卡券编号：<b id="card_id"></b><br />
+		        		<div class="form-group">
+	                    	<input type="text" style="width: 200px" name="time" readonly="readonly" id="time" class="form-control" placeholder="2013-01-02 至 2013-01-02"  class="span4"/>
+	                    </div>
+	                    <div class="form-group ">
+	                    	<div class="tools" >
+								<a href="javascript:;" class="fa fa-search yc_seach" table="couponDataTable" > 查询</a>
+								<a href="javascript:;" class="fa fa-search " onclick="datacube.getdatacube();" > 同步数据信息</a>
+	                    	</div>
+			            </div>
+	                </form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="couponDataTable" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>	
+			            	<th></th>
+			             	<th></th>
+			             	<th>日期信息</th>
+			             	<th>浏览次数</th>
+			                <th>浏览人数</th>
+			                <th>领取次数</th>
+			                <th>领取人数</th>
+			                <th>使用次数</th>
+			                <th>使用人数</th>
+			                <th>转赠次数</th>
+			                <th>转赠人数</th>
+			                <th>过期次数</th>
+			                <th>过期人数</th>
+			                
+			                <th>朋友浏览次数</th>
+			                <th>朋友浏览人数</th>
+			                <th>朋友领取次数</th>
+			                <th>朋友领取人数</th>
+			                <th>朋友使用次数</th>
+			                <th>朋友使用人数</th>
+			                <th></th>
+			            </tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+   	</section>
+   	<script type="text/javascript" src="/html/js/coupon/datacube.js" ></script>
+</body>
+</html>

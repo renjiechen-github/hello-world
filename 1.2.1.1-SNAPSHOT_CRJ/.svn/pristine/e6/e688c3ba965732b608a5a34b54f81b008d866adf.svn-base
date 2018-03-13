@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<style type="text/css">
+	._img_ .tab-content ul{
+		list-style: none;
+	}
+	._img_ .bntdiv{
+		position: fixed;
+		width: 100%;
+		margin-top: 43px;
+		padding-top: 2px;
+		padding-bottom:2px;
+		background-color: rgba(0, 0, 0, 0.29);
+		text-align: center;
+		z-index: 1;
+	}
+	._img_ .tab-content li{
+		float: left;
+		margin: 5px;
+		border: 1px solid #E6E3E3;
+		cursor: pointer;
+		position: relative;
+		height: 113px;
+		width: 113px;
+	}
+	._img_ .tab-content li:HOVER{
+		border: 1px solid blue;
+	}
+	._img_ .tab-content li img{
+		width: 100%;
+		height: 100%;
+	}
+	._img_ .zzdiv{
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0px;
+		left: 0px;
+		text-align: center;
+		background-color: black;
+		opacity:0.1;
+	}
+	._img_ .zzdiv .fa-check{
+		margin-top: 50px;
+	}
+	._img_  .tab-content .fa-check-circle{
+		color: blue;
+		position: absolute;
+		top:2px;
+		right: 2px;
+		font-size: 30px;
+		opacity:0;
+	}
+	._img_ .tab-content .select{
+		border: 1px solid blue !important;
+	}
+	._img_ .tab-content .select .fa-check-circle{
+		opacity:0.5;
+	}
+</style>
+<title>新增</title>
+
+</head>
+
+<body>
+	<div class="_img_" >
+		<section class="panel">
+			<header class="panel-heading custom-tab " style="      z-index: 1;  position: fixed;    width: 100%;" >
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="#home" data-toggle="tab">我的临时文件空间</a></li>
+					<li class=""><a href="#about" data-toggle="tab">临时文件公共空间</a></li>
+					<!-- <li class=""><a href="#profile" data-toggle="tab">Profile</a></li>
+					<li class=""><a href="#contact" data-toggle="tab">Contact</a></li> -->
+				</ul>
+			</header>
+			<div class="bntdiv" style="display: none;" >
+				<button class="btn btn-success btn-sm" style="display: none;" id="bntsucc" type="button">确定选择</button>
+				<button class="btn btn-success btn-sm" id="bntcommon" type="button">设为公共文件</button>
+				<button class="btn btn-danger btn-sm" id="bntdelete" type="button">删除</button>
+			</div>
+			<div class="panel-body" style="    padding-top: 77px;" >
+				<div class="tab-content">
+					<div class="tab-pane active" id="home">
+						<div class="divload" style="width: 100%;text-align: center;" >加载中...</div>
+						<ul>
+							<!-- <li title="右击鼠标预览" >
+								<i class="fa fa-check-circle"></i>
+								<img src="">
+							</li> -->
+						</ul>
+					</div>
+					<div class="tab-pane" id="about">
+						<div class="divload" style="width: 100%;text-align: center;" >加载中...</div>
+						<ul>
+						</ul>
+					</div>
+					<!-- <div class="tab-pane" id="profile">
+	
+						<p>Profile pariatur cliche reprehenderit, enim eiusmod high
+							life accusamus terry richardson ad squid. 3 wolf moon officia
+							aute, non cupidatat skateboard dolor brunch. Food truck quinoa
+							nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua
+							put a bird on it squid single-origin coffee nulla assumenda
+							shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore
+							wes anderson cred nesciunt sapiente ea proident.</p>
+					</div>
+					<div class="tab-pane" id="contact">Contact</div> -->
+				</div>
+			</div>
+		</section>
+	</div>
+	<script type="text/javascript" src="/html/js/common/img.js"></script>
+</body>
+</html>

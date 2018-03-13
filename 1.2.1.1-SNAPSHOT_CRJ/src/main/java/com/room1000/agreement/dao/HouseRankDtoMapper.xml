@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.agreement.dao.HouseRankDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.agreement.dto.HouseRankDto">
+    <!--
+    @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="house_id" jdbcType="BIGINT" property="houseId" />
+    <result column="istop" jdbcType="INTEGER" property="istop" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="createtime" jdbcType="DATE" property="createtime" />
+    <result column="rank_type" jdbcType="VARCHAR" property="rankType" />
+    <result column="rank_name" jdbcType="VARCHAR" property="rankName" />
+    <result column="begin_date" jdbcType="VARCHAR" property="beginDate" />
+    <result column="failure_date" jdbcType="VARCHAR" property="failureDate" />
+    <result column="fee_id" jdbcType="VARCHAR" property="feeId" />
+    <result column="fee" jdbcType="BIGINT" property="fee" />
+    <result column="rank_desc" jdbcType="VARCHAR" property="rankDesc" />
+    <result column="allocation_id_a" jdbcType="VARCHAR" property="allocationIdA" />
+    <result column="allocation_id_b" jdbcType="VARCHAR" property="allocationIdB" />
+    <result column="images" jdbcType="VARCHAR" property="images" />
+    <result column="label_id" jdbcType="VARCHAR" property="labelId" />
+    <result column="account_id" jdbcType="VARCHAR" property="accountId" />
+    <result column="rank_status" jdbcType="VARCHAR" property="rankStatus" />
+    <result column="isdelete" jdbcType="VARCHAR" property="isdelete" />
+    <result column="decorate" jdbcType="VARCHAR" property="decorate" />
+    <result column="rank_spec" jdbcType="VARCHAR" property="rankSpec" />
+    <result column="rank_area" jdbcType="VARCHAR" property="rankArea" />
+    <result column="rank_code" jdbcType="VARCHAR" property="rankCode" />
+    <result column="operid" jdbcType="BIGINT" property="operid" />
+    <result column="old_state" jdbcType="INTEGER" property="oldState" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+    @mbg.generated
+    -->
+    id, house_id, istop, title, createtime, rank_type, rank_name, begin_date, failure_date, 
+    fee_id, fee, rank_desc, allocation_id_a, allocation_id_b, images, label_id, account_id, 
+    rank_status, isdelete, decorate, rank_spec, rank_area, rank_code, operid, old_state
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+    @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from yc_houserank_tab
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--
+    @mbg.generated
+    -->
+    delete from yc_houserank_tab
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <update id="resetHouseRankState">
+  	update yc_houserank_tab set rank_status=5 where id=#{rank_id}
+  </update>
+  <update id="resetHouseRankStateShared">
+  	update yc_houserank_tab set rank_status=6 where house_id=#{house_id} and rank_type=1
+  </update>
+  <insert id="insert" parameterType="com.room1000.agreement.dto.HouseRankDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into yc_houserank_tab (id, house_id, istop, 
+      title, createtime, rank_type, 
+      rank_name, begin_date, failure_date, 
+      fee_id, fee, rank_desc, 
+      allocation_id_a, allocation_id_b, images, 
+      label_id, account_id, rank_status, 
+      isdelete, decorate, rank_spec, 
+      rank_area, rank_code, operid, 
+      old_state)
+    values (#{id,jdbcType=BIGINT}, #{houseId,jdbcType=BIGINT}, #{istop,jdbcType=INTEGER}, 
+      #{title,jdbcType=VARCHAR}, #{createtime,jdbcType=DATE}, #{rankType,jdbcType=VARCHAR}, 
+      #{rankName,jdbcType=VARCHAR}, #{beginDate,jdbcType=VARCHAR}, #{failureDate,jdbcType=VARCHAR}, 
+      #{feeId,jdbcType=VARCHAR}, #{fee,jdbcType=BIGINT}, #{rankDesc,jdbcType=VARCHAR}, 
+      #{allocationIdA,jdbcType=VARCHAR}, #{allocationIdB,jdbcType=VARCHAR}, #{images,jdbcType=VARCHAR}, 
+      #{labelId,jdbcType=VARCHAR}, #{accountId,jdbcType=VARCHAR}, #{rankStatus,jdbcType=VARCHAR}, 
+      #{isdelete,jdbcType=VARCHAR}, #{decorate,jdbcType=VARCHAR}, #{rankSpec,jdbcType=VARCHAR}, 
+      #{rankArea,jdbcType=VARCHAR}, #{rankCode,jdbcType=VARCHAR}, #{operid,jdbcType=BIGINT}, 
+      #{oldState,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.agreement.dto.HouseRankDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into yc_houserank_tab
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="houseId != null">
+        house_id,
+      </if>
+      <if test="istop != null">
+        istop,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="createtime != null">
+        createtime,
+      </if>
+      <if test="rankType != null">
+        rank_type,
+      </if>
+      <if test="rankName != null">
+        rank_name,
+      </if>
+      <if test="beginDate != null">
+        begin_date,
+      </if>
+      <if test="failureDate != null">
+        failure_date,
+      </if>
+      <if test="feeId != null">
+        fee_id,
+      </if>
+      <if test="fee != null">
+        fee,
+      </if>
+      <if test="rankDesc != null">
+        rank_desc,
+      </if>
+      <if test="allocationIdA != null">
+        allocation_id_a,
+      </if>
+      <if test="allocationIdB != null">
+        allocation_id_b,
+      </if>
+      <if test="images != null">
+        images,
+      </if>
+      <if test="labelId != null">
+        label_id,
+      </if>
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="rankStatus != null">
+        rank_status,
+      </if>
+      <if test="isdelete != null">
+        isdelete,
+      </if>
+      <if test="decorate != null">
+        decorate,
+      </if>
+      <if test="rankSpec != null">
+        rank_spec,
+      </if>
+      <if test="rankArea != null">
+        rank_area,
+      </if>
+      <if test="rankCode != null">
+        rank_code,
+      </if>
+      <if test="operid != null">
+        operid,
+      </if>
+      <if test="oldState != null">
+        old_state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="houseId != null">
+        #{houseId,jdbcType=BIGINT},
+      </if>
+      <if test="istop != null">
+        #{istop,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=DATE},
+      </if>
+      <if test="rankType != null">
+        #{rankType,jdbcType=VARCHAR},
+      </if>
+      <if test="rankName != null">
+        #{rankName,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null">
+        #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="failureDate != null">
+        #{failureDate,jdbcType=VARCHAR},
+      </if>
+      <if test="feeId != null">
+        #{feeId,jdbcType=VARCHAR},
+      </if>
+      <if test="fee != null">
+        #{fee,jdbcType=BIGINT},
+      </if>
+      <if test="rankDesc != null">
+        #{rankDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="allocationIdA != null">
+        #{allocationIdA,jdbcType=VARCHAR},
+      </if>
+      <if test="allocationIdB != null">
+        #{allocationIdB,jdbcType=VARCHAR},
+      </if>
+      <if test="images != null">
+        #{images,jdbcType=VARCHAR},
+      </if>
+      <if test="labelId != null">
+        #{labelId,jdbcType=VARCHAR},
+      </if>
+      <if test="accountId != null">
+        #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="rankStatus != null">
+        #{rankStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="isdelete != null">
+        #{isdelete,jdbcType=VARCHAR},
+      </if>
+      <if test="decorate != null">
+        #{decorate,jdbcType=VARCHAR},
+      </if>
+      <if test="rankSpec != null">
+        #{rankSpec,jdbcType=VARCHAR},
+      </if>
+      <if test="rankArea != null">
+        #{rankArea,jdbcType=VARCHAR},
+      </if>
+      <if test="rankCode != null">
+        #{rankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="operid != null">
+        #{operid,jdbcType=BIGINT},
+      </if>
+      <if test="oldState != null">
+        #{oldState,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.agreement.dto.HouseRankDto">
+    <!--
+    @mbg.generated
+    -->
+    update yc_houserank_tab
+    <set>
+      <if test="houseId != null">
+        house_id = #{houseId,jdbcType=BIGINT},
+      </if>
+      <if test="istop != null">
+        istop = #{istop,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        createtime = #{createtime,jdbcType=DATE},
+      </if>
+      <if test="rankType != null">
+        rank_type = #{rankType,jdbcType=VARCHAR},
+      </if>
+      <if test="rankName != null">
+        rank_name = #{rankName,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDate != null">
+        begin_date = #{beginDate,jdbcType=VARCHAR},
+      </if>
+      <if test="failureDate != null">
+        failure_date = #{failureDate,jdbcType=VARCHAR},
+      </if>
+      <if test="feeId != null">
+        fee_id = #{feeId,jdbcType=VARCHAR},
+      </if>
+      <if test="fee != null">
+        fee = #{fee,jdbcType=BIGINT},
+      </if>
+      <if test="rankDesc != null">
+        rank_desc = #{rankDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="allocationIdA != null">
+        allocation_id_a = #{allocationIdA,jdbcType=VARCHAR},
+      </if>
+      <if test="allocationIdB != null">
+        allocation_id_b = #{allocationIdB,jdbcType=VARCHAR},
+      </if>
+      <if test="images != null">
+        images = #{images,jdbcType=VARCHAR},
+      </if>
+      <if test="labelId != null">
+        label_id = #{labelId,jdbcType=VARCHAR},
+      </if>
+      <if test="accountId != null">
+        account_id = #{accountId,jdbcType=VARCHAR},
+      </if>
+      <if test="rankStatus != null">
+        rank_status = #{rankStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="isdelete != null">
+        isdelete = #{isdelete,jdbcType=VARCHAR},
+      </if>
+      <if test="decorate != null">
+        decorate = #{decorate,jdbcType=VARCHAR},
+      </if>
+      <if test="rankSpec != null">
+        rank_spec = #{rankSpec,jdbcType=VARCHAR},
+      </if>
+      <if test="rankArea != null">
+        rank_area = #{rankArea,jdbcType=VARCHAR},
+      </if>
+      <if test="rankCode != null">
+        rank_code = #{rankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="operid != null">
+        operid = #{operid,jdbcType=BIGINT},
+      </if>
+      <if test="oldState != null">
+        old_state = #{oldState,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.agreement.dto.HouseRankDto">
+    <!--
+    @mbg.generated
+    -->
+    update yc_houserank_tab
+    set house_id = #{houseId,jdbcType=BIGINT},
+      istop = #{istop,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=DATE},
+      rank_type = #{rankType,jdbcType=VARCHAR},
+      rank_name = #{rankName,jdbcType=VARCHAR},
+      begin_date = #{beginDate,jdbcType=VARCHAR},
+      failure_date = #{failureDate,jdbcType=VARCHAR},
+      fee_id = #{feeId,jdbcType=VARCHAR},
+      fee = #{fee,jdbcType=BIGINT},
+      rank_desc = #{rankDesc,jdbcType=VARCHAR},
+      allocation_id_a = #{allocationIdA,jdbcType=VARCHAR},
+      allocation_id_b = #{allocationIdB,jdbcType=VARCHAR},
+      images = #{images,jdbcType=VARCHAR},
+      label_id = #{labelId,jdbcType=VARCHAR},
+      account_id = #{accountId,jdbcType=VARCHAR},
+      rank_status = #{rankStatus,jdbcType=VARCHAR},
+      isdelete = #{isdelete,jdbcType=VARCHAR},
+      decorate = #{decorate,jdbcType=VARCHAR},
+      rank_spec = #{rankSpec,jdbcType=VARCHAR},
+      rank_area = #{rankArea,jdbcType=VARCHAR},
+      rank_code = #{rankCode,jdbcType=VARCHAR},
+      operid = #{operid,jdbcType=BIGINT},
+      old_state = #{oldState,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

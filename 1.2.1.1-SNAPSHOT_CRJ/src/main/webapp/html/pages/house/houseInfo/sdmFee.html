@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>缴纳水电煤费</title>
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<meta name="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+	.daterangepicker.dropdown-menu {
+	    max-width: none;
+	    z-index: 900000000;
+	}
+</style>
+</head>
+
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<form id="form2" class="form-horizontal adminex-form" role="form">
+				<div class="col-md-12">
+					<div class="panel" data-collapsed="0">
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group">
+									<label class="col-md-2 control-label">水读数：</label>
+									<div class="col-md-3">
+										<input type="hidden" id="id" name="id" value="" />
+										 <input id="waterD" name="waterD" msg="请输入数字格式的水读数" class="form-control changeInput" />
+									</div>
+									<label class="col-md-2 control-label">水费：</label>
+									<div class="col-md-3">
+										 <input id="waterF" name="waterF" msg="请输入数字格式的水费" class="form-control changeInput" />
+									</div>
+									
+								</div>
+								<div class="form-group">
+									<label class="col-md-2 control-label">水费时间：</label>
+									<div class="col-md-8">
+										 <input id="waterDate" name="waterDate" msg="请选择水费时间段" class="form-control changeInput" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-2 control-label">电读数：</label>
+									<div class="col-md-3">
+										 <input id="eMeterD" name="eMeterD" msg="请输入数字格式的电读数" class="form-control changeInput" />
+									</div>
+
+									<label class="col-md-2 control-label">电费：</label>
+									<div class="col-md-3">
+										 <input id="eMeterF" name="eMeterF" msg="请输入数字格式的电费" class="form-control changeInput" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-2 control-label">电费时间：</label>
+									<div class="col-md-8">
+										 <input id="eMeterDate" name="eMeterDate" msg="请选择电费时间段" class="form-control changeInput" />
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="col-md-2 control-label">煤气数：</label>
+									<div class="col-md-3">
+										 <input id="cardgasD" name="cardgasD" msg="请输入数字格式的煤气数" class="form-control changeInput" />
+									</div>
+
+									<label class="col-md-2 control-label">煤气费：</label>
+									<div class="col-md-3">
+										 <input id="cardgasF" name="cardgasF" msg="请输入数字格式的煤气费" class="form-control changeInput" />
+									</div>
+									
+								</div>
+								<div class="form-group">
+									<label class="col-md-2 control-label">煤气时间：</label>
+									<div class="col-md-8">
+										 <input id="cardgasDate" name="cardgasDate" msg="请选择煤气时间段" class="form-control changeInput" />
+									</div>
+								</div>	
+							</div>
+						</div>
+							<div class="text-center">
+								<button class="btn btn-info" id="w_add_bnt" type="button">确定提交</button>
+								<br/>
+							</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</section>
+</body>
+<script type="text/javascript"
+	src="/html/js/house/houseInfo/sdmFee.js"></script>
+</html>

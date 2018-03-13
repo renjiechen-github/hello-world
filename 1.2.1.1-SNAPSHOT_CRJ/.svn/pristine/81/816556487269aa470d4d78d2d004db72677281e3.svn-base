@@ -1,0 +1,13 @@
+[
+  { "id" : "demo_root_11", "text" : "Root 1", "children" : "true", "type" : "root","state":{"selected":"true" }},
+  { "id" : "demo_root_2", "text" : "Root 2", "type" : "root","selected":"true" }
+]
+[{"id":207,"text":"区域查询","children":"false","type":"root","state":"{selected:true" }},
+{"id":220,"text":"小区查询","children":"false","type":"root","state":"{selected:true }"},
+{"id":221,"text":"小区房源关系查询","children":"false","type":"root","state":"{selected:true }"},
+{"id":222,"text":"小区新增","children":"false","type":"root","state":"{selected:true }"},
+{"id":223,"text":"小区修改","children":"false","type":"root","state":"{selected:true }"},
+{"id":224,"text":"小区删除","children":"false","type":"root","state":"{selected:true}"},
+{"id":225,"text":"小区审批通过","children":"false","type":"root","state":"{selected:true }"},
+{"id":226,"text":"小区审批拒绝","children":"false","type":"root","state":"{selected:true }"},
+{"id":228,"text":"小区房屋报表","children":"false","type":"root","state":"{selected:true }"}]

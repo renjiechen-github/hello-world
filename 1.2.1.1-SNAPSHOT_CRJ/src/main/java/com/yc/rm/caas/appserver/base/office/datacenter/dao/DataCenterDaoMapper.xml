@@ -1,0 +1,1109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.rm.caas.appserver.base.office.datacenter.dao.IDataCenterDao">
+        <select id="selectDataRpt" resultType="map">
+                <if test="id==1"> <!-- 每天生成当前空置率 -->
+                <![CDATA[
+                        select
+b.name as '管家',
+ag.id as '收房合约id',
+ag.code as '收房合约编码',
+ag.name as '收房合约名称',
+c.address as '房源地址',
+d.group_name as '小区名称',
+ox.area_name '区域名称',
+-- left(o.spec,1) as '间数',
+yht.rank_code '出租房源编码',
+yht.id '出租房源ID',
+case when yht.isdelete = 0 then '否'
+ when yht.isdelete = 1 then '是' end '是否可用',
+yd.item_name as  '房源状态',
+yht.title '房源标题',
+case when MAX(m.checkouttime) is null then 
+  case when xxd.housemaxcheck is null then ''
+     else xxd.housemaxcheck
+  END
+  when xxd.housemaxcheck is null or MAX(m.checkouttime) > xxd.housemaxcheck THEN 
+   MAX(m.checkouttime)
+  ELSE
+   xxd.housemaxcheck
+  end as '最后退租时间',
+
+case when MAX(m.begin_time) is null then 
+  case when xxd.housemaxbegin is null then ''
+     else xxd.housemaxbegin
+  END
+  when xxd.housemaxbegin is null  THEN 
+   MAX(m.begin_time)
+  when MAX(m.begin_time) > xxd.housemaxbegin then 
+   MAX(m.begin_time)
+  ELSE
+   xxd.housemaxbegin
+  end as '最后起租时间',
+
+case when MAX(m.checkouttime) is null then 
+  case when xxd.housemaxcheck is null then ''
+     else TIMESTAMPDIFF(
+        DAY,
+        DATE_FORMAT(
+        MAX(xxd.housemaxcheck),
+        '%Y-%m-%d'
+        ),
+        now()
+       )
+  END
+  when xxd.housemaxcheck is null or MAX(m.checkouttime) > xxd.housemaxcheck THEN 
+   TIMESTAMPDIFF(
+        DAY,
+        DATE_FORMAT(
+        MAX(m.checkouttime),
+        '%Y-%m-%d'
+        ),
+        now()
+       )
+  ELSE
+   TIMESTAMPDIFF(
+        DAY,
+        DATE_FORMAT(
+        MAX(xxd.housemaxcheck),
+        '%Y-%m-%d'
+        ),
+        now()
+       )
+  end as '空置天数',
+ ag.cost_a '收房价格',
+ yht.fee '发布价格'
+-- ifnull(sum(left(o.spec,1)),0) as '收房间数'
+from yc_agreement_tab ag 
+left join yc_onstruction_tab o on ag.house_id = o.houseid
+left join yc_house_tab c on o.houseid=c.id
+LEFT JOIN yc_houserank_tab yht on yht.house_id=c.id
+LEFT JOIN yc_agreement_tab m on yht.id=m.house_id and m.type=2 and m.isdelete=1
+LEFT JOIN (select b.house_id, max(t.begin_time) housemaxbegin, MAX(t.checkouttime) housemaxcheck from yc_agreement_tab t LEFT JOIN yc_houserank_tab b on t.house_id=b.id where t.type=2 and b.rank_type=0 group by b.house_id ) xxd on xxd.house_id=c.id
+left join yc_group_tab d on c.group_id=d.id
+LEFT JOIN yc_area_tab ox on d.areaid=ox.id
+left join yc_account_tab b on d.g_id=b.g_id
+LEFT JOIN  yc_dictionary_item yd on yd.item_id=yht.rank_status and yd.group_id like '%RANKHOUSE.STATUS%'
+where o.is_work=1 and ag.type=1 and ag.isdelete=1
+and ag.begin_time < date_sub(now(),interval -1 day)
+and ag.end_time >= date_sub(now(),interval -1 day)
+and (ag.checkouttime is null or ag.checkouttime >= date_sub(now(),interval -1 day))
+and yht.rank_type=1
+and yht.id not in (
+SELECT
+   h.id
+ FROM
+  yc_agreement_tab ag
+ LEFT JOIN yc_houserank_tab h ON ag.house_id = h.id
+ WHERE
+  h.isdelete = 1
+ AND ag.type = 2
+ AND ag.isdelete = 1
+ AND ag.begin_time < now()
+ AND ag.end_time >= now()
+ AND (
+  ag.checkouttime IS NULL
+  OR ag.checkouttime >= now()
+ )
+ AND h.rank_type = 1
+)
+and yht.id not in (
+SELECT
+  h.id
+ FROM
+  yc_houserank_tab h
+ WHERE
+  h.house_id IN (
+   SELECT
+    h.house_id
+   FROM
+    yc_agreement_tab ag
+   LEFT JOIN yc_houserank_tab h ON ag.house_id = h.id
+   WHERE
+    h.isdelete = 1
+   AND ag.type = 2
+   AND ag.isdelete = 1
+   AND ag.begin_time < now()
+   AND ag.end_time >= now()
+   AND (
+    ag.checkouttime IS NULL
+    OR ag.checkouttime >= now()
+   )
+   AND h.rank_type != 1)
+AND h.rank_type = 1
+)
+group by yht.id
+                ]]>
+                </if>
+                <if test="id==10000"><!-- 每周生成退租明细 -->
+                <![CDATA[
+                         select distinct
+a.id,
+a.code '订单编码',
+g.type_name as '退租类型',
+a.user_name as '客户姓名',
+a.user_phone as '客户手机号',
+a.created_date as '订单创建时间',
+f.area_name as '区域',
+d.address as '房源地址',
+ifnull(b.checkouttime, '') as '退租时间',
+ifnull(h.text_input, 0) as '金额总计',
+left(o.spec,1) as '房间总数',
+left(ktab.rank_spec,1) as '退房间数',
+'订单录入' as '步骤1',
+ifnull(group_concat(distinct dd.update_date),'') as '步骤1时间',
+ifnull(group_concat(distinct ddt.name),'') as '步骤1处理人',
+'指派订单' as '步骤2',
+ifnull(group_concat(distinct ee.update_date),'') as '步骤2时间',
+ifnull(group_concat(distinct eet.name),'') as '步骤2处理人',
+'接单或重新指派' as '步骤3',
+ifnull(group_concat(distinct k.update_date),'') as '步骤3时间',
+ifnull(group_concat(distinct kt.name),'') as '步骤3处理人',
+'重新指派或接单' as '步骤4',
+ifnull(group_concat(distinct cc.update_date),'') as '步骤4时间',
+ifnull(group_concat(distinct cct.name),'') as '步骤4处理人',
+'员工处理' as '步骤5',
+ifnull(group_concat(distinct kk.update_date),'') as '步骤5时间',
+ifnull(group_concat(distinct kkt.name),'') as '步骤5处理人',
+'订单关闭' as '步骤6',
+ifnull(group_concat(distinct aa.update_date),'') as '步骤6时间',
+ifnull(group_concat(distinct aat.name),'') as '步骤6处理人',
+case when kk.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,kk.update_date), 0) end as '录入到员工执行时间差（小时）',
+case when cc.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,cc.update_date), 0) end as '录入到重新指派或接单的时间差（小时）',
+case when k.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,k.update_date), 0) end as '录入到接单或重新指派的时间差（小时）',
+case when ee.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,ee.update_date), 0) end as '录入到指派时间差（小时）',
+case when k.update_date is null then '' else ifnull(timestampdiff(hour,ee.update_date,k.update_date), 0) end as '指派到接单时间差（小时）',
+case when kk.update_date is null then '' else ifnull(timestampdiff(hour,k.update_date,kk.update_date), 0) end as '接单到处理时间差（小时）',
+ifnull(gro.text_input, '') as '服务管家接单备注',
+ifnull(fro.text_input, '') as '服务管家执行备注'
+from work_order a
+left join yc_agreement_tab b on a.rental_lease_order_id=b.id
+left join yc_houserank_tab ktab on b.house_id=ktab.id
+left join yc_agreement_tab c on b.father_id=c.id
+left join yc_area_tab f on c.areaid=f.id
+left join yc_onstruction_tab o on c.house_id=o.houseid
+left join yc_house_tab d on o.houseid=d.id
+left join yc_group_tab i on d.group_id=i.id
+left join yc_account_tab j on i.g_id=j.g_id
+left join cancel_lease_order e on a.id=e.work_order_id
+left join cancel_lease_order_type g on e.type=g.type
+left join cancel_lease_order_value h on e.id=h.sub_order_id
+and h.attr_path='CANCEL_LEASE_ORDER_PROCESS.RENTAL_ACCOUNT.TOTAL_MONEY'
+left join cancel_lease_order_his dd on a.id=dd.work_order_id and dd.update_person_id is not null and dd.state='A'
+left join yc_account_tab ddt on dd.update_person_id=ddt.id
+left join cancel_lease_order_his ee on a.id=ee.work_order_id and ee.update_person_id is not null and ee.state='B'
+left join yc_account_tab eet on ee.update_person_id=eet.id
+left join cancel_lease_order_his k on a.id=k.work_order_id and k.update_person_id is not null and k.state='C'
+left join yc_account_tab kt on k.update_person_id=kt.id
+left join cancel_lease_order_his cc on a.id=cc.work_order_id and cc.update_person_id is not null and cc.state='P'
+left join yc_account_tab cct on cc.update_person_id=cct.id
+left join cancel_lease_order_his kk on a.id=kk.work_order_id and kk.update_person_id is not null and kk.state='D'
+left join yc_account_tab kkt on kk.update_person_id=kkt.id 
+left join cancel_lease_order_his aa on a.id=aa.work_order_id and aa.update_person_id is not null and aa.state='I'
+left join yc_account_tab aat on aa.update_person_id=aat.id 
+left join cancel_lease_order eor on a.id=eor.work_order_id
+left join cancel_lease_order_value fro on eor.id=fro.sub_order_id
+and fro.attr_path='ANCEL_LEASE_ORDER_PROCESS.BUTLER_GET_HOME.HOUSE_INSPECTION_COMMENTS'
+left join cancel_lease_order_value gro on eor.id=gro.sub_order_id
+and gro.attr_path='CANCEL_LEASE_ORDER_PROCESS.TAKE_ORDER.COMMENTS'
+where a.type='A' 
+and date_format(a.created_date, '%Y-%m-%d') >= date_sub(curdate(),interval 7 day)
+group by a.id       
+                           ]]>
+                </if>
+                <if test="id==10001"><!-- 每日应收账款 -->
+                <![CDATA[
+                        select t.`code` '出租合约编码', a.title '房源名称', PERIOD_DIFF(DATE_FORMAT(t.end_time,'%Y%m'),DATE_FORMAT(t.begin_time,'%Y%m')) '租期',
+(CASE
+      WHEN t.`status` = 2 THEN
+       '已生效'
+   WHEN t.`status` = 3 THEN
+       '已失效'
+   WHEN t.`status` = 7 THEN
+       '失效待清算'
+      WHEN t.`status` = 12 THEN
+       '生效待付款'
+   ELSE
+    t.`status` 
+ END
+     ) AS '合约状态',
+ x.cost '应收金额',
+ ox.`name` '类别',
+ x.plat_time '预计付款时间',  
+CASE  
+WHEN x.`status` != 0 THEN   
+ x.cost  
+ELSE   
+ '0'  
+END AS '已付金额' ,
+x.target_bank  AS '缴费方式',
+x.pay_time  AS '实收时间',
+t.user_mobile '租客手机号码',
+yi.username '租客姓名',
+d.area_name '区域名称',
+c.group_name '小区名',
+vs.u_name '市场管家名称',
+vg.u_name '服务管家名称',
+yy.`name` '签约管家名称',
+x.remarks as '备注'
+from yc_agreement_tab t LEFT JOIN yc_houserank_tab a on t.house_id=a.id 
+ LEFT JOIN yc_account_tab yy on t.agents = yy.id
+  LEFT JOIN yc_userinfo_tab yi on t.user_id = yi.id
+ LEFT JOIN yc_house_tab b on a.house_id=b.id 
+ LEFT JOIN yc_group_tab c on b.group_id=c.id
+ LEFT JOIN yc_area_tab d on c.areaid=d.id
+ LEFT JOIN team_area_scb_view vs on vs.area_id=c.id
+ LEFT JOIN team_group_service_view vg on vg.group_id=c.id
+ LEFT JOIN financial_receivable_tab x on x.secondary=t.id
+ LEFT JOIN financial_category_tab ox on x.category=ox.id
+where t.type=2 
+and x.plat_time < date_format(now(), '%Y-%m-%d')
+and t.`status` in ('2','7')
+and t.isdelete=1
+and x.`status`=0
+-- and x.category in ('11','12','13');
+-- and x.category in ('4')
+order by x.plat_time desc
+                       ]]>
+                </if>
+                <if test="id==10002"><!-- 每日应付房租   -->
+                <![CDATA[
+                        SELECT b.code as '合约编号',c.title as '房源名称',
+                                   TIMESTAMPDIFF(MONTH,CONCAT(DATE_FORMAT(b.begin_time,'%Y-%m'),'-01'),CONCAT(DATE_FORMAT(b.end_time,'%Y-%m'),'-01')) as '租
+期',
+                                   a.cost as '租金金额',a.target_bank as '缴费方式',a.start_time as '应付日期'
+                          FROM financial_payable_tab a,yc_agreement_tab b,yc_houserank_tab c
+                         where a.secondary = b.id
+                   AND b.house_id = c.id
+                   and DATE_FORMAT(a.start_time,'%Y-%m-%d') = CURDATE()
+                     ]]>
+                </if>
+                <if test="id==10003"><!--
+                每周管家绩效 -->
+                <![CDATA[
+                        SELECT
+ x.*, IFNULL(y.cost_a, '0') AS '上一份合约租金',
+ IFNULL(y.checkouttime, '无合约') AS '租客最后退租时间'
+FROM
+ (
+  SELECT
+   a.*, b.*,
+ (
+  CASE
+  WHEN a.rank_type = 1 THEN
+   '合租'
+  ELSE
+   '整租'
+  end 
+ ) AS '出租类型',
+ (
+  CASE
+  WHEN a.rank_type = 1 THEN
+   a.`合约租金` - b.partrent
+  ELSE
+   a.`合约租金` - b.wholerent
+  end 
+ ) AS '租差'
+  FROM
+   (
+    SELECT
+     a. CODE AS '合约编码',
+     a. NAME AS '合约名称',
+     d.title as '房源标题',
+     c.house_name as '小区名称',
+     b. NAME AS '管家',
+     a.create_time AS '系统录入',
+     a.begin_time AS '合约生效',
+     a.end_time AS '合约失效',
+     DATEDIFF(a.end_time, a.begin_time) AS '合约天数',
+     d.rank_type,
+     LEFT (d.rank_spec, 1) AS '间数',
+     (
+      CASE
+      WHEN a.pay_type = 0 THEN
+       '全额'
+      WHEN a.pay_type = 1 THEN
+       '月付'
+      WHEN a.pay_type = 2 THEN
+       '双月付'
+      WHEN a.pay_type = 3 THEN
+       '季付'
+      WHEN a.pay_type = 6 THEN
+       '半年付'
+      WHEN a.pay_type = 12 THEN
+       '年付'
+      WHEN a.pay_type = 15 THEN
+       '金融月付'
+      END
+     ) AS '付款方式',
+     a.cost_a '合约租金',
+     (
+      CASE
+      WHEN c.decorate = 0 THEN
+       '毛坯'
+      WHEN c.decorate = 1 THEN
+       '简装'
+      WHEN c.decorate = 2 THEN
+       '精装'
+      END
+     ) AS '装修',
+     (
+      CASE
+      WHEN a.`status` = 2 THEN
+       '已生效'
+      WHEN a.`status` = 12 THEN
+       '生效待付款'
+      END
+     ) AS '状态',
+     a.father_id,
+     a.house_id
+    FROM
+     yc_agreement_tab a
+    LEFT JOIN yc_account_tab b ON a.agents = b.id
+    LEFT JOIN yc_houserank_tab d ON a.house_id = d.id
+    LEFT JOIN yc_house_tab c ON d.house_id = c.id
+--     LEFT JOIN yc_group_tab o on c.group_id=o.id
+    WHERE
+     (a. STATUS = 2 OR a. STATUS = 12)
+    AND a.type = 2
+    and a.isdelete=1
+    AND a.create_time >= DATE_FORMAT(date_sub(now(), INTERVAL 1 WEEK), '%Y-%m-%d')
+   ) a
+  LEFT JOIN (
+   SELECT
+    a.id,
+    a.begin_time AS '收房开始时间',
+    round(
+     substring_index(
+      substring_index(
+       a.cost_a,
+       '|',
+       TIMESTAMPDIFF(
+        YEAR,
+        a.begin_time,
+        CURDATE()
+       )+1
+      ),
+      '|',
+      - 1
+     ) / LEFT (d.rank_spec, 1)
+    ) AS 'partrent',
+    round(
+     substring_index(
+      substring_index(
+       a.cost_a,
+       '|',
+       TIMESTAMPDIFF(
+        YEAR,
+        a.begin_time,
+        CURDATE()
+       )+1
+      ),
+      '|',
+      - 1
+     )
+    ) AS 'wholerent',
+    a.cost_a AS '收房价',
+    a. NAME AS '收房合约',
+    a.code as '收房合约编号',
+    d.rank_spec AS '户型',
+    LEFT (d.rank_spec, 1) AS '房间数'
+   FROM
+    yc_agreement_tab a
+   LEFT JOIN yc_houserank_tab d ON a.house_id = d.house_id
+   AND d.rank_type = 0
+   where a.type = 1 and a.isdelete=1
+   ORDER BY
+    a.begin_time
+  ) b ON a.father_id = b.id
+ ) x
+LEFT JOIN (
+-- 获取每个房源或房间的最大退租时间和租金
+ SELECT
+  b.house_id,
+  b.cost_a,
+  b.checkouttime
+ FROM
+  yc_agreement_tab b,
+  (
+   SELECT
+    a.house_id,
+    max(a.checkouttime) AS maxendtime
+   FROM
+    yc_agreement_tab a
+   WHERE
+    a.type = 2
+    and a.isdelete=1
+   AND a.checkouttime < date_format(now(), '%Y-%m-%d')
+  and DATEDIFF( a.checkouttime,a.begin_time) > 90
+   GROUP BY
+    a.house_id
+  ) c
+ WHERE
+  b.house_id = c.house_id
+ AND b.checkouttime = c.maxendtime
+) y ON y.house_id = x.house_id
+                ]]>
+                </if>
+                <if test="id==10004"><!-- 上周维修订单 -->
+                <![CDATA[
+                        SELECT
+     DISTINCT a.CODE '任务编号',
+     gethouse.`code` '收房合同编号',
+     yat.area_name '区域',
+     case when yht.rank_type = '1' then '合租' else '整租' end  '出租类型',
+     j.NAME '订单名称',
+     j.user_name '发起人',
+     yut.mobile '手机号码',
+     a.created_date '创建时间',
+     j.user_name '用户名称',     
+     yhouset.address '房源地址',     
+     j. NAME '维修标题',
+     a.comments '备注',
+     a.update_date '接单时间',
+     h.NAME '接单人员',
+     rov.text_input '接单备注',
+     excut.update_date '执行时间',
+     excuteper.`name` '执行人员',
+     excutrov.text_input '执行备注'
+    FROM
+     repair_order_his a
+    LEFT JOIN yc_agreement_tab b ON a.rental_lease_order_id = b.id 
+    LEFT JOIN yc_houserank_tab yht on yht.id = b.house_id
+    LEFT JOIN yc_agreement_tab gethouse on gethouse.id = b.father_id
+    LEFT JOIN repair_order_his excut on excut.id = a.id and excut.state='D'
+    LEFT JOIN repair_type d ON a.type = d.type
+    LEFT JOIN yc_account_tab f ON a.actual_dealer_id = f.id
+    LEFT JOIN yc_account_tab g ON a.assigned_dealer_id = g.id
+    LEFT JOIN yc_account_tab h ON a.update_person_id = h.id
+    LEFT JOIN yc_account_tab excuteper ON excut.update_person_id = excuteper.id
+    LEFT JOIN yc_role_new_tab i ON a.assigned_dealer_role_id = i.role_id
+    LEFT JOIN work_order j ON a.work_order_id = j.id
+    LEFT JOIN yc_area_tab yat on yat.id = b.areaid
+    LEFT JOIN yc_userinfo_tab yut on yut.id = j.created_user_id
+    LEFT JOIN yc_house_tab yhouset on yhouset.id = yht.house_id
+    LEFT JOIN repair_order_value rov on rov.sub_order_id=a.id and rov.attr_path='REPAIR_ORDER_PROCESS.CUSTOMER_SERV_ASSIGN.COMMENTS'
+    LEFT JOIN repair_order_value excutrov on excutrov.sub_order_id=excut.id and excutrov.attr_path='REPAIR_ORDER_PROCESS.SUPPLIER_EXECUTE.COMMENTS'
+    WHERE
+     a.update_person_id IS NOT NULL
+    and excut.update_person_id is not null
+    and a.state='C'
+    AND date_format(a.created_date, '%Y-%m-%d') >= date_format(date_sub(now(), INTERVAL 1 WEEK), '%Y-%m-%d')
+    ORDER BY
+     a.created_date,
+     a. CODE,
+     a.update_date,
+     a.priority
+                           ]]>
+                </if>
+                <if test="id==10005"><!-- 昨天的预约看房订单 -->
+                <![CDATA[
+                        SELECT
+ a. CODE AS '订单编码',
+ a.created_date AS '订单创建时间',
+ dd.`name` as '创建人姓名',
+ a.user_name AS '客户姓名',
+ a.user_phone AS '客户手机号',
+ a.appointment_date AS '预约时间',
+ hloc.channel_name as '来源渠道',
+ ifnull(f.area_name, '') AS '区域',
+ ifnull(g.group_name, '') AS '小区',
+ b.state_name AS '当前订单步骤',
+ d. NAME AS '当前步骤指定处理人',
+ case when a.sub_order_state='D' then d.name else cct. NAME end AS '执行管家', 
+ case when hloh.text_input = 'Y' then '已看房' else '未看房' end as '是否看房',
+ case when hlah.text_input = 'Y' then '已签约' else '未签约' end as '是否签约',
+ hh.update_date '执行时间',
+ a.sub_comments AS '看房备注'
+FROM
+ work_order a
+LEFT JOIN sub_order_state b ON a.sub_order_state = b.state
+LEFT JOIN yc_account_tab c ON a.sub_actual_dealer_id = c.id
+LEFT JOIN yc_account_tab d ON a.sub_assigned_dealer_id = d.id
+LEFT JOIN yc_account_tab dd ON a.created_staff_id = dd.id
+LEFT JOIN house_looking_order e ON a.id = e.work_order_id
+LEFT JOIN house_looking_order_his hh on hh.work_order_id = a.id and hh.state='D'
+LEFT JOIN yc_account_tab cct on cct.id=hh.actual_dealer_id
+LEFT JOIN house_looking_order_value hloh on hloh.sub_order_id=e.id and hloh.attr_path='HOUSE_LOOKING_ORDER_PROCESS.BUTLER_EXECUTE.IS_LOOK'
+LEFT JOIN house_looking_order_value hlah on hlah.sub_order_id=e.id and hloh.attr_path='HOUSE_LOOKING_ORDER_PROCESS.BUTLER_EXECUTE.IS_RENT'
+LEFT JOIN house_looking_order_channel hloc on hloc.channel=e.channel
+LEFT JOIN yc_area_tab f ON e.area_id = f.id
+LEFT JOIN yc_group_tab g ON e.group_id = g.id
+WHERE
+ a.type = 'D'
+AND date_format(a.created_date, '%Y-%m-%d') = date_sub(
+ date_format(now(), '%Y-%m-%d'),
+ INTERVAL 1 DAY
+)
+ORDER BY
+ a.created_date
+                         ]]>
+                </if>
+				<if test="id==10006"><!-- 上周退租订单 -->
+                <![CDATA[
+                        select
+a.id,
+a.code '订单编码',
+clot.type_name as '退租类型',
+yacct.name '网格管家',
+are.area_name '片区',
+a.user_name as '客户姓名',
+a.user_phone as '客户手机',
+a.created_date as '订单创建时间',
+ifnull(group_concat(distinct k.update_date),'') as '接单或重新指派执行时间',
+ifnull(group_concat(distinct yat.name),'') as '接单管家',
+ifnull(group_concat(distinct cc.update_date),'') as '重新指派或接单执行时间',
+ifnull(group_concat(distinct kk.update_date),'') as '员工处理执行时间',
+ifnull(group_concat(distinct bt.name),'') as '员工处理执行人',
+ifnull(group_concat(distinct aa.update_date),'') as '租务核算执行时间',
+ifnull(group_concat(distinct bb.update_date),'') as '财务核算执行时间',
+d.address as '房源地址',
+ifnull(b.checkouttime, '') as '退租时间',
+ifnull(f.text_input, '') as '支付宝账号',
+ifnull(g.text_input, '') as '银行卡号',
+ifnull(h.text_input, 0) as '金额总计',
+ifnull(i.text_input, '') as '租务核算备注',
+left(o.spec,1) as '房间总数',
+left(m.rank_spec,1) as '退房间数'
+from work_order a
+left join cancel_lease_order_his k on a.id=k.work_order_id and k.update_person_id is not null and k.state='C'
+left join yc_account_tab yat on k.update_person_id=yat.id 
+left join cancel_lease_order_his cc on a.id=cc.work_order_id and cc.update_person_id is not null and cc.state='P'
+left join cancel_lease_order_his kk on a.id=kk.work_order_id and kk.update_person_id is not null and kk.state='D'
+left join yc_account_tab bt on kk.update_person_id=bt.id 
+left join cancel_lease_order_his aa on a.id=aa.work_order_id and aa.update_person_id is not null and aa.state='M'
+left join cancel_lease_order_his bb on a.id=bb.work_order_id and bb.update_person_id is not null and bb.state='N'
+left join yc_agreement_tab b on a.rental_lease_order_id=b.id
+left join yc_agreement_tab c on b.father_id=c.id
+left join yc_onstruction_tab o on c.house_id=o.houseid
+left join yc_houserank_tab m on b.house_id=m.id
+left join yc_house_tab d on c.house_id=d.id 
+LEFT JOIN yc_group_tab ygrt on ygrt.id=d.group_id
+LEFT JOIN yc_area_tab are on are.id = ygrt.areaid
+LEFT JOIN yc_account_tab yacct on yacct.g_id=ygrt.g_id
+left join cancel_lease_order e on a.id=e.work_order_id
+left join cancel_lease_order_type clot on e.type=clot.type
+left join cancel_lease_order_value f on e.id=f.sub_order_id 
+and f.attr_path='CANCEL_LEASE_ORDER_PROCESS.BUTLER_GET_HOME.ALIPAY'
+left join cancel_lease_order_value g on e.id=g.sub_order_id
+and g.attr_path='CANCEL_LEASE_ORDER_PROCESS.BUTLER_GET_HOME.BANK_CARD_NBR'
+left join cancel_lease_order_value h on e.id=h.sub_order_id
+and h.attr_path='CANCEL_LEASE_ORDER_PROCESS.RENTAL_ACCOUNT.TOTAL_MONEY'
+left join cancel_lease_order_value i on e.id=i.sub_order_id
+and i.attr_path='CANCEL_LEASE_ORDER_PROCESS.FINANCE_AUDIT.COMMENTS'
+where a.type='A'
+and a.created_date >= date_format(date_sub(now(), INTERVAL 1 WEEK), '%Y-%m-%d')
+group by a.id
+                         ]]>
+                </if>
+				
+                <if test="id==10007"><!-- 上周评价数据 -->
+                <![CDATA[
+SELECT DISTINCT
+ a.`code` '订单编码',
+ b.type_name '订单类型',
+ a.created_date '创建时间',
+ a.`name` '订单名称',
+ a.user_name '用户姓名',
+ a.user_phone '用户号码',
+ a.sub_comments '订单备注',
+ c.type_name '评价类型',
+ t.score '评分',
+ t.comments '评价',
+ t.comment_date '评价时间'
+FROM
+ order_commentary t LEFT JOIN work_order a on t.work_order_id = a.id
+ LEFT JOIN work_order_type b on a.type = b.type
+ LEFT JOIN order_commentary_type c on t.type= c.type
+WHERE
+DATE_FORMAT(t.comment_date, '%y%m%d') >= date_format(
+     date_sub(now(), INTERVAL 1 WEEK),
+     '%y%m%d'
+    )
+AND t.comments != '系统自动好评'
+                         ]]>
+                </if>
+				
+				<if test="id==10008"><!-- 上周保洁对账数据 -->
+                <![CDATA[
+select
+a.id,
+a.code '订单编码',
+a.created_date as '订单创建时间',
+a.name as '订单名称',
+a.user_name as '客户姓名',
+a.user_phone as '客户手机号',
+a.sub_comments as '订单备注',
+'订单录入' as '步骤1',
+ifnull(group_concat(distinct dd.update_date),'') as '步骤1时间',
+ifnull(group_concat(distinct ddt.name),'') as '步骤1处理人',
+'指派订单' as '步骤2',
+ifnull(group_concat(distinct ee.update_date),'') as '步骤2时间',
+ifnull(group_concat(distinct eet.name),'') as '步骤2处理人',
+'接单或重新指派' as '步骤3',
+ifnull(group_concat(distinct k.update_date),'') as '步骤3时间',
+ifnull(group_concat(distinct kt.name),'') as '步骤3处理人',
+'重新指派或接单' as '步骤4',
+ifnull(group_concat(distinct cc.update_date),'') as '步骤4时间',
+ifnull(group_concat(distinct cct.name),'') as '步骤4处理人',
+'员工处理' as '步骤5',
+ifnull(group_concat(distinct kk.update_date),'') as '步骤5时间',
+ifnull(group_concat(distinct kkt.name),'') as '步骤5处理人',
+ifnull(f.text_input, '') as '供应商执行图片',
+'http://file.room1000.com:9003/data/order' as '图片前缀',
+'订单关闭' as '步骤6',
+ifnull(group_concat(distinct aa.update_date),'') as '步骤6时间',
+ifnull(group_concat(distinct aat.name),'') as '步骤6处理人'
+from work_order a
+left join routine_cleaning_order_his dd on a.id=dd.work_order_id and dd.update_person_id is not null and dd.state='A'
+left join yc_account_tab ddt on dd.update_person_id=ddt.id
+left join routine_cleaning_order_his ee on a.id=ee.work_order_id and ee.update_person_id is not null and ee.state='B'
+left join yc_account_tab eet on ee.update_person_id=eet.id
+left join routine_cleaning_order_his k on a.id=k.work_order_id and k.update_person_id is not null and k.state='C'
+left join yc_account_tab kt on k.update_person_id=kt.id
+left join routine_cleaning_order_his cc on a.id=cc.work_order_id and cc.update_person_id is not null and cc.state='P'
+left join yc_account_tab cct on cc.update_person_id=cct.id
+left join routine_cleaning_order_his kk on a.id=kk.work_order_id and kk.update_person_id is not null and kk.state='D'
+left join yc_account_tab kkt on kk.update_person_id=kkt.id 
+left join routine_cleaning_order_his aa on a.id=aa.work_order_id and aa.update_person_id is not null and aa.state='I'
+left join yc_account_tab aat on aa.update_person_id=aat.id 
+left join routine_cleaning_order e on a.id=e.work_order_id
+left join routine_cleaning_order_value f on e.id=f.sub_order_id
+and f.attr_path='ROUTINE_CLEANING_ORDER_PROCESS.SUPPLIER_EXECUTE.HOUSE_PICTURE'
+where a.type='I'
+and date_format(a.created_date, '%Y-%m-%d') >= date_format(date_sub(now(), INTERVAL 1 WEEK), '%Y-%m-%d')
+group by a.id
+                         ]]>
+                </if>
+				
+				<if test="id==10009"><!-- 上周其他订单数据 -->
+                <![CDATA[
+select
+a.id,
+a.code '订单编码',
+a.created_date as '订单创建时间',
+a.name as '订单名称',
+a.user_name as '客户姓名',
+a.user_phone as '客户手机号',
+a.sub_comments as '订单录入备注',
+'订单录入' as '步骤1',
+ifnull(group_concat(distinct dd.update_date),'') as '步骤1时间',
+ifnull(group_concat(distinct ddt.name),'') as '步骤1处理人',
+'指派订单' as '步骤2',
+ifnull(group_concat(distinct ee.update_date),'') as '步骤2时间',
+ifnull(group_concat(distinct eet.name),'') as '步骤2处理人',
+'接单或重新指派' as '步骤3',
+ifnull(group_concat(distinct k.update_date),'') as '步骤3时间',
+ifnull(group_concat(distinct kt.name),'') as '步骤3处理人',
+'重新指派或接单' as '步骤4',
+ifnull(group_concat(distinct cc.update_date),'') as '步骤4时间',
+ifnull(group_concat(distinct cct.name),'') as '步骤4处理人',
+'员工处理' as '步骤5',
+ifnull(group_concat(distinct kk.update_date),'') as '步骤5时间',
+ifnull(group_concat(distinct kkt.name),'') as '步骤5处理人',
+'订单关闭' as '步骤6',
+ifnull(group_concat(distinct aa.update_date),'') as '步骤6时间',
+ifnull(group_concat(distinct aat.name),'') as '步骤6处理人',
+case when kk.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,kk.update_date), 0) end as '录入到员工执行时间差（小时）',
+case when cc.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,cc.update_date), 0) end as '录入到重新指派或接单的时间差（小时）',
+case when k.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,k.update_date), 0) end as '录入到接单或重新指派的时间差（小时）',
+case when ee.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,ee.update_date), 0) end as '录入到指派时间差（小时）',
+case when k.update_date is null then '' else ifnull(timestampdiff(hour,ee.update_date,k.update_date), 0) end as '指派到接单时间差（小时）',
+case when kk.update_date is null then '' else ifnull(timestampdiff(hour,k.update_date,kk.update_date), 0) end as '接单到处理时间差（小时）',
+ifnull(g.text_input, '') as '服务管家接单备注',
+ifnull(f.text_input, '') as '服务管家执行备注'
+from work_order a
+left join other_order_his dd on a.id=dd.work_order_id and dd.update_person_id is not null and dd.state='A'
+left join yc_account_tab ddt on dd.update_person_id=ddt.id
+left join other_order_his ee on a.id=ee.work_order_id and ee.update_person_id is not null and ee.state='B'
+left join yc_account_tab eet on ee.update_person_id=eet.id
+left join other_order_his k on a.id=k.work_order_id and k.update_person_id is not null and k.state='C'
+left join yc_account_tab kt on k.update_person_id=kt.id
+left join other_order_his cc on a.id=cc.work_order_id and cc.update_person_id is not null and cc.state='P'
+left join yc_account_tab cct on cc.update_person_id=cct.id
+left join other_order_his kk on a.id=kk.work_order_id and kk.update_person_id is not null and kk.state='D'
+left join yc_account_tab kkt on kk.update_person_id=kkt.id 
+left join other_order_his aa on a.id=aa.work_order_id and aa.update_person_id is not null and aa.state='I'
+left join yc_account_tab aat on aa.update_person_id=aat.id 
+left join other_order e on a.id=e.work_order_id
+left join other_order_value f on e.id=f.sub_order_id
+and f.attr_path='OTHER_ORDER_PROCESS.BUTLER_EXECUTE.COMMENTS'
+left join other_order_value g on e.id=g.sub_order_id
+and g.attr_path='OTHER_ORDER_PROCESS.BUTLER_TAKE_ORDER.COMMENTS'
+where a.type='F' 
+and date_format(a.created_date, '%Y-%m-%d') >= date_sub(curdate(),interval 7 day)
+group by a.id  
+                         ]]>
+                </if>
+				
+				<if test="id==10010"><!-- 上周投诉订单数据 -->
+                <![CDATA[
+select
+a.id,
+a.code '订单编码',
+a.created_date as '订单创建时间',
+a.name as '订单名称',
+a.user_name as '客户姓名',
+a.user_phone as '客户手机号',
+a.sub_comments as '订单备注',
+'订单录入' as '步骤1',
+ifnull(group_concat(distinct dd.update_date),'') as '步骤1时间',
+ifnull(group_concat(distinct ddt.name),'') as '步骤1处理人',
+'指派订单' as '步骤2',
+ifnull(group_concat(distinct ee.update_date),'') as '步骤2时间',
+ifnull(group_concat(distinct eet.name),'') as '步骤2处理人',
+'接单或重新指派' as '步骤3',
+ifnull(group_concat(distinct k.update_date),'') as '步骤3时间',
+ifnull(group_concat(distinct kt.name),'') as '步骤3处理人',
+'重新指派或接单' as '步骤4',
+ifnull(group_concat(distinct cc.update_date),'') as '步骤4时间',
+ifnull(group_concat(distinct cct.name),'') as '步骤4处理人',
+'员工处理' as '步骤5',
+ifnull(group_concat(distinct kk.update_date),'') as '步骤5时间',
+ifnull(group_concat(distinct kkt.name),'') as '步骤5处理人',
+'订单关闭' as '步骤6',
+ifnull(group_concat(distinct aa.update_date),'') as '步骤6时间',
+ifnull(group_concat(distinct aat.name),'') as '步骤6处理人',
+ifnull(f.text_input, '') as '员工执行备注',
+case when kk.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,kk.update_date), 0) end as '录入到员工的时间差（小时）',
+case when cc.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,cc.update_date), 0) end as '录入到重新指派或接单的时间差（小时）',
+case when k.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,k.update_date), 0) end as '录入到接单或重新指派的时间差（小时）',
+ifnull(g.text_input, '') as '接单备注',
+ifnull(f.text_input, '') as '执行备注',
+case when ee.update_date is null then '' else ifnull(timestampdiff(hour,dd.update_date,ee.update_date), 0) end as '录入到指派时间差（小时）',
+case when k.update_date is null then '' else ifnull(timestampdiff(hour,ee.update_date,k.update_date), 0) end as '指派到接单时间差（小时）',
+case when kk.update_date is null then '' else ifnull(timestampdiff(hour,k.update_date,kk.update_date), 0) end as '接单到处理时间差（小时）'
+from work_order a
+left join complaint_order_his dd on a.id=dd.work_order_id and dd.update_person_id is not null and dd.state='A'
+left join yc_account_tab ddt on dd.update_person_id=ddt.id
+left join complaint_order_his ee on a.id=ee.work_order_id and ee.update_person_id is not null and ee.state='B'
+left join yc_account_tab eet on ee.update_person_id=eet.id
+left join complaint_order_his k on a.id=k.work_order_id and k.update_person_id is not null and k.state='C'
+left join yc_account_tab kt on k.update_person_id=kt.id
+left join complaint_order_his cc on a.id=cc.work_order_id and cc.update_person_id is not null and cc.state='P'
+left join yc_account_tab cct on cc.update_person_id=cct.id
+left join complaint_order_his kk on a.id=kk.work_order_id and kk.update_person_id is not null and kk.state='D'
+left join yc_account_tab kkt on kk.update_person_id=kkt.id 
+left join complaint_order_his aa on a.id=aa.work_order_id and aa.update_person_id is not null and aa.state='I'
+left join yc_account_tab aat on aa.update_person_id=aat.id 
+left join complaint_order e on a.id=e.work_order_id
+left join complaint_order_value f on e.id=f.sub_order_id
+and f.attr_path='COMPLAINT_ORDER_PROCESS.BUTLER_EXECUTE.COMMENTS'
+left join complaint_order_value g on e.id=g.sub_order_id
+and g.attr_path='COMPLAINT_ORDER_PROCESS.BUTLER_TAKE_ORDER.COMMENTS'
+where a.type='C' 
+and date_format(a.created_date, '%Y-%m-%d') >= date_sub(curdate(),interval 7 day)
+group by a.id  
+                         ]]>
+                </if>
+				<if test="id==10011"><!-- 上周维修工单数据 -->
+                <![CDATA[
+select
+a.id,
+'维修订单' as '工单类型',
+wos.state_name as '订单状态',
+a.code '订单编码',
+a.created_date as '订单创建时间',
+a.name as '订单名称',
+a.user_name as '客户姓名',
+a.user_phone as '客户手机号',
+a.sub_comments as '订单录入备注',
+'订单录入' as '步骤1',
+ifnull(group_concat(distinct dd.update_date),'') as '步骤1时间',
+ifnull(group_concat(distinct ddt.name),'') as '步骤1处理人',
+'指派订单' as '步骤2',
+ifnull(group_concat(distinct ee.update_date),'') as '步骤2时间',
+ifnull(group_concat(distinct eet.name),'') as '步骤2处理人',
+'接单或重新指派' as '步骤3',
+ifnull(group_concat(distinct k.update_date),'') as '步骤3时间', -- 3 - 1
+ifnull(group_concat(distinct kt.name),'') as '步骤3处理人',
+'重新指派或接单' as '步骤4',
+ifnull(group_concat(distinct cc.update_date),'') as '步骤4时间', -- 4 - 1 
+ifnull(group_concat(distinct cct.name),'') as '步骤4处理人',
+'员工处理' as '步骤5',
+ifnull(group_concat(distinct kk.update_date),'') as '步骤5时间', 
+ifnull(group_concat(distinct kkt.name),'') as '步骤5处理人',
+'订单关闭' as '步骤6',
+ifnull(group_concat(distinct aa.update_date),'') as '步骤6时间', -- 6 - 1 
+ifnull(group_concat(distinct aat.name),'') as '步骤6处理人',
+ifnull(f.text_input, '') as '供应商执行备注'
+from work_order a
+LEFT JOIN work_order_state wos on a.state=wos.state
+left join repair_order_his dd on a.id=dd.work_order_id and dd.update_person_id is not null and dd.state='A'
+left join yc_account_tab ddt on dd.update_person_id=ddt.id
+left join repair_order_his ee on a.id=ee.work_order_id and ee.update_person_id is not null and ee.state='B'
+left join yc_account_tab eet on ee.update_person_id=eet.id
+left join repair_order_his k on a.id=k.work_order_id and k.update_person_id is not null and k.state='C'
+left join yc_account_tab kt on k.update_person_id=kt.id
+left join repair_order_his cc on a.id=cc.work_order_id and cc.update_person_id is not null and cc.state='P'
+left join yc_account_tab cct on cc.update_person_id=cct.id
+left join repair_order_his kk on a.id=kk.work_order_id and kk.update_person_id is not null and kk.state='D'
+left join yc_account_tab kkt on kk.update_person_id=kkt.id 
+left join repair_order_his aa on a.id=aa.work_order_id and aa.update_person_id is not null and aa.state='I'
+left join yc_account_tab aat on aa.update_person_id=aat.id 
+left join repair_order e on a.id=e.work_order_id
+left join repair_order_value f on e.id=f.sub_order_id
+and f.attr_path='REPAIR_ORDER_PROCESS.SUPPLIER_EXECUTE.COMMENTS'
+where a.type='H'
+and date_format(a.created_date, '%Y-%m-%d') >= date_format(date_sub(now(), INTERVAL 1 WEEK), '%Y-%m-%d')
+group by a.id
+                         ]]>
+                </if>
+				
+				<if test="id==10012"><!-- 上周入住问题订单数据 -->
+                <![CDATA[
+select
+a.id,
+'入住问题' as '工单类型',
+wos.state_name as '订单状态',
+a.code '订单编码',
+a.created_date as '订单创建时间',
+a.name as '订单名称',
+a.user_name as '客户姓名',
+a.user_phone as '客户手机号',
+a.sub_comments as '订单录入备注',
+'订单录入' as '步骤1',
+ifnull(group_concat(distinct dd.update_date),'') as '步骤1时间',
+ifnull(group_concat(distinct ddt.name),'') as '步骤1处理人',
+'指派订单' as '步骤2',
+ifnull(group_concat(distinct ee.update_date),'') as '步骤2时间',
+ifnull(group_concat(distinct eet.name),'') as '步骤2处理人',
+'接单或重新指派' as '步骤3',
+ifnull(group_concat(distinct k.update_date),'') as '步骤3时间', -- 3 - 1
+ifnull(group_concat(distinct kt.name),'') as '步骤3处理人',
+'重新指派或接单' as '步骤4',
+ifnull(group_concat(distinct cc.update_date),'') as '步骤4时间', -- 4 - 1 
+ifnull(group_concat(distinct cct.name),'') as '步骤4处理人',
+'员工处理' as '步骤5',
+ifnull(group_concat(distinct kk.update_date),'') as '步骤5时间', 
+ifnull(group_concat(distinct kkt.name),'') as '步骤5处理人',
+'订单关闭' as '步骤6',
+ifnull(group_concat(distinct aa.update_date),'') as '步骤6时间', -- 6 - 1 
+ifnull(group_concat(distinct aat.name),'') as '步骤6处理人',
+ifnull(f.text_input, '') as '供应商执行备注'
+from work_order a
+LEFT JOIN work_order_state wos on a.state=wos.state
+left join living_problem_order_his dd on a.id=dd.work_order_id and dd.update_person_id is not null and dd.state='A'
+left join yc_account_tab ddt on dd.update_person_id=ddt.id
+left join living_problem_order_his ee on a.id=ee.work_order_id and ee.update_person_id is not null and ee.state='B'
+left join yc_account_tab eet on ee.update_person_id=eet.id
+left join living_problem_order_his k on a.id=k.work_order_id and k.update_person_id is not null and k.state='C'
+left join yc_account_tab kt on k.update_person_id=kt.id
+left join living_problem_order_his cc on a.id=cc.work_order_id and cc.update_person_id is not null and cc.state='P'
+left join yc_account_tab cct on cc.update_person_id=cct.id
+left join living_problem_order_his kk on a.id=kk.work_order_id and kk.update_person_id is not null and kk.state='D'
+left join yc_account_tab kkt on kk.update_person_id=kkt.id 
+left join living_problem_order_his aa on a.id=aa.work_order_id and aa.update_person_id is not null and aa.state='I'
+left join yc_account_tab aat on aa.update_person_id=aat.id 
+left join living_problem_order e on a.id=e.work_order_id
+left join living_problem_order_value f on e.id=f.sub_order_id
+and f.attr_path='LIVING_PROBLEM_ORDER_PROCESS.BUTLER_EXECUTE.COMMENTS'
+where a.type='E'
+and date_format(a.created_date, '%Y-%m-%d') >= date_format(date_sub(now(), INTERVAL 1 WEEK), '%Y-%m-%d')
+group by a.id;
+                         ]]>
+                </if>
+				
+
+				<if test="id==10013"><!-- 每天生成所有房源明细数据 -->
+                <![CDATA[
+select
+b.name as '管家',
+ag.id as '收房合约id',
+ag.code as '收房合约编码',
+ag.name as '收房合约名称',
+c.address as '房源地址',
+d.group_name as '小区名称',
+ox.area_name '区域名称',
+-- left(o.spec,1) as '间数',
+yht.rank_code '出租房源编码',
+yht.id '出租房源ID',
+case when yht.isdelete = 0 then '否'
+ when yht.isdelete = 1 then '是' end '是否可用',
+yd.item_name as  '房源状态',
+yht.title '房源标题'
+-- ifnull(sum(left(o.spec,1)),0) as '收房间数'
+from yc_agreement_tab ag 
+left join yc_onstruction_tab o on ag.house_id = o.houseid
+left join yc_house_tab c on o.houseid=c.id
+LEFT JOIN yc_houserank_tab yht on yht.house_id=c.id
+left join yc_group_tab d on c.group_id=d.id
+LEFT JOIN yc_area_tab ox on d.areaid=ox.id
+left join yc_account_tab b on d.g_id=b.g_id
+LEFT JOIN  yc_dictionary_item yd on yd.item_id=yht.rank_status and yd.group_id like '%RANKHOUSE.STATUS%'
+where o.is_work=1 and ag.type=1 and ag.isdelete=1
+and ag.begin_time < date_sub(now(),interval -1 day)
+and ag.end_time >= date_sub(now(),interval -1 day)
+and (ag.checkouttime is null or ag.checkouttime >= date_sub(now(),interval -1 day))
+and yht.rank_type=1
+order by b.name
+                         ]]>
+                </if>
+				
+				
+				<if test="id==10014"><!-- 每天生成已出租房源明细数据 -->
+                <![CDATA[
+SELECT
+   h.rank_code '房间编号',
+ ht.id '房源ID',
+ yd.item_name as  '房源状态',
+ h.title '房源标题',
+ yat.area_name '区域',
+ ht.address '房源地址',
+--  case when h.rank_type = '0' then '整租' else '合租' end as '租赁类型',
+ accoun.`name` '管家姓名',
+	'合租' as '租赁类型'
+ FROM
+  yc_agreement_tab ag
+ LEFT JOIN yc_houserank_tab h ON ag.house_id = h.id
+ LEFT JOIN yc_house_tab ht ON h.house_id = ht.id 
+ LEFT JOIN yc_group_tab g ON g.id = ht.group_id
+LEFT JOIN yc_area_tab yat on g.areaid=yat.id
+LEFT JOIN yc_account_tab accoun on accoun.g_id=g.g_id
+LEFT JOIN  yc_dictionary_item yd on yd.item_id=h.rank_status and yd.group_id like '%RANKHOUSE.STATUS%'
+ WHERE
+  h.isdelete = 1
+ AND ag.type = 2
+ AND ag.isdelete = 1
+ AND ag.begin_time < now()
+ AND ag.end_time >= now()
+ AND (
+  ag.checkouttime IS NULL
+  OR ag.checkouttime >= now()
+ )
+ AND h.rank_type = 1
+
+UNION all
+SELECT
+  h.rank_code '房间编号',
+ ht.id '房源ID',
+ yd.item_name as  '房源状态',
+ h.title '房源标题',
+ yat.area_name '区域',
+ ht.address '房源地址',
+--  case when h.rank_type = '0' then '整租' else '合租' end as '租赁类型',
+ accoun.`name` '管家姓名',
+	'整租' as '租赁类型'
+ FROM
+  yc_houserank_tab h
+	LEFT JOIN yc_house_tab ht ON h.house_id = ht.id 
+	LEFT JOIN yc_group_tab g ON g.id = ht.group_id
+	LEFT JOIN yc_area_tab yat on g.areaid=yat.id
+	LEFT JOIN yc_account_tab accoun on accoun.g_id=g.g_id
+	LEFT JOIN  yc_dictionary_item yd on yd.item_id=h.rank_status and yd.group_id like '%RANKHOUSE.STATUS%'
+ WHERE
+  h.house_id IN (
+   SELECT
+    h.house_id
+   FROM
+    yc_agreement_tab ag
+   LEFT JOIN yc_houserank_tab h ON ag.house_id = h.id
+   LEFT JOIN yc_house_tab ht ON h.house_id = ht.id
+   LEFT JOIN yc_group_tab g ON g.id = ht.group_id
+   WHERE
+    h.isdelete = 1
+   AND ag.type = 2
+   AND ag.isdelete = 1
+   AND ag.begin_time < now()
+   AND ag.end_time >= now()
+   AND (
+    ag.checkouttime IS NULL
+    OR ag.checkouttime >= now()
+   )
+   AND h.rank_type != 1)
+AND h.rank_type = 1
+
+                         ]]>
+                </if>
+				
+
+				<if test="id==10015"><!-- 每周生成财务审核阶段的退租订单信息 -->
+                <![CDATA[
+select distinct
+a.id,
+a.code '订单编码',
+a.name as '订单名称',
+g.type_name as '订单类型',
+a.created_date as '订单创建时间',
+a.user_name as '客户姓名',
+a.user_phone as '客户手机号',
+b.state_name as '状态',
+a.sub_comments as '订单详情',
+ifnull(h.text_input, 0) as '金额总计',
+ifnull(i.text_input, '') as '组务核算备注'
+from work_order a
+left join sub_order_state b on a.sub_order_state=b.state
+left join cancel_lease_order e on a.id=e.work_order_id
+left join cancel_lease_order_type g on e.type=g.type
+left join cancel_lease_order_value h on e.id=h.sub_order_id
+and h.attr_path='CANCEL_LEASE_ORDER_PROCESS.RENTAL_ACCOUNT.TOTAL_MONEY'
+left join cancel_lease_order_value i on e.id=i.sub_order_id
+and i.attr_path='CANCEL_LEASE_ORDER_PROCESS.RENTAL_ACCOUNT.COMMENTS'
+where a.type='A' and a.sub_order_state='N'
+order by a.created_date desc
+                         ]]>
+                </if>
+
+
+				<if test="id==10016"><!-- 每周10月1日前预缴费催缴情况 -->
+								<![CDATA[
+								select t.`code` '合约编码', a.title '房源名称', PERIOD_DIFF(DATE_FORMAT(t.end_time,'%Y%m'),DATE_FORMAT(t.begin_time,'%Y%m')) '租期',
+(CASE
+      WHEN t.`status` = 2 THEN
+       '已生效'
+   WHEN t.`status` = 3 THEN
+       '已失效'
+   WHEN t.`status` = 7 THEN
+       '失效待清算'
+      WHEN t.`status` = 12 THEN
+       '生效待付款'
+   ELSE
+    t.`status` 
+ END
+     ) AS '合约状态',
+y.`name` '费用类别',
+ x.cost '应收金额',
+ x.plat_time '预计付款时间', 
+case when x.isdelete =1 then '有效' else '无效' end as '是否有效',
+CASE  
+WHEN x.`status` != 0 THEN   
+ x.cost  
+ELSE   
+ '0'  
+END AS '已付金额' ,
+x.target_bank  AS '缴费方式',
+x.pay_time  AS '实收时间',
+d.area_name '区域名称',
+vs.u_name '市场管家名称',
+vg.u_name '服务管家名称',
+x.remarks as '备注'
+from yc_agreement_tab t LEFT JOIN yc_houserank_tab a on t.house_id=a.id 
+ LEFT JOIN yc_house_tab b on a.house_id=b.id 
+ LEFT JOIN yc_group_tab c on b.group_id=c.id
+ LEFT JOIN yc_area_tab d on c.areaid=d.id
+ LEFT JOIN team_area_scb_view vs on vs.area_id=c.id
+ LEFT JOIN team_group_service_view vg on vg.group_id=c.id
+ LEFT JOIN financial_receivable_tab x on x.secondary=t.id
+ LEFT JOIN financial_category_tab y on x.category=y.id
+where t.type=2 and x.plat_time < date_format('2017-10-01', '%Y-%m-%d')
+-- and t.`status` in ('2','7')
+and t.isdelete=1
+-- and x.category in ('11','12','13');
+and x.category in ('4')
+ and x.isdelete=1
+order by t.`code` asc, x.plat_time desc
+										 ]]>
+								</if>
+								<if test="id==10017"><!-- 每日管家收入 -->
+								<![CDATA[
+								select t.date '日期', t.agent_name '管家名', t.fee_name '费用类型', t.cost '收入', t.area_name '区域', t.group_name '小区名称' from yc_bill_pay_stat t where t.date = date_format(DATE_SUB(CURDATE(),INTERVAL 1 DAY), '%Y-%m-%d') and t.cost != 0
+										 ]]>
+								</if>								
+				
+        </select>
+        <select id="selectRptCfg" parameterType="int" resultType="com.yc.rm.caas.appserver.base.office.datacenter.entity.DataRptCfgBean">
+                select id,teamid,rptname as name,datetype as type,mailto as mailTo,createtime as createTime,description
+		  from t_datarpt
+		 where datetype like '%${type}%' and isdelete = 0
+        </select>
+</mapper>

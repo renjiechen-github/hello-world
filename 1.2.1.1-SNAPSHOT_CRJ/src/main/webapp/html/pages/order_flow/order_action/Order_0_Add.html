@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>新增看房订单</title>
+</head>
+
+<body>
+	<section class="panel">
+		<form id="form2" class="form-horizontal adminex-form " role="form">
+			<!-- 基本信息-->
+			<div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label"><b style="color: red">*</b>预约房源：</label>
+				<div class="col-sm-8">
+					<input id="rankName" maxlength="40" type="text" onClick="orderadd.Open();"  readonly dataType="Require" class="form-control" msg="请选择预约房源！" />
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label"><b style="color: red">*</b>订单名称：</label>
+				<div class="col-sm-8">
+					<input id="oname" maxlength="40" type="text" dataType="Require"
+						class="form-control" msg="建议保留系统生成名称" />
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2  control-label"><b style="color: red">*</b>
+					联系方式：</label>
+				<div class="col-sm-3">
+					<input id="ouserMobile" maxlength="11" msg="请输入正确的手机号码" class="form-control" dataType="Mobile">
+				</div>
+				<label class="col-sm-2  control-label"><b style="color: red">*</b>
+					用户名称：</label>
+				<div class="col-sm-3">
+					<input type="text" maxlength="8" name="ouserName" id="ouserName" msg="请填写用户名称"
+						class="form-control" dataType="Require" />
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2  control-label"><b style="color: red">*</b>预约时间：</label>
+				<div class="col-sm-8">
+						<input type="text" name="groupDate" dataType="Require"  msg="请选择预约时间"
+								id="oserviceTime" class="form-control"
+								placeholder="2013-01-02 01:00 " readonly="readonly" /> 
+								
+				<!--  <div class="input-group date form_datetime col-md-12" data-date="" data-date-format="yyyy-mm-dd hh:ii:ss" data-link-field="dtp_input1">
+							<input class="form-control" id="oserviceTime" size="16"
+								type="text" value="" readonly> <span
+								class="input-group-addon"><span
+								class="glyphicon glyphicon-remove"></span> </span> <span
+								class="input-group-addon"><span
+								class="glyphicon glyphicon-th"></span> </span>
+						</div>  -->
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2  control-label">订单说明：</label>
+				<div class="col-sm-8">
+					<textarea id="odesc" rows="6"  maxlength="256"  class="form-control"
+						placeholder="请填写订单相关信息"></textarea>
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+			<div class="text-center">
+				<button class="btn btn-info" id="orderadd_bnt" type="button">保存</button>
+			</div>
+		</form>
+		<div class="modal fade" id="rankModal" tabindex="-1" role="dialog"
+			aria-labelledby="myModalLabel">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h3 class="modal-title" id="myModalLabel">房源选择</h3>
+						<div class="row">
+							<form class="form-inline text-right">
+								出租方式：&nbsp; <select class="form-control" id="rankType"
+									style="width: 120px">
+									<option value="">请选择</option>
+								</select> 区域选择：<select class="form-control" id="area"
+									style="width: 120px">
+									<option value="">请选择</option>
+								</select> <input type="search" id="keywordT" class="form-control " placeholder="关键字" style="width: 120px">
+							<span class="form-group tools"><a
+							href="javascript:;" class="fa fa-search yc_seach" id="search"
+							table="rank_table">查询</a> </span>
+							</form>
+						</div>
+					</div>
+					<div class="modal-body">
+					 <div class="adv-table">
+							<table id="rank_table" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th></th>
+										<th></th>
+										<th>房源编码</th>
+										<th>房源标题</th>
+										<th>出租方式</th>
+										<th>户型</th>
+										<th>面积</th>
+										<th></th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+					<div class="row">
+					&nbsp;
+					</div>
+					<div class="row">
+					&nbsp;
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+<script type="text/javascript"
+	src="/html/js/order_flow/order_action/Order_0_Add.js"></script>
+</html>

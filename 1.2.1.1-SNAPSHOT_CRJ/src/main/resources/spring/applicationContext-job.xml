@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context" xmlns:task="http://www.springframework.org/schema/task"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+
+  <!-- task任务扫描注解 -->
+  <task:annotation-driven />
+  
+  <task:scheduled-tasks>
+  	<!-- 数据报表定时邮件发送 -->
+  	<task:scheduled ref="dataCenterMain" method="makeRpt" cron="0 0 1 * * ?" />
+    <!-- 自动好评 -->
+    <task:scheduled ref="OrderTaskService" method="autoOrderCommentaryWithTrans" cron="0 0 3 * * ?" />
+    <!-- 自动生成退租合约 -->
+    <task:scheduled ref="OrderTaskService" method="autoCreateCancelLeaseOrderWithTrans" cron="0 0 2 * * ?" />
+    <!-- 自动发起推送，通知管家进行上门结算 -->
+    <task:scheduled ref="OrderTaskService" method="autoSendHousekeeperDealWithMessage" cron="0 30 8 * * ?" />    
+    <!-- 自动发送未处理订单数量 -->
+    <task:scheduled ref="OrderTaskService" method="autoSendWait2DealWorkOrderMessage" cron="0 0 9,14 * * ?" />
+    <!-- 自动催租 -->
+    <task:scheduled ref="dunTaskServ" method="dunTask" cron="0 0 15 * * ?" />
+    <!-- 自动生成例行保洁(每个月10号凌晨执行) -->
+    <task:scheduled ref="orderTaskServ" method="orderNewTask" cron="0 0 0 10 * ?" />
+    <!-- 金蝶同步任务
+    <task:scheduled  ref="jdJob" method="execute" cron="0 0/1 * * * ?" /> -->
+  </task:scheduled-tasks>
+
+</beans>

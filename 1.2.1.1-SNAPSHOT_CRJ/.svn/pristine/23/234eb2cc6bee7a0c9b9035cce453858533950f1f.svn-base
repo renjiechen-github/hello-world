@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>首页</title>
+
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<style type="text/css">
+.h6 {
+	font-size: 10px;
+}
+
+.num {
+	font-size: 11px;
+}
+
+.form-con {
+	background-color: #eee;
+	line-height: 1.42857143;
+	color: #555;
+	border: 1px solid #ccc;
+}
+</style>
+</head>
+
+<body>
+	<input type="hidden" id="time_type" value='M' />
+	<div class="container-fluid" style="padding-right: 5px; padding-left: 5px">
+		<div class="row">
+			<div class="col-md-12" style="padding-right: 5px; padding-left: 5px">
+
+				<!-- 市场报表 -->
+				<div class="col-md-3" style="background: #6a8abe">
+					<div style="padding: 5px;">
+						<img src="images/market.png" style="width: 19.72px; height: 19.72px;">&nbsp;&nbsp; <span style="color: #FFFFFF">市场报表</span>
+					</div>
+					<div class="row" style="background: #FFFFFF;">
+						<div class="col-md-4 h6" style="padding-right: 6px; padding-left: 6px;">
+							当前房源
+							<div class="h6 num a_total_get">0</div>
+						</div>
+						<div class="col-md-4 h6" style="padding-right: 6px; padding-left: 6px;">
+							当前出租
+							<div class="h6 num a_total_rent">0</div>
+						</div>
+						<div class="col-md-4 h6" style="padding-right: 6px; padding-left: 6px;">
+							人均效能
+							<div class="h6 num perNum">0</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 工程报表 -->
+				<div class="col-md-3" style="@media (min-width: 992px) {width: 22.5%;}">
+					<div class="row">
+						<div class="col-md-11" style="background: #765abc; margin-left: 10px;">
+							<div style="padding: 5px;">
+								<img src="images/market.png" style="width: 19.72px; height: 19.72px;">&nbsp;&nbsp; <span style="color: #FFFFFF">工程报表</span>
+							</div>
+							<div class="row" style="background: #FFFFFF;">
+								<div class="col-md-9 h6" style="padding-right: 6px; padding-left: 6px; width: 50%;">
+									延期工程
+									<div class="h6 num">0</div>
+								</div>
+								<div class="col-md-9 h6" style="padding-right: 6px; padding-left: 6px; width: 50%;">
+									单间成本
+									<div class="h6 num singlePrice">0</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 客服报表 -->
+				<div class="col-md-3" style="background: #5e5e5e">
+					<div style="padding: 5px;">
+						<img src="images/market.png" style="width: 19.72px; height: 19.72px;">&nbsp;&nbsp; <span style="color: #FFFFFF">客服报表</span>
+					</div>
+					<div class="row" style="background: #FFFFFF;">
+						<div class="col-md-4 h6" style="padding-right: 6px; padding-left: 6px;">
+							维修/保洁
+							<div class="h6 num">
+								<span id="wx">0</span>/<span id="bj">0</span>
+							</div>
+						</div>
+						<div class="col-md-4 h6" style="padding-right: 6px; padding-left: 6px;">
+							投诉订单
+							<div class="h6 num">
+								<span id="ts">0</span>
+							</div>
+						</div>
+						<div class="col-md-4 h6" style="padding-right: 6px; padding-left: 6px;">
+							预约看房
+							<div class="h6 num">
+								<span id="kf">0</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 财务报表 -->
+				<div class="col-md-3">
+					<div class="row">
+						<div class="col-md-12" style="background: #FC8675; margin-left: 10px;">
+							<div style="padding: 5px;">
+								<img src="images/market.png" style="width: 19.72px; height: 19.72px;">&nbsp;&nbsp; <span style="color: #FFFFFF">财务报表</span>
+							</div>
+							<div class="row" style="background: #FFFFFF;">
+								<div class="col-md-9 h6" style="padding-left: 6px; padding-right: 6px; width: 50%;">
+									待收款（笔（元））
+									<div class="h6 num">
+										<span id="receivableCount">0</span>（<span id="receivable">0</span>万元）
+									</div>
+								</div>
+								<div class="col-md-9 h6" style="padding-left: 6px; padding-right: 6px; width: 50%;">
+									待付款（笔（元））
+									<div class="h6 num">
+										<span id="payableCount">0</span>（<span id="payable">0</span>万元）
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row" style="margin-top: 20px;">
+			<div class="col-md-12" style="padding-right: 5px; padding-left: 5px;">
+				<!-- 房源增量折线图 -->
+				<div class="col-md-7" style="background: #FFFFFF; padding-right: 5px; padding-left: 5px;">
+					<div style="padding: 5px;">
+						<span>房源量</span> <span class="num" style="float: right;">
+							<button type="button" class="btn btn-default btn-xs house-year" onclick="home_index.changeTimeButtonColour('Y');">年</button>
+							<button type="button" class="btn btn-success btn-xs house-month" disabled="disabled" onclick="home_index.changeTimeButtonColour('M');">月</button>
+							<button type="button" class="btn btn-default btn-xs house-week" onclick="home_index.changeTimeButtonColour('W');">周</button>
+							<button type="button" class="btn btn-default btn-xs house-day" onclick="home_index.changeTimeButtonColour('D');">天</button> <input size="10" type="text" class="form-con" style="border: 0; background-color: #FFFFFF;" readonly id="query_time" />
+						</span>
+					</div>
+					<div id="house_add" style="width: 100%; height: 250px;"></div>
+				</div>
+
+				<!-- 当月房源信息 -->
+				<div class="col-md-2" style="width: 15%">
+					<div class="row">
+						<div class="col-md-12" style="padding-bottom: 5px; padding-left: 8px; padding-right:8px;">
+							<div style="background: #FFFFFF; text-align: center; height: 135px; padding-top: 50px;">
+								<span class="h6">当月租差</span><br /> <span class="rentalDiff">0</span>元
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12" style="padding-top: 5px; padding-left: 8px; padding-right:8px;">
+							<div style="background: #FFFFFF; text-align: center; height: 135px; padding-top: 50px;">
+								<span class="h6">空置率</span><br /> <span class="idle">0</span>%
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 房源数据 -->
+				<div class="col-md-3" style="height: 280px; padding-right: 0px; padding-left: 0px; overflow-y: visible;">
+					<div style="background: #FFFFFF; padding-right: 0px; padding-left: 0px; ">
+						<div style="padding: 5px;">
+							<span>房源数据</span>
+						</div>
+						<div id="house_data" style="width: 100%; height: 250px; ;overflow-y: visible;"></div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+</body>
+<script src="js/echarts.js"></script>
+<script type="text/javascript" src="js/home/home_index.js"></script>
+</html>

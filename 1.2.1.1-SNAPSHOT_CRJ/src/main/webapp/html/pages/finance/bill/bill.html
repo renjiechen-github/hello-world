@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="ThemeBucket">
+        <link rel="shortcut icon" href="#" type="image/png">
+
+        <title>财务支出</title>
+        <style type="text/css">
+            .bzh{
+                background-color: #e68d8d !important;
+            }
+            .bzh td{
+                background-color: #e68d8d !important;
+                color: #fff;
+            }
+            .panel-body .form-group{
+                margin-top: 5px;
+            }
+            .daterangepicker{
+                z-index: 99999999 !important;
+            }
+        </style>
+    </head>
+
+    <body>
+        <section class="panel">
+            <div class="panel-body">
+                <section class="panel panel-info panel-seach">
+                    <div class="panel-body">
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <label class="" for="exampleInputEmail2">账单类型:</label>
+                                <select class="form-control" id="type" name="type" >
+                                    <option value="1">收入</option>
+                                    <option value="2">支出</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="" for="exampleInputEmail2">账单资源类型:</label>
+                                <select class="form-control" id="resource_type" name="resource_type" >                                	
+                                    <option value="">请选择...</option>
+                                    <option value="1">租金账单</option>
+                                    <option value="2">水电燃账单</option>
+                                    <option value="3">退租账单</option>
+                                    <option value="4">增值保洁账单</option>
+                                    <option value="5">增值维修账单</option>
+                                    <option value="6">其他账单</option>
+                                    <option value="7">押金账单</option>
+                                    <option value="8">365金融账单</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="" for="exampleInputEmail2">状态:</label>
+                                <select class="form-control" id="state" name="state" >
+                                    <option value="">请选择...</option>
+                                    <option value="1">待支付（订单刚创建）</option>
+                                    <option value="2">支付中（已经支付金额，等待微信或支付宝反馈结果）</option>
+                                    <option value="3">支付完成（完成所有支付时）</option>
+                                    <option value="4">挂起（挂起状态不需要进行支付）</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="" for="exampleInputEmail2">是否退租:</label>
+                                <select class="form-control" id="sftz" name="sftz" >
+                                    <option value="">请选择...</option>
+                                    <option value="0">正常</option>
+                                    <option value="1">退租中</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="" for="exampleInputEmail2">合约名称</label>
+                                <input type="text" class="form-control" id="ager_name" name="ager_name" placeholder="请输入合约名称模糊查询">
+                            </div>
+                            <div class="form-group">
+                                <label class="" for="exampleInputEmail2">合约编号</label>
+                                <input type="text" class="form-control" id="ager_code" name="ager_code" placeholder="请输入合约编号模糊查询">
+                            </div>
+                            <div class="form-group">
+                                <label class="" for="exampleInputEmail2">租客姓名</label>
+                                <input type="text" class="form-control" id="username" name="username" placeholder="请输入租客姓名模糊查询">
+                            </div>
+                            <div class="form-group">
+                                <label class="" for="exampleInputEmail2">租客手机号</label>
+                                <input type="text" class="form-control" id="mobile" name="mobile" placeholder="请输入租客手机号模糊查询">
+                            </div>
+                            <div class="form-group">
+                                <label class="" for="exampleInputEmail2">财务编号</label>
+                                <input type="text" class="form-control" id="set_code" name="set_code" placeholder="请输入财务编号模糊查询">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail2">计划时间:</label>
+                                <input type="text" style="width: 300px" name="actiontime" readonly="readonly" id="plattime" class="form-control"  class="span4"/>
+                            </div>
+                            <div class="form-group ">
+                                <div class="tools" >
+                                    <a href="javascript:;" class="fa fa-search yc_seach" table="example" >查询</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+                <div class="adv-table">
+                    <table id="example" class="display tablehover table table-bordered dataTable" aria-describedby="dynamic-table_info"  width="100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>账单名称</th>
+                                <th>账单类型</th>
+                                <th>账单金额</th>
+                                <th>已经支付金额</th>
+                                <th>优惠金额</th>
+                                <th>创建时间</th>
+                                <th>支付完成时间</th>
+                                <th>计划支付时间</th>
+
+                                <th>合约名称</th>
+                                <th>账单资源类型</th>
+
+                                <th>客户姓名</th>
+                                <th>客户号码</th>
+                                <th>网格管家</th>
+                                <th>区域</th>
+                                <th>网格</th>
+
+                                <th>状态</th>
+                                <th>是否有效</th>
+                                <th>是否退租</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </section>
+        <script type="text/javascript">
+            var bill = {
+                init: function () {
+                  // 初始化时间
+                  this.createTime();
+                  this.loadTable();
+                    
+                },
+                addevent: function () {
+
+                },
+                createTime: function () {
+              		// 初始化时间
+              		var now_time = new Date();
+              		var pre_time = new Date();
+              		pre_time.setDate(pre_time.getDate() - 1);
+              		// 年
+              		var query_year = now_time.getFullYear();
+              		var pre_query_year = pre_time.getFullYear();
+              		// 月
+              		var query_month = now_time.getMonth() + 1;
+              		query_month = query_month < 10 ? "0" + (query_month) : query_month;
+              		var pre_query_month = pre_time.getMonth() + 1;
+              		pre_query_month = pre_query_month < 10 ? "0" + (pre_query_month) : pre_query_month;
+              		// 日
+              		var query_day = now_time.getDate();
+              		query_day = query_day < 10 ? "0" + query_day : query_day;
+              		var pre_query_day = pre_time.getDate();
+              		pre_query_day = pre_query_day < 10 ? "0" + pre_query_day : pre_query_day;
+
+              		var query_begin_time = pre_query_year + "-" + pre_query_month + "-" + pre_query_day + " 00:00:00";
+              		var query_end_time = query_year + "-" + query_month + "-" + query_day + " 23:59:59";
+
+              		$("#plattime").daterangepicker({
+              			startDate : query_begin_time,
+              			endDate : query_end_time,
+              			timePicker12Hour : false,
+              			separator : '~',
+              			format : 'YYYY-MM-DD HH:mm:ss'
+              		}, function(start, end, label) {
+              			console.log(start.toISOString(), end.toISOString(), label);
+              		});  
+              		$("#plattime").val(query_begin_time + "~" + query_end_time);
+                },
+                loadTable: function () {
+                    var table1 = table.init({
+                        id: '#example',
+                        expname: '账单明细',
+                        url: common.root + '/financial/getBillList.do',
+                        columns: ["name",
+                            "type",
+                            "cost",
+                            "yet_cost",
+                            "discounts_cost",
+                            "oper_date_",
+                            "complete_date_",
+                            "plan_time_",
+                            "ager_name",
+                            "resource_type",
+                            "username",
+                            "usermobile",
+                            "wgname",
+                            "area_name",
+                            "g_name",
+                            "state",
+                            "isdelete",
+                            "sftz",
+                            {name: "set_code", isshow: false, title: '财务编号', isover: true},
+                            {name: "CODE", isshow: false, title: '合约编号', isover: true},
+                            {name: "begin_time", isshow: false, title: '合约开始时间', isover: true},
+                            {name: "end_time", isshow: false, title: '合约结束时间', isover: true},
+                        ],
+                        bnt: [
+                            {
+                                name: '明细查询',
+                                fun: function (data, row) {
+                                    common.openWindow({
+                                            area:['1200px','600px'],
+                                            name:'billdetail',
+                                            type : 1,
+                                            data:{id:data.id},
+                                            title : '账单明细',
+                                            url : '/html/pages/finance/bill/bill_detail.html'
+                                    });
+                                }
+                            },
+                            {
+                                name: '财务审批',
+                                isshow: function (data, row) {
+                                    if (data.state != '1') {
+                                        return false;
+                                    }
+                                    return true;
+                                },
+                                fun: function (data, row) {
+                                    common.openWindow({
+                                            area:['1200px','700px'],
+                                            name:'billpayEdit',
+                                            type : 1,
+                                            data:data,
+                                            title : '账单审批',
+                                            url : '/html/pages/finance/bill/bill_exa.html?1=2'
+                                    });
+                                }
+                            }
+                        ],
+                        ismultiple: false,
+                        "aLengthMenu": [5, 10, 25, 50, 100, 200, 500, 1000],
+                        param: function () {
+                            var a = new Array();
+                            a.push({"name": "type", "value": $('#type').val()});
+                            a.push({"name": "resource_type", "value": $('#resource_type').val()});
+                            a.push({"name": "state", "value": $('#state').val()});
+                            a.push({"name": "ager_name", "value": $('#ager_name').val()});
+                            a.push({"name": "ager_code", "value": $('#ager_code').val()});
+                            a.push({"name": "username", "value": $('#username').val()});
+                            a.push({"name": "set_code", "value": $('#set_code').val()});
+                            a.push({"name": "mobile", "value": $('#mobile').val()});
+                            a.push({"name": "plattime", "value": $('#plattime').val()});
+                            a.push({"name": "sftz", "value": $('#sftz').val()});
+                            return a;
+                        },
+                        /**
+                         * 创建函数执行
+                         * @param {Object} rowindex 所在行
+                         * @param {Object} colindex 所在列
+                         * @param {Object} name 字段名称
+                         * @param {Object} value 字段值 
+                         * @param {Object} data 此行的数据信息 json数据格式
+                         */
+                        createRow: function (rowindex, colindex, name, value, data, row) {
+                            if (name == 'type') {
+                                return data.type == '1' ? '收入' : data.type == '2' ? '支出' : '未知';
+                            }
+                            if (name == 'resource_type') {
+                                //1 租金账单 2 水电燃账单 3 退租账单 4 增值保洁账单 5 增值维修账单 6 其他账单
+                                return data.resource_type == '1' ? '租金账单' : data.resource_type == '2' ? '水电燃账单' : data.resource_type == '3' ? '退租账单' : data.resource_type == '4' ? '增值保洁账单' : data.resource_type == '5' ? '增值维修账单' :data.resource_type == '6' ? '其他账单' :data.resource_type == '7' ? '押金账单':"365金融账单";
+                            }
+                            if (name == 'state') {
+                                //状态:1 生成订单（订单刚创建） 2 支付中（已经支付的金额） 3 支付完成（完成所有支付时）4 挂起（挂起状态不需要进行支付）
+                                return data.state == '1' ? '待支付（订单刚创建）' : data.state == '2' ? '支付中（已经支付金额，等待微信或支付宝反馈结果）' : data.state == '3' ? '支付完成（完成所有支付时）' : data.state == '4' ? '挂起（挂起状态不需要进行支付）' : "其他账单";
+                            }
+                            if (name == 'sftz') {
+                                return data.sftz == '1' ? '退租中' : '正常';
+                            }
+                            if (name == 'isdelete') {
+                                return data.isdelete == '1' ? '无效' : '有效';
+                            }
+                            if (name.indexOf('yet_cost') >= 0) {
+                                return '￥' + data.yet_cost;
+                            }
+                            if (name.indexOf('discounts_cost') >= 0) {
+                                return '￥' + data.discounts_cost;
+                            }
+                            if (name.indexOf('cost') >= 0) {
+                                return '￥' + data.cost;
+                            }
+                            return value;
+                        },
+                        fnDrawCallback: function () {
+                        },
+                        //移除操作
+                        overflowfun: function (data, head) {
+//                            console.log(data);
+                            if(data.resource_type == 3 || data.resource_type == 4 || data.resource_type == 5){
+                                if(data.order_code != undefined){
+                                    var sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
+                                    for(var i=0;i<head.length;i++){
+                                            var name = head[i].name;
+                                            sOut += '<tr><td>'+head[i].title+':</td><td> '+data[name]+'</td></tr>';
+                                    }
+                                    sOut += '<tr><td>订单编号：</td>';
+                                    sOut += '<td>'+data.order_code+'</td>';
+                                    sOut += '</tr>';
+                                    sOut += '</table>';
+                                    return sOut;
+                                }
+                            }
+                        }
+                    });
+                }
+            };
+            $(function () {
+                bill.init();
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<style type="text/css">
+.test-align {
+	text-align: center;
+}
+
+.th-font-color {
+	color: #0093ea;
+}
+
+.form-control-contr {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	box-shadow: none;
+	padding: 3px 6px;
+	font-size: 10px;
+	height: 25px;
+}
+
+.form-font {
+	color: #ffffff;
+	font-size: 12px;
+	margin-left: 10px;
+}
+
+.background-url {
+	background: #FFFFFF url('../../../client/images/search_logo1.png')
+		no-repeat 0 center;
+	background-size: 12px 12px;
+	background-position: 5px 6px;
+	padding-left: 25px;
+}
+
+#createTime::-webkit-input-placeholder { /* webkit内核浏览器 */
+	color: black;
+}
+
+#createTime:-moz-placeholder { /* Firefox 18- */
+	color: black;
+}
+
+#createTime::-moz-placeholder { /* Firefox 19+ */
+	color: black;
+}
+
+#createTime:-ms-input-placeholder {
+	color: black;
+}
+
+.abc-checkbox label::before {
+	cursor: pointer;
+	content: "";
+	display: inline-block;
+	position: absolute;
+	width: 17px;
+	height: 15px;
+	top: 5px;
+	left: 0;
+	margin-left: -15px;
+	border: 1px solid rgba(0, 0, 0, .15);
+	border-radius: 3px;
+	background-color: #fff;
+	transition: border .15s ease-in-out, color .15s ease-in-out;
+}
+
+.abc-checkbox label::after {
+	cursor: pointer;
+	display: inline-block;
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	left: 0;
+	top: 2px;
+	margin-left: -20px;
+	padding-left: 7px;
+	padding-top: 1px;
+	font-size: 11px;
+	color: #464a4c;
+}
+
+.add-btn-position {
+	position: absolute;
+	top: 37px;
+	right: 60px;
+}
+
+userTable thead tr th div {
+	color: red;
+}
+
+.userInfo-contr {
+	padding-right: 0px;
+	padding-left: 15px;
+	text-align: left;
+	width: inherit;
+}
+</style>
+<title>用户管理</title>
+</head>
+<body>
+	<section>
+		<div class="panel-body">
+			<div style="background-color: #0093ea; height: 100;">
+				<form class="form-inline" role="form">
+					<div class="form-group">
+						<label><font class="form-font">用户管理</font></label> <input type="text" class="form-control-contr background-url"
+							id="keyWord" name="keyWord" placeholder="关键词搜索">
+					</div>
+					<div class="form-group">
+						&nbsp;&nbsp;&nbsp;<label><font class="form-font">筛选</font></label> &nbsp;&nbsp;&nbsp; <select
+							class="form-control-contr" id="state" name="state">
+							<option value="">状态</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<select class="form-control-contr" id="device" name="device">
+							<option value="">设备</option>
+							<option value="手机">手机</option>
+							<option value="电脑">电脑</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<select class="form-control-contr" id="teamId" name="teamId">
+							<option value="">团队</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<select class="form-control-contr" id="roleId" name="roleId">
+							<option value="">角色</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<input size="40" type="text" readonly="readonly" class="form-control-contr" id="createTime" placeholder="注册时间" />
+					</div>
+					<div class="form-group add-btn-position">
+						<a class="btn btn-default btn-sm" href="#" role="button" id="addNewUser">新增用户</a>
+					</div>
+				</form>
+			</div>
+			<div class="adv-table" style="background-color: white;">
+				<!-- 表格展示 -->
+				<table id="userTable" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%"></table>
+			</div>
+		</div>
+
+		<!-- 用户信息添加模态框 -->
+		<div class="modal" id="addUserInfo">
+			<div class="modal-dialog ">
+				<div class="modal-content">
+					<div class="modal-header" style="background: #4596F8;">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+						</button>
+						<h4 class="modal-title">新增用户</h4>
+					</div>
+					<div class="modal-body">
+						<form id="form" class="form-horizontal adminex-form " role="form">
+							<div class="tab-content">
+								<div class="tab-pane fade in active">
+									<div class="form-group">
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>用户姓名</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<input id="addUserName" type="text" class="form-control" style="padding-left: 0px;" />
+										</div>
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>手机号码</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<input id="addUserPhone" type="text" class="form-control" style="padding-left: 0px;">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>用户组织</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<select class="form-control m-bot15" multiple="multiple" id="addUserOrg">
+												<option value="">请选择</option>
+											</select>
+										</div>
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>用户角色</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<select class="form-control m-bot15" multiple="multiple" id="addUserRole">
+												<option value="">请选择</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>用户团队</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<select class="form-control" id="addUserTeam">
+												<option value="">请选择</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-2 control-label userInfo-contr" style="padding-right: 25px;">说明</label>
+										<div class="col-sm-9" style="padding-right: 0px;">
+											<textarea rows="3" cols="50" id="addUserText" type="text" class="form-control"></textarea>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+						<button type="button" class="btn btn-primary" id="addUserInfoBtn">保存</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 查看并更新用户信息 -->
+		<input id="updateUserId" type="hidden" />
+		<div class="modal" id="updateUserInfo">
+			<div class="modal-dialog ">
+				<div class="modal-content">
+					<div class="modal-header" style="background: #4596F8;">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+						</button>
+						<h4 class="modal-title">查看并更新用户信息</h4>
+					</div>
+					<div class="modal-body">
+						<form id="form3" class="form-horizontal adminex-form " role="form">
+							<div class="tab-content">
+								<div class="tab-pane fade in active">
+									<div class="form-group">
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>用户姓名</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<input id="updateUserName" type="text" class="form-control" style="padding-left: 0px;" />
+										</div>
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>手机号码</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<input id="updateUserPhone" type="text" class="form-control" style="padding-left: 0px;">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>用户组织</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<select class="form-control m-bot15" multiple="multiple" id="updateUserOrg">
+												<option value="">请选择</option>
+											</select>
+										</div>
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>用户角色</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<select class="form-control m-bot15" multiple="multiple" id="updateUserRole">
+												<option value="">请选择</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-2 control-label userInfo-contr"> <b style="color: red">*</b>用户团队</label>
+										<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+											<select class="form-control" id="updateUserTeam">
+												<option value="">请选择</option>
+											</select>
+										</div>
+									</div>									
+									<div class="form-group">
+										<label class="col-sm-2 control-label userInfo-contr" style="padding-right: 25px;">说明</label>
+										<div class="col-sm-9" style="padding-right: 0px;">
+											<textarea rows="3" cols="50" id="updateUserText" type="text" class="form-control"></textarea>
+										</div>
+									</div>									
+									
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+						<button type="button" class="btn btn-primary" id="updateUserInfoBtn">保存</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</section>
+	<script type="text/javascript" src="/html/yc/rm/caass/appserv/bus/user/js/userInfo.js"></script>
+	<script type="text/javascript">
+		$(window).keydown(function(e) {
+
+			if (e.keyCode == 13) {
+				$('#userTable').bootstrapTable('refresh');
+				/* 				var keyWord = $("#keyWord").val();
+				 if (keyWord != '') {
+				 var pattern = new RegExp("[`_-+()￣~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？]")   
+				 if (pattern.test(keyWord)) {
+				 alert(keyWord);
+				 alert("只能输入中英文");
+				 return false;
+				 } else {
+				
+				 }
+				 } */
+			}
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>修改其他订单</title>
+</head>
+<body>
+	<section class="panel">
+		<form id="form2" class="form-horizontal adminex-form " role="form">
+			<!-- 基本信息-->
+			<div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label">订单编号：</label>
+				<div class="col-sm-8">
+				<span id="order_code" class="form-control" style="border: 0px"></span>
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label"><b style="color: red">*</b>订单名称：</label>
+				<div class="col-sm-6">
+					<input id="oname" maxlength="40" type="text" dataType="Require" class="form-control" msg="建议保留系统生成名称" />
+				</div>
+				<div class="col-sm-4">
+				<font style="color: red">*建议保留系统生成该名称</font>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label">
+					联系方式：</label>
+				<div class="col-sm-3">
+				<span id="ouserMobile"  msg="请输入正确的手机号码" class="form-control" style="border: 0px"></span>
+				</div>
+				<label class="col-sm-2  control-label">
+					用户名称：</label>
+				<div class="col-sm-3">
+				<span id="ouserName" class="form-control" style="border: 0px"></span>
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label"><b style="color: red">*</b>预约时间：</label>
+				<div class="col-sm-6">
+						<input dataType="Require" type="text" name="groupDate" readonly="readonly" msg="请选择预约时间"
+								id="oserviceTime" class="form-control"
+								placeholder="2013-01-02 01:00 " /> 
+				</div>
+				<div class="col-sm-4"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label">订单说明：</label>
+				<div class="col-sm-8">
+					<textarea id="odesc" rows="6"  maxlength="256"  class="form-control"
+						placeholder="请填写订单相关信息"></textarea>
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+			<div class="text-center">
+				<button class="btn btn-info" id="orderadd_bnt" type="button">保存</button>
+				&nbsp;<button class="btn btn-info" id="backrow" type="button">取消</button>
+			</div>
+		</form>
+	</section>
+</body>
+<script type="text/javascript" src="/html/js/order_flow/order_action/Order_4_update.js"></script>
+</html>

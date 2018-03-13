@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>服务报表</title>
+<style type="text/css">
+.paddingClass {
+	padding: 1px 10px !important;
+}
+
+.ulClass {
+	min-width: 10px;
+}
+
+.head {
+	display: flex;
+	height: 50px;
+	line-height: 50px;
+	background-color: #ecb292;
+	width: 80%;
+	margin: 20px auto;
+}
+
+.leftdiv {
+	flex: 1;
+	text-align: center;
+	cursor: pointer;
+	border-right: 1px solid white;
+	color: white;
+	background-color: #ecb292;
+}
+
+.rightdiv {
+	flex: 1;
+	text-align: center;
+	cursor: pointer;
+	color: white;
+	background-color: #ecb292;
+}
+
+.movediv {
+	color: black;
+	background-color: #A0443F;
+}
+</style>
+</head>
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+					<form class="form-inline" role="form">
+
+						<!-- <div class="date form_datetime form-group">
+							
+								<input id="queryTime" type="text" placeholder="请选择日期" class="form-control" />
+						</div> -->
+					<div class="date form_datetime form-group">
+						<label>查询时间：</label>
+						<input id="queryTime" style="width: 80px;"
+							placeholder="请选择日期" class="form-control" size="16" type="text"
+							value="" readonly="">
+					</div>
+						
+						<div class="form-group">
+							<label for="exampleInputEmail2">服务类型:</label> 
+								<select id="order_type" class="form-control">
+								<option value="">请选择..</option>
+								<option value="0">看房订单</option>
+								<option value="1">维修订单</option>
+								<option value="2">保洁订单</option>
+								<option value="3">投诉订单</option>
+								<option value="4">其他订单</option>
+								<option value="6">入住问题</option>
+								<option value="7">退租订单</option>
+								<option value="9">例行保洁</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail3">服务状态:</label> 
+								<select id="order_status" class="form-control">
+								<option value="">请选择..</option>
+								<option value="0">新增待处理</option>
+								<option value="2">待支付</option>
+								<option value="3">待退款</option>
+								<option value="4">待派单</option>
+								<option value="6">执行中</option>
+								<option value="8">待执行</option>
+								<option value="10">待完成</option>
+								<option value="200">已完成</option>
+								<option value="-1">已关闭</option>
+							</select>
+						</div>						
+						<span class="form-group tools">
+							<a href="javascript:;" class="fa fa-search yc_seach" table="basehouse_table" id="querySub">查询</a>
+						</span>
+					</form>
+					<br>
+					<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+					<div id="main"
+						style="width: 100%;height:500px;display:inline-block;">
+					</div>
+					<div class="adv-table">
+						<table id="home_sc_table" class="table table-bordered"
+							style="width: 100%">
+							<tr>
+								<td colspan="10">南京 <b id="hometableMonth"></b>月
+								</td>
+							</tr>
+						</table>
+					</div>					
+				</div>
+			</section>
+		</div>
+	</section>
+
+</body>
+<!-- 引入 ECharts 文件 -->
+<script src="/html/js/echarts.js"></script>
+<script type="text/javascript" src="/html/js/report/order_statistics.js"></script>
+</html>

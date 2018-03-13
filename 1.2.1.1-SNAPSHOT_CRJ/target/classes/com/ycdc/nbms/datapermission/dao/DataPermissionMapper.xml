@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.nbms.datapermission.dao.DataPermissionMapper">
+
+	<resultMap id="BaseResultMap" type="com.ycdc.nbms.datapermission.model.DataPermission">
+		<!-- @mbg.generated -->
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="role_id" jdbcType="INTEGER" property="role_id" />
+		<result column="created_date" jdbcType="TIMESTAMP" property="created_date" />
+		<result column="creater_id" jdbcType="INTEGER" property="creater_id" />
+		<result column="update_date" jdbcType="TIMESTAMP" property="update_date" />
+		<result column="type_id" jdbcType="INTEGER" property="type_id" />
+		<result column="sub_type_id" jdbcType="VARCHAR" property="sub_type_id" />
+		<result column="sub_type_name" jdbcType="VARCHAR" property="sub_type_name" />
+		<result column="query_permission" jdbcType="INTEGER" property="query_permission" />
+		<result column="add_permission" jdbcType="INTEGER" property="add_permission" />
+		<result column="update_permission" jdbcType="INTEGER" property="update_permission" />
+		<result column="assign_permission" jdbcType="INTEGER" property="assign_permission" />
+		<result column="close_permission" jdbcType="INTEGER" property="close_permission" />
+		<result column="export_permission" jdbcType="INTEGER" property="export_permission" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		<!-- @mbg.generated -->
+		id, role_id, created_date, creater_id, update_date, type_id, sub_type_id, sub_type_name,
+		query_permission, add_permission, update_permission, assign_permission, close_permission, export_permission
+	</sql>
+	
+	<sql id="add_Column_List">
+		<!-- @mbg.generated -->
+		role_id, created_date, creater_id, update_date, type_id, sub_type_id, sub_type_name,
+		query_permission, add_permission, update_permission, assign_permission, close_permission, export_permission
+	</sql>
+	
+	<!-- 根据角色id和类型id查看是否有记录 -->
+	<select id="getTotalByRoleId" resultType="int">
+		select count(1) from yc_data_permission where role_id=#{role_id} and type_id=#{type_id} and sub_type_id=#{sub_type_id}
+	</select>
+	
+	<!-- 插入没有记录的信息 -->
+	<insert id="insertPermissions" useGeneratedKeys="true" keyProperty="id" 
+		parameterType="com.ycdc.nbms.datapermission.model.DataPermission">
+		insert into yc_data_permission (
+		<include refid="add_Column_List" />
+		)
+		values
+		(#{role_id},now(),#{creater_id},now(),#{type_id},#{sub_type_id},#{sub_type_name},
+		#{query_permission},#{add_permission},#{update_permission},#{assign_permission},
+		#{close_permission},#{export_permission})	
+	</insert>
+
+	<!-- 根据角色id查询数据权限信息 -->
+	<select id="getPermissionsInfo" parameterType="com.ycdc.nbms.datapermission.model.DataPermissionRequest"
+		resultMap="BaseResultMap">
+		<!-- @mbg.generated -->
+		select
+		<include refid="Base_Column_List" />
+		from yc_data_permission
+		where role_id=#{role_id}
+	</select>
+	
+	<select id="getExportInfoByRoleIds" resultType="int">
+		select count(1) 
+		from yc_data_permission a 
+		where a.role_id in (${roleIds}) and a.export_permission=1 and a.type_id=3
+	</select>
+	
+	<select id="getPermissionsInfoByRoleIds" resultType="map">
+		select 
+		sub_type_id as "subTypeId",
+		query_permission as "queryPermission",
+		add_permission as "addPermission",
+		update_permission as "updatePermission",
+		assign_permission as "assignPermission",
+		close_permission as "closePermission"
+		from yc_data_permission
+		where type_id=#{typeId} and role_id in (${roleIds})
+	</select>
+	
+	<!-- 根据角色id查询菜单权限 -->
+	<select id="getMenuInfo" parameterType="com.ycdc.nbms.datapermission.model.DataPermissionRequest"
+		resultType="map">
+		select
+		a.role_id as "role_id",
+		a.menu_id as "menu_id"
+		from yc_role_menu_tab a
+		where a.role_id=#{role_id}
+	</select>
+	
+	<!-- 根据role_id查询是否存在记录 -->
+	<select id="getRecordTotalByRoleId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(1)
+		from yc_data_permission
+		where role_id=#{role_id}
+	</select>
+
+	<!-- 批量插入权限信息 -->
+	<insert id="batchInsertPermissions">
+		<!-- @mbg.generated -->
+		insert into yc_data_permission (
+		<include refid="add_Column_List" />
+		)
+		values
+		<foreach collection="datas" item="item" index="index" separator=",">
+			(#{role_id},now(),#{creater_id},now(),#{item.type_id},#{item.sub_type_id},#{item.sub_type_name},
+			#{item.query_permission},#{item.add_permission},#{item.update_permission},#{item.assign_permission},
+			#{item.close_permission},#{item.export_permission})	
+		</foreach>
+	</insert>
+
+	<!-- 批量更改权限信息 -->
+	<update id="batchUpdatePermissions">
+		<!-- @mbg.generated -->
+		update yc_data_permission
+		<trim prefix="set" suffixOverrides=",">
+		
+			<trim prefix="update_date=case" suffix="end,">
+				<foreach collection="datas" item="item" index="index">
+					when id=#{item.id} then now()
+				</foreach>
+			</trim>
+			
+      <trim prefix="query_permission=case" suffix="end," >
+	      <foreach collection="datas" item="item" index="index">
+	       <if test="item.query_permission!=null">
+	        when id=#{item.id} then #{item.query_permission}
+	       </if>
+	      </foreach>
+      </trim>
+      
+      <trim prefix="add_permission=case" suffix="end," >
+	      <foreach collection="datas" item="item" index="index">
+	       <if test="item.add_permission!=null">
+	        when id=#{item.id} then #{item.add_permission}
+	       </if>
+	      </foreach>
+      </trim>
+      
+      <trim prefix="update_permission=case" suffix="end," >
+	      <foreach collection="datas" item="item" index="index">
+	       <if test="item.update_permission!=null">
+	        when id=#{item.id} then #{item.update_permission}
+	       </if>
+	      </foreach>
+      </trim>
+      
+      <trim prefix="assign_permission=case" suffix="end," >
+	      <foreach collection="datas" item="item" index="index">
+	       <if test="item.assign_permission!=null">
+	        when id=#{item.id} then #{item.assign_permission}
+	       </if>
+	      </foreach>
+      </trim>
+      
+      <trim prefix="close_permission=case" suffix="end," >
+	      <foreach collection="datas" item="item" index="index">
+	       <if test="item.close_permission!=null">
+	        when id=#{item.id} then #{item.close_permission}
+	       </if>
+	      </foreach>
+      </trim>  
+      
+      <trim prefix="export_permission=case" suffix="end," >
+	      <foreach collection="datas" item="item" index="index">
+	       <if test="item.export_permission!=null">
+	        when id=#{item.id} then #{item.export_permission}
+	       </if>
+	      </foreach>
+      </trim>                      
+			
+		</trim>
+		where role_id=#{role_id}
+	</update>
+
+</mapper>

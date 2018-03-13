@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>新增</title>
+<style type="text/css">
+		.bzh{
+			background-color: #f1b9bd !important;
+		}
+		.mx{
+			margin-top: 5px;
+		}
+		.mx th{
+			color: black;
+		}
+		.select2-dropdown{
+			width: 200px !important;
+		}
+		#add_cost_table .form-control{
+			padding: 0px !important;
+			margin-top: 0px !important;
+		}
+		#add_cost_table td{
+			padding: 2px !important;
+		}
+	</style>
+</head>
+
+<body>
+       <section class="panel">
+        <div class="panel-body szmx">
+        	项目编号：<b id="item_code_" ></b>
+        	项目名称：<b id="item_name_" ></b>
+	    </div>
+   	</section>
+   	<script type="text/javascript" >
+    
+   	var szmxAdd={
+   		categoryDate:null,
+   		secondaryData:null,
+   		targetTypeData:null,
+   		init:function(){
+   			var aData = common.getWindowsData('projectSzWin');
+   			$('#item_code_').text(aData.code);
+   			$('#item_name_').text(aData.name);
+   			var html = '<form id="mxfrom_'+aData.correlation_id+'" ><a href="javascript:;" class="button button-tiny " onclick="szmxAdd.addMx(this,\''+aData.correlation_id+'\',\''+aData.ager_id+'\'); return false;" ><i class="fa fa-search"></i>新增</a>'+
+	   			'&nbsp;<a href="javascript:;" class="button button-tiny " onclick="szmxAdd.savemx(this,\''+aData.correlation_id+'\'); return false;" ><i class="fa fa-search"></i>保存</a>'+
+	   			'    <div style="width: 100%;overflow: auto;" ><table id="add_cost_table" class="mx tablehover table table-bordered dataTable" style="width:150%;">'+
+	   		    ' <tr>'+ 
+	   		    '    <th>收支类型<b style="color:red">*</b></th>'+
+	   		    '	<th>名称<b style="color:red">*</b></th>'+
+	   		    '	<th>类型<b style="color:red">*</b></th>'+
+	   		    //'	<th>合约</th>'+
+	   		    ' 	<th>明细类目<b style="color:red">*</b></th>'+
+	   		    '    <th>金额<b style="color:red">*</b></th>'+
+	   		 	'    <th>收入方式<b class="btxingh" style="color:red;display: none;">*</b></th>'+
+	   		    '    <th>收入账户<b class="btxingh" style="color:red;display: none;">*</b></th>'+
+	   		 	'    <th>收入姓名<b class="btxingh" style="color:red;display: none;">*</b></th>'+
+	   		 	'    <th>结算号<b class="btxingh" style="color:red;display: none;">*</b></th>'+
+	   		    '    <th>计划时间<b style="color:red">*</b></th>'+
+	   		    '    <th>开始时间<b style="color:red">*</b></th>'+
+	   		    '    <th>结束时间<b style="color:red">*</b></th>'+
+	   		    '    <th>备注</th>'+
+	   		    '	<th>操作</th>'+
+	   		    ' </tr></table></div></form>';
+	   		$('.szmx').append(html);
+	   		//加载其他项目类型
+	   		common.loadItem('FINANCIAL.SECONDARY_TYPE',function(data){
+	   			szmxAdd.secondaryData = data;
+	   		},true);
+	   	//加载其他项目类型
+	   		common.loadItem('FINANCIAL.TARGET_TYPE',function(data){
+	   			szmxAdd.targetTypeData = data;
+	   		},true);
+   		},
+	   	/**
+	     * 添加明细信息
+	     */
+	    addMx:function(obj,correlation_id,secondary){
+	    	var html = '<tr class="mxtr" >'+
+				    	'<td style="vertical-align: middle;"><input type="hidden" id="secondary" name="secondary" value="'+secondary+'" >'+
+					    '     <select dataType="Require" msg="请选择收支类型！" class="form-control " id="stype" name="stype" >'+
+					    '         <option value="" >请选择...</option>'+
+					    '         <option value="0" >收入</option>'+
+					    '         <option value="1" >支出</option>'+
+					    '     </select>'+
+					    '</td>'+
+					   '     	<td style="vertical-align: middle;" >'+
+						'	<input type="text" title="请输入名称：如xxxx_合约编号,方便列表查询"  dataType="Require" msg="请输入名称：如xxxx_合约编号" class="form-control" placeholder="请填写名称" id="name" name="name" >'+
+						'</td>'+
+						'<td style="vertical-align: middle;">'+
+					    '     <select dataType="Require" msg="请选择类型！" class="form-control mxtype" id="type" name="type" >'+
+					    '         <option value="" >请选择...</option>';
+		    for(var i=0;i<szmxAdd.secondaryData.length;i++){
+				html += '<option  value="' + szmxAdd.secondaryData[i].item_id + '" >' + szmxAdd.secondaryData[i].item_name + '</option>';
+			}
+				html +=	'     </select>'+
+					    '	<input type="hidden" id="correlation" name="correlation" value="'+correlation_id+'" >'+
+					    '</td>'+
+					   /* '<td style="vertical-align: middle;">'+
+					    '     <select dataType="Require" msg="请选择类型！" class="form-control" id="secondary" name="secondary" >'+
+					    '         <option value="" >请选择...</option>'+
+					    '     </select>'+
+					    '</td>'+*/
+					 	'<td style="vertical-align: middle;">'+
+					 	'	<select dataType="Require" msg="请选择类型！" class="form-control xmcategory" id="category" name="category" >'+
+					    '         <option value="" >请选择...</option>';
+	    	for(var i=0;i<project.categoryDate.length;i++){
+	    		html += '<option  value="' + project.categoryDate[i].id + '" >' + project.categoryDate[i].name + '</option>';
+	    	}
+			html += '     </select>'+
+					 	'</td>'+
+					    '<td style="vertical-align: middle;">'+
+					   ' 	<input type="text" dataType="Double" style="width: 100px;" msg="请填写明细金额！" class="form-control" placeholder="请填写明细金额" id="cost" name="cost" >'+
+					    '</td>'+
+					    '<td style="vertical-align: middle;">'+
+					    ' 	<select msg="请选择收入方式！" onchange="szmxAdd.srfs(this);" readonly class="form-control xmtarget_type" id="target_type" name="target_type" ><option value="" >请选择...</option>';
+			for(var i=0;i<szmxAdd.targetTypeData.length;i++){
+				html += '<option  value="' + szmxAdd.targetTypeData[i].item_id + '" >' + szmxAdd.targetTypeData[i].item_name + '</option>';
+			}		    
+			html += '</select></td>'+
+					    '<td style="vertical-align: middle;">'+
+					    ' 	<input type="text" style="width: 100px;" readonly class="form-control" placeholder="请填写收入账户" id="target_bank" name="target_bank" >'+
+					    '</td>'+
+					    '<td style="vertical-align: middle;">'+
+					    ' 	<input type="text" style="width: 100px;" readonly class="form-control" placeholder="请填写收入用户" id="target_user" name="target_user" >'+
+					    '</td>'+
+					    '<td style="vertical-align: middle;">'+
+					    ' 	<input type="text" style="width: 100px;" readonly class="form-control" placeholder="请填写结算号" id="settle_num" name="settle_num" >'+
+					    '</td>'+
+					    '<td style="vertical-align: middle;"><input style="width: 100px;" type="text" title="如果是退款、物业，请选择相同与计划时间相同，可以是当天时间，租金请选择租金的开始于结束时间" dataType="Require" msg="请选择计划时间！" readonly="readonly" class="form-control" placeholder="请选择计划时间" id="plat_time" name="plat_time" ></td>'+
+					    '<td style="vertical-align: middle;"><input style="width: 100px;" type="text" title="如果是退款、物业，请选择相同与计划时间相同，可以是当天时间，租金请选择租金的开始于结束时间" dataType="Require" msg="请填写开始时间" readonly="readonly" class="form-control" placeholder="请填写开始时间" id="start_time" name="start_time" ></td>'+
+					    '<td style="vertical-align: middle;"><input style="width: 100px;" type="text" title="如果是退款、物业，请选择相同与计划时间相同，可以是当天时间，租金请选择租金的开始于结束时间" dataType="Require" msg="请填写结束时间" readonly="readonly" class="form-control" placeholder="请填写结束时间"  id="end_time" name="end_time" ></textarea></td>'+
+					    '<td style="vertical-align: middle;"><textarea rows="2" class="form-control" id="remark" name="remark" ></textarea></td>'+
+					    '<td style="vertical-align: middle;"><button onclick="szmxAdd.delmx(this);" title="删除" class="button button-circle button-tiny"><i class="fa fa-times"></i></button></td>'+
+					    '</tr>';
+	    	$(obj).parent().find('#add_cost_table').append(html);
+	    	var nowTemp = new Date();
+	    	$(".mxtype").die('change');
+	    	$(".mxtype").live('change',function(){
+	    		var id = $(this).val();
+	    		/* if(id != '0'&& id != '1'){
+	    			//$(this).parent().parent().find('#secondary').select2("destroy");
+	    			//$(this).parent().parent().find('#secondary').empty().append('<option value="" >请选择...</option>');
+	    			return ;
+	    		} */
+	    		if(id == 4){
+	    			$(this).parent().parent().find('.xmcategory').find("option[value='']").attr('selected','true');
+ 	    			$(this).parent().parent().find('.xmcategory').find("option[value='7'],option[value='8'],option[value='9']").show();
+ 	    			$(this).parent().parent().find('.xmcategory').find("option[value='1'],option[value='2'],option[value='3'],option[value='4'],option[value='5'],option[value='6']").hide();
+	    		}else{
+	    			$(this).parent().parent().find('.xmcategory').find("option[value='']").attr('selected','true');
+	    			$(this).parent().parent().find('.xmcategory').find("option[value='7'],option[value='8'],option[value='9']").hide();
+	    			$(this).parent().parent().find('.xmcategory').find("option[value='1'],option[value='2'],option[value='3'],option[value='4'],option[value='5'],option[value='6']").show();
+	    		}
+	    	});
+	    	$("#stype").die('change');
+	    	$("#stype").live('change',function(){
+	    		var id = $(this).val();
+	    		if(id == 0){
+	    			$(this).parent().parent().find('#target_type').attr('readonly','readonly').find("option[value='']").attr('selected','true');
+	    			$(this).parent().parent().find('#target_bank').attr('readonly','readonly').val("");
+	    			$(this).parent().parent().find('#target_user').attr('readonly','readonly').val("");
+	    			$(this).parent().parent().find('#settle_num').attr('readonly','readonly').val("");
+	    			$('.btxingh').hide();
+	    		}else if(id == 1 && $(this).parent().parent().find('.xmcategory').val() == 5 ){
+	    			$(this).parent().parent().find('#target_type').removeAttr('readonly');
+	    			$(this).parent().parent().find('#target_bank').removeAttr('readonly');
+	    			$(this).parent().parent().find('#target_user').removeAttr('readonly');
+	    			$(this).parent().parent().find('#settle_num').removeAttr('readonly');
+	    			$('.btxingh').show();
+	    		}
+	    	});
+	    	$(".xmcategory").die('change');
+	    	$(".xmcategory").live('change',function(){
+	    		var id = $(this).val();
+	    		//找到上级对应的收支类型
+	    		var stype = $(this).parent().parent().find('#stype').val();
+	    		if(id == 5){//押金需要添加收入信息
+	    			if(stype == '0'){
+		    			return;
+		    		}
+	    			$(this).parent().parent().find('#target_type').removeAttr('readonly');
+	    			$(this).parent().parent().find('#target_bank').removeAttr('readonly');
+	    			$(this).parent().parent().find('#target_user').removeAttr('readonly');
+	    			$(this).parent().parent().find('#settle_num').removeAttr('readonly');
+	    			$('.btxingh').show();
+	    		}else{
+	    			$(this).parent().parent().find('#target_type').attr('readonly','readonly').find("option[value='']").attr('selected','true');
+	    			$(this).parent().parent().find('#target_bank').attr('readonly','readonly').val("");
+	    			$(this).parent().parent().find('#target_user').attr('readonly','readonly').val("");
+	    			$(this).parent().parent().find('#settle_num').attr('readonly','readonly').val("");
+	    			$('.btxingh').hide();
+	    		}
+	    	});
+	    	$("input[id='plat_time'],input[id='start_time'],input[id='end_time']").daterangepicker({
+				startDate : nowTemp.getFullYear() + '-'+ (nowTemp.getMonth() + 1) + '-02',
+				timePicker12Hour : false,
+				singleDatePicker: true,
+				format : 'YYYY-MM-DD',
+				daterangepicker:function(){
+					alert(2);
+				}
+			}, function(start, end, label) {
+				//alert(2);
+			});
+	    },
+	    srfs:function(obj){
+	    	if($(obj).attr('readonly') == 'readonly'){
+	    		if($(obj).val() != ''){
+	    			$(obj).find("option[value='']").attr('selected','selected');
+	    		}
+	    	}
+	    },
+	    /**
+	     * 保存明细信息
+	     * @param obj
+	     * @param correlation_id
+	     */
+	    savemx:function(obj,correlation_id){
+	    	if (!Validator.Validate('mxfrom_'+correlation_id)) {
+	            return;
+	        }
+	    	if($('#mxfrom_'+correlation_id+' .mxtr').size() == 0){
+	    		common.alert('请至少填写一项在进行保存。');
+	    		return;
+	    	}
+	    	
+	    	var truth = false;
+	    	$('.xmcategory').each(function(){
+	    		var stype = $(this).parent().parent().find('#stype').val();
+	    		if($(this).val() == '5' && stype == 1){//押金类型必须需要输入收入方式账户姓名结算号
+					var o = $(this).parent().parent();
+	    			if(o.find('#target_type').val() == ''||o.find('#target_bank').val() == ''||o.find('#target_user').val() == ''||o.find('#settle_num').val() == ''){
+	    				truth = true;
+	    			}
+	    		}
+	    	});
+	    	
+	    	if(truth){
+	    		common.alert('明细类目为押金并且收支类型为收入类型必须需要输入收入方式、收入账户、收入姓名与结算号。');
+	    		return false;
+	    	}
+	    	
+	    	var truth = false;
+	    	//校验开始时间是否小于结束时间
+	    	$("input[id='start_time']").each(function(i,n){
+	    		var start_time = $(this).val();
+	    		var end_time = $(this).parent().parent().find("input[id='end_time']").val();
+	    		if(szmxAdd.toDate(start_time)>szmxAdd.toDate(end_time)){
+	    			$(this).focus();
+	    			common.alert('开始时间不能大于结束时间。');
+	    			truth = true;
+		    		return false;
+	    		}
+	    	});
+	    	if(truth){
+	    		return false;
+	    	}
+	    	common.load.load('保存中');
+	    	common.log($('#mxfrom_'+correlation_id).serialize());
+	    	common.ajax({
+	            url: common.root + '/financial/mxSave.do',
+	            data: $('#mxfrom_'+correlation_id).serialize(),
+	            dataType: 'json',
+	            loadfun: function(isloadsucc, data){
+	            	if(isloadsucc){
+	            		common.load.hide();
+	            		if(data.state == 1){  
+	            			common.alert({
+	            				msg:"操作成功",
+	            				fun:function(){
+	            					$('#mxfrom_'+correlation_id+' .mxtr').remove();
+	            				}
+	            			});
+	            		}else if(data.state == -2){
+	            			common.alert("您登录已失效，请重新登陆");
+	            		}else{
+	            			common.alert(common.msg.error);
+	            		}
+	            	}else{
+	            		common.alert(common.msg.error);
+	            	}
+	            }
+	        });
+	    },
+	    delmx:function(obj){
+	    	$(obj).parents('.mxtr').remove();
+	    },
+	    toDate:function(str){
+	    	var sd=str.split("-");
+	        return new Date(sd[0],sd[1],sd[2]);
+	    }
+   	}
+   	$(function(){
+   		szmxAdd.init();
+   	})
+   	</script>
+</body>
+</html>

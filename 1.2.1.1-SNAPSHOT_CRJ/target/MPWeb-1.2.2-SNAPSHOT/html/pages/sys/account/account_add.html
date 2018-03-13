@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<title>新增</title>
+</head>
+<body>
+	<section class="panel">
+		<ul id="myTab" class="nav nav-tabs">
+			<li class="active"><a href="#addIndex" data-toggle="tab">基本信息</a>
+		</ul>
+		<form id="form2" class="form-horizontal adminex-form " role="form">
+			<div id="myTabContent" class="tab-content">
+				<!-- 基本信息-->
+				<div class="tab-pane fade in active" id="addIndex">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"></label>
+						<div class="col-sm-6"></div>
+						<div class="col-sm-4"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>姓名：</label>
+						<div class="col-sm-3">
+							<input id="aname" maxlength="40" type="text" name="aname"
+								dataType="Require" class="form-control" msg= 请输入姓名   />
+						</div>
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>手机号码：</label>
+						<div class="col-sm-3">
+							<input id="mobile"  type="text"  dataType="Number"  name="mobile" class="form-control" placeholder="手机号码"  msg= 请输入正确手机号码>
+						</div>
+					</div>
+					<div class="form-group">
+						<!-- <label class="col-sm-2  control-label"><b style="color: red">*</b>注册日期：</label>
+						<div class="col-sm-3">
+							<input type="text" name="create_time" readonly="readonly"
+								id="groupDate" class="form-control"
+								placeholder="2013-01-02 " />
+						   </div> -->
+						   <label class="col-sm-2  control-label"><b style="color: red">*</b>组织：</label>
+						<div class="col-sm-3">
+							<select class="form-control m-bot15" multiple="multiple" id="Org"  name="Org" >
+								<option value="">请选择...</option>
+							</select>
+						   </div>
+						   <label class="col-sm-2  control-label"><b style="color: red">*</b>角色：</label>
+						   <div class="col-sm-3">
+							<select class="form-control m-bot15"  multiple="multiple" id="Role"  name="Role" >
+								<option value="">请选择...</option>
+							</select>
+						</div>
+							<div class="col-sm-7"></div>
+					</div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2  control-label"><b style="color: red">*</b>归属团队：</label>
+						<div class="col-sm-3">
+							<select class="form-control m-bot15" multiple="multiple" id="team"  name="team" >
+								<option value="">请选择...</option>
+							</select>
+						   </div>
+                                        </div>
+					<!-- <div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>组织：</label>
+						<div class="col-sm-3">
+							<select class="form-control m-bot15" multiple="multiple" id="Org"  name="Org" >
+								<option value="">请选择...</option>
+							</select>
+						   </div>
+							<div class="col-sm-7"></div>
+					</div> -->
+					<div class="form-group">
+						<label class="col-sm-2  control-label">说明：</label>
+						<div class="col-sm-8">
+							<textarea rows="3" cols="50" id="desc_text"  type="text"  dataType="desc_text"  name="desc_text" dataType="Require"  class="form-control" placeholder="说明"  msg= 请输入正确的说明></textarea>
+						</div>
+							<div class="col-sm-2"></div>
+					</div>
+			<div class="text-center">
+				<button class="btn btn-info" id="user_add_bnt" type="button">保存</button>
+			</div>
+		</form>
+	</section>
+</body>
+<script type="text/javascript" src="/html/adminX/js/dropzone/dropzone.js"></script>
+<script type="text/javascript" src="/html/js/sys/account/account_add.js"></script>
+</html>

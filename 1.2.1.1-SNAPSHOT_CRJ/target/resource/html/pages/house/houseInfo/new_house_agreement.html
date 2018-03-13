@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<link rel="shortcut icon" href="#" type="image/png">
+<link rel="stylesheet" href="/html/css/house/house_add.min.css">
+<title>签约房源</title>
+<style type="text/css">
+	.rent_width_3{
+		width: 30%;
+	}
+	.rent_width_4{
+		width: 24%;
+	}
+	.rent_width_5{
+		width: 18%;
+	}
+	.rent_width_6{
+		width: 15%;
+	}
+	.rent_width_7{
+		width: 13%;
+	}
+	.rent_width_8{
+		width: 12%;
+	}
+	.rent_width_9{
+		width: 10%;
+	}
+	.rent_width_10{
+		width: 10%;
+	}
+	.a_no_line:hover{text-decoration:none;cursor: pointer;}
+	.closeDialog{position: fixed; top: 18px;right: 20px; cursor: pointer;}
+	.div_room_pz_80{
+		width: 80%;
+	}
+	.div_room_pz_0{
+		 
+	}
+	.div_room_pz_100{
+		 width: 100%;
+	}
+	.paddingB10
+	{
+		padding-bottom: 10px;
+	}
+	.modal-dialog .form-control{
+		margin-top: 0px !important;
+	}
+</style>
+</head>
+<body>
+	<section class="panel">
+		<ul id="myTab" class="nav nav-tabs newUl">
+			<li><a href="#houseBaseInfo" data-toggle="tab">房源基本信息</a></li>
+			<li class="active"><a href="#signBaseInfo" data-toggle="tab">合约基本信息</a></li>
+			<li><a href="#contractInfo" data-toggle="tab">合同相关</a></li> 
+			<li><a href="#chief" id="chiefLi" data-toggle="tab">房屋家具家电及厨卫设施</a></li> 
+			<li><a href="#attachmentInfo" data-toggle="tab">附件</a></li> 
+		</ul>
+		<div class="panel-body">
+			<div class="col-md-12">
+				<form class="form-horizontal adminex-form" id="form1">
+				<input value="" type="hidden" id="roomCnt" name="roomCnt" />
+					<div id="myTabContent" class="tab-content">
+					<div id="houseBaseInfo" class="row tab-pane fade">
+							<div class="row">
+							<div class="form-group" >
+								<label class="col-md-2 control-label">所属小区：</label>
+								<div class="col-md-3">
+									<input type="text" dataType="Require" msg="请填写所属小区！"
+										readonly="readonly" class="form-control changeInput"
+										placeholder="请填写所属小区" id="groupName" name="groupName">
+									
+								</div>
+								<label class="col-md-2 control-label">房源名称：</label>
+								<div class="col-md-3">
+									<input type="text" dataType="Require" msg="请填写房源名称！"
+										class="form-control changeInput" placeholder="请填写房源名称"
+										id="house_name" name="house_name">
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							
+							<div class="form-group" >
+								<label class="col-md-2 control-label">
+									 装修类型：
+								</label>
+								<div class="col-md-3">
+									<select dataType="Require" msg="请选择装修类型！" class="form-control decorate"
+										id="decorate" name="decorate">
+									</select>
+								</div>
+								<label class="col-md-2 control-label">
+									房型：
+								</label>
+								<div class="col-md-3">
+									 <input id="houseType" class="form-control changeInput" />
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" >
+								<label class="col-md-2 control-label">
+									房屋面积(㎡)：
+								</label>
+								<div class="col-md-3">
+									<input type="text" dataType="Double" msg="请填写数字格式的房屋面积！"
+										class="form-control changeInput area" placeholder="120 "
+										maxlength="6" id="area" name="area">
+								</div>
+
+								<label class="col-md-2 control-label">
+									 楼层：
+								</label>
+
+								<div class="col-md-3">
+									<input type="text" dataType="Require" msg="请填写楼层！"
+										class="form-control changeInput" placeholder="7/13"
+										maxlength="6" id="floor" name="floor">
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" style="display: none;">
+								<label class="col-md-2 control-label">
+											 选择房源坐标：
+								</label>
+								<div class="col-md-8">
+									<div id="groupMap" title="请选择房源信息"
+										style="width: 95%;height: 300px;overflow: hidden;margin:0;font-family:'微软雅黑';"></div>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" >
+								<label class="col-md-2 control-label">
+										 房源坐标：
+								</label>
+								<div class="col-md-3">
+									<input id="groupCoordinate" type="text" class="form-control changeInput"
+										readonly />
+								</div>
+								<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 房源地址：
+								</label>
+								<div class="col-md-3">
+									<input id="groupAddress" type="text" class="form-control changeInput"
+										placeholder="请填写房源地址" maxlength='50'  
+										 />
+								</div>
+								<div class="col-md-1"></div>
+								</div>
+							</div>
+					</div>
+					<div class="row tab-pane fade in active" id="signBaseInfo">
+						<div class="row">
+						<div class="form-group" >
+								<label class="col-md-2 control-label">房源名称：</label>
+						<div class="col-md-3">
+							<span id="houseName" style="border: 0" class="form-control"></span>
+							<input type="hidden" style="display: none;" value="" name="address" id="address" />
+							<input type="hidden" style="display: none;" value="" name="houseId" id="houseId" />
+							<input type="hidden" style="display: none;" value="" name="user_id" id="user_id" />
+							<input type="hidden" style="display: none;" value="" name="user_mobile" id="user_mobile" />
+							<input type="hidden" style="display: none;" value="" name="houseCode" id="houseCode" />
+							<input type="hidden" style="display: none;" value="" name="areaid" id="areaid" />
+							<input type="hidden" style="display: none;" value="" name="agreementId" id="agreementId" />
+							<input type="hidden" style="display: none;" value="" name="spec2" id="spec2" class="spec2" />
+							<input type="hidden" style="display: none;" value="" name="spec" id="spec" class="spec" />
+							<input type="hidden" style="display: none;" value="" name="purpose" id="purpose" />
+							<input type="hidden" style="display: none;" value="" name="area" id="area" class="area" />
+							<input type="hidden" style="display: none;" value="" name="decorate" id="decorate" class="decorate" />
+							<input type="hidden" style="display: none;" value="" name="keys_count" id="keys_count" />
+							<input type="hidden" style="display: none;" value="" name="oldMatched" id="oldMatched" />
+						</div>
+						<label class="col-md-2 control-label">业主信息：</label>
+						<div class="col-md-3">
+							<span id="yzInfo" style="border: 0" class="form-control"></span>
+						</div>
+						<div class="col-md-1"></div>
+						</div>
+						<div class="form-group" >
+								<label class="col-md-2 control-label" style="display: none;"><b style="color: red">*</b>合约编号：</label>
+								<div class="col-md-3" style="display: none;">
+									<input type="text"  name="contractId" id="contractId"  placeholder="请输入合约编号" value="" class="form-control inputChange2"/>
+								</div>
+								<label class="col-md-2 control-label"><b style="color: red">*</b>合约名称：</label>
+								<div class="col-md-3">
+									<input type="text" name="contractName" dataType="Custom" regexp="^([\u4e00-\u9fa5A-Za-z0-9_-]{1,})$" msg="请输入合法的合约名称！" id="contractName" placeholder="请输入合约名称" value="" class="form-control inputChange2" maxlength="20"/>
+								</div>
+								<label class="col-md-2 control-label"><b style="color: red">*</b>身份证：</label>
+								<div class="col-md-3">
+									<input type="text"  name="certificateno" maxlength="18" dataType="IdCard" msg="请输入合法的产权人身份证号码！"  id="certificateno"  placeholder="请输入身份证号码" value="" class="form-control inputChange2" disabled/>
+								</div>
+								<div class="col-md-1"></div>
+						</div>
+						<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>签约管家：</label>
+								<div class="col-md-3">
+									<select id="contractManage" dataType="Require" msg="请选择签约管家！"  class="form-control"  name="contractManage" disabled></select>
+								</div>
+								<label class="col-md-2 control-label"><b style="color: red">*</b>是否可隔：</label>
+								<div class="col-md-3">
+									<select name="is_kg" id="is_kg" dataType="Require" msg="请选择是否可以隔离！"  class="form-control" disabled>
+										<option value="0">否</option>
+										<option value="1">是</option>
+									</select>
+								</div>
+								<div class="col-md-1"></div>
+						</div>
+						<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>门禁钥匙：</label>
+								<div class="col-md-2">
+									<input type="number" name="doorkey"  dataType="Integer2" msg="请输入门禁钥匙！" placeholder="请输入门禁钥匙"  id="doorkey" value="" class="form-control inputChange2"/>
+								</div>
+								<label class="col-md-1 control-label"><b style="color: red">*</b>楼层：</label>
+								<div class="col-md-2">
+									<input type="number" name="fooler"  dataType="Integer2" msg="请输入数字格式的楼层！" placeholder="请输入楼层"  id="fooler" value="" class="form-control inputChange2" disabled/> 
+								</div>
+								<label class="col-md-1 control-label"><b style="color: red">*</b>入户：</label>
+								<div class="col-md-2">
+									<input type="number" name="personCount"  dataType="Integer2" msg="请输入入户！" placeholder="请输入入户"  id="personCount" value="" class="form-control inputChange2" disabled/>
+								</div>
+								<label class="col-md-2 control-label"></label>
+						</div>
+						<div class="form-group" id="room_pz_div">
+							<label class="col-md-2 control-label">房间配置：</label>
+							<div class="col-md-8" id="div_room_pz">
+							</div>
+							<div class="col-md-1"></div>
+						</div>
+						<div class="form-group" >
+							<label class="col-md-2 control-label"><b style="color: red">*</b>付款方式：</label>
+							<div class="col-md-2">
+								<select name="payType" class="form-control" id="payType" disabled></select>
+							</div> 
+							<label class="col-md-1 control-label"><b style="color: red">*</b>免租方式：</label>
+							<div class="col-md-2">
+								<select name="freeType" class="form-control" id="freeType" disabled></select>
+							</div>
+							<label class="col-md-1 control-label"><b style="color: red">*</b>免租期(天)：</label>
+							<div class="col-md-2">
+								<input type="text" name="fee_date"  dataType="Integer2" msg="请输入免租期！" placeholder="请输入免租期"  id="fee_date" value="0" class="form-control inputChange2" disabled/>
+							</div>
+							<div class="col-md-1"></div>
+						</div>
+						<div class="form-group" >
+							<label class="col-md-2 control-label"><b style="color: red">*</b>生效时间：</label>
+							<div class="col-md-3">
+								<input type="text" readonly="readonly" dataType="Require" msg="请选择生效时间！"  placeholder="请选择生效时间"  class="form-control inputChange2" name="effectDate" id="effectDate" disabled/>
+							</div>
+							<label class="col-md-2 control-label"><b style="color: red">*</b>租约时长：</label>
+							<div class="col-md-3">
+								<select name="leaseTime"  class="form-control" dataType="Require" msg="请选择租约时长！"  id="leaseTime" disabled></select>
+							</div>
+							<div class="col-md-1"></div>
+						</div>
+						<div class="form-group" >
+							<label class="col-md-2 control-label"><b style="color: red">*</b>每月租金：</label>
+							<div class="col-md-8" id="div_rent">
+								<input type="number" placeholder="第1年房租" dataType="Integer2" msg="请输入第1年房租！" maxlength="10"  class="form-control rent_width_3 inputChange2"  name="rentMonth" id="rentOne" />&nbsp;&nbsp;
+								<input type="number" placeholder="第2年房租" dataType="Integer2" msg="请输入第2年房租！" maxlength="10" class="form-control rent_width_3 inputChange2"  name="rentMonth" id="rentTwo" />&nbsp;&nbsp;
+								<input type="number" placeholder="第3年房租" dataType="Integer2" msg="请输入第3年房租！" maxlength="10" class="form-control rent_width_3 inputChange2"  name="rentMonth" id="rentThree"/>
+							</div>
+							<div class="col-md-1"></div>
+						</div>
+						<div class="form-group" >
+							<label class="col-md-2 control-label">合约描述：</label>
+                                                        <div class="col-md-8"style="word-wrap: break-word;" >
+								<textarea rows="6" class="form-control" id="descInfo" placeholder="请输入0-200字符的合约描述" name="descInfo" maxlength="200"></textarea>
+							</div>
+							<div class="col-md-1"></div>
+						</div>
+						</div>
+					</div>
+					<div id="contractInfo" class="row tab-pane fade">
+						<div class="row">
+							<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>产权证明文件：</label>
+								<div class="col-md-3">
+									<select id="propertyFile" name="propertyFile" class="form-control">
+										
+									</select>
+								</div>
+								<label class="col-md-2 control-label"><b style="color: red">*</b>抵押情况：</label>
+								<div class="col-md-3">
+									<select id="mortgage" name="mortgage" class="form-control">
+										<option value="0">否</option>
+										<option value="1">是</option>
+									</select>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>产权证明文件编号：</label>
+								<div class="col-md-2">
+									<input style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;" type="text" name="propertyCode"  dataType="Require" msg="请输入产权证明文件编号！" placeholder="请输入产权证明文件编号"  id="propertyCode" value="" class="form-control inputChange2"/>
+								</div>
+								<label class="col-md-1 control-label"><b style="color: red">*</b>产权人：</label>
+								<div class="col-md-2">
+									<input type="text" name="propertMan" dataType="Require" msg="请输入产权人！" placeholder="请输入产权人"  id="propertMan" value="" class="form-control inputChange2" maxlength="20"/> 
+								</div>
+								<label class="col-md-1 control-label">共有人：</label>
+								<div class="col-md-2">
+									<input type="text" name="co_owner"   placeholder="请输入共有权人"  id="co_owner" value="" class="form-control inputChange2"/>
+								</div>
+								<label class="col-md-2 control-label"></label>
+						   </div>
+						   
+						  <div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>委托人号码：</label>
+								<div class="col-md-3">
+									<input type="text" msg="请填写11位数字格式租客号码" class="form-control inputChange2" placeholder="请输入委托人号码"
+											dataType="Mobile"  maxlength="11" value="" id="wtmobile" name="wtmobile" />
+									<input type="hidden" value="" id="wtUser_id" name="wtUser_id" />
+								</div>
+								<label class="col-md-2 control-label"><b style="color: red">*</b>委托人住址：</label>
+								<div class="col-md-3">
+									 <input style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;" type="text" msg="请填写委托人地址" class="form-control inputChange2"  placeholder="请输入委托人住址"
+											dataType="Require" value="" id="wtAddress" name="wtAddress" maxlength="30"/>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>身份证：</label>
+								<div class="col-md-2">
+									<input type="text" name="wtIDCard"  maxlength="18" dataType="IdCard" msg="请输入委托方身份证！" msg="请输入委托方身份证！" placeholder="请输入委托方身份证"  id="wtIDCard" value="" class="form-control inputChange2"/> 
+								</div>
+								<label class="col-md-1 control-label"><b style="color: red">*</b>姓名：</label>
+								<div class="col-md-2">
+									<input type="text" name="wtname"  dataType="Require" msg="请输入委托方姓名！" placeholder="请输入委托方姓名"  id="wtname" value="" class="form-control inputChange2" maxlength="20"/>
+								</div>
+								<label class="col-md-1 control-label"><b style="color: red">*</b>邮件：</label>
+								<div class="col-md-2">
+									<input type="text" name="wtemail"  dataType="Email" msg="请输入委托方邮件！"   placeholder="请输入委托方邮件"  id="wtemail" value="" class="form-control inputChange2"/>
+								</div>
+								<label class="col-md-2 control-label"></label>
+						   </div>
+						  <div class="form-group" >
+								<label class="col-md-2 control-label">代理人号码：</label>
+								<div class="col-md-3">
+									<input type="text" msg="请填写11位数字格式代理人号码" class="form-control inputChange2" placeholder="请输入委托人号码"
+											  maxlength="11" value="" id="dlmobile" name="dlmobile" />
+									<input type="hidden" value="" id="dlUser_id" name="dlUser_id" />
+								</div>
+								<label class="col-md-2 control-label">代理人住址：</label>
+								<div class="col-md-3">
+									 <input style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;" type="text" class="form-control inputChange2"  placeholder="请输入代理人住址"
+											  value="" id="dlAddress" name="dlAddress" maxlength="30"/>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" >
+								<label class="col-md-2 control-label">身份证：</label>
+								<div class="col-md-2">
+									<input type="text" name="dlIDCard"  maxlength="18" msg="请输入代理人身份证！"   placeholder="请输入代理人身份证"  id="dlIDCard" value="" class="form-control inputChange2"/> 
+								</div>
+								<label class="col-md-1 control-label">姓名：</label>
+								<div class="col-md-2">
+									<input type="text" name="dlname" msg="请输入代理人姓名！" placeholder="请输入代理人姓名"  id="dlname" value="" class="form-control inputChange2" maxlength="20"/>
+								</div>
+								<label class="col-md-1 control-label">邮件：</label>
+								<div class="col-md-2">
+									<input type="text" name="dlemail" re msg="请输入代理方邮件！" placeholder="请输入代理方邮件"  id="dlemail" value="" class="form-control inputChange2"/>
+								</div>
+								<label class="col-md-2 control-label"></label>
+						   </div>
+						   
+							<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>业主卡号：</label>
+								<div class="col-md-3">
+									<input type="number" name="cardText" maxlength="20" dataType="Integer2" msg="请输入业主卡号！" placeholder="请输入业主卡号"  id="cardText" value="" class="form-control inputChange2"/>
+								</div>
+								<label class="col-md-2 control-label"><b style="color: red">*</b>开卡人姓名：</label>
+								<div class="col-md-3">
+									<input type="text" name="cardPressonName"  dataType="Require" msg="请输入开卡人姓名！" placeholder="请输入开卡人姓名"  id="cardPressonName" value="" class="form-control inputChange2" maxlength="20"/>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>开户银行：</label>
+								<div class="col-md-8">
+									<input readonly="readonly"  dataType="Require" msg="请选择开户银行！"  name="carBank" id="carBank" class="form-control inputChange2" />
+									<input name="bankId" id="bankId" type="hidden">
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>电卡帐号：</label>
+								<div class="col-md-3">
+									<input type="text" name="cardelectric"  dataType="Require" msg="请输入电卡帐号！" placeholder="请输入电卡帐号"  id="cardelectric" value="" class="form-control inputChange2" maxlength="20"/>
+								</div>
+								<label class="col-md-2 control-label"><b style="color: red">*</b>电表总值：</label>
+								<div class="col-md-3">
+									<input type="number" name="eMeter"  dataType="Double" msg="请输入电表总值！" placeholder="请输入电表总值"  id="eMeter" value="" class="form-control inputChange2"/>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							
+							<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>电表峰值：</label>
+								<div class="col-md-3">
+									<input type="number" name="eMeterH"  dataType="Double" msg="请输入电表峰值！" placeholder="请输入电表峰值"  id="eMeterH" value="" class="form-control inputChange2"/>
+								</div>
+								<label class="col-md-2 control-label"><b style="color: red">*</b>电表谷值：</label>
+								<div class="col-md-3">
+									<input type="number" name="eMeterL"  dataType="Double" msg="请输入电表谷值！" placeholder="请输入电表谷值"  id="eMeterL" value="" class="form-control inputChange2"/>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" >
+								<label class="col-md-2 control-label"><b style="color: red">*</b>水卡帐号：</label>
+								<div class="col-md-3">
+									<input type="text" name="cardWarter"  dataType="Require" msg="请输入水卡帐号！" placeholder="请输入水卡帐号"  id="cardWarter" value="" class="form-control inputChange2" maxlength="20"/>
+								</div>
+								<label class="col-md-2 control-label"><b style="color: red">*</b>水表读数：</label>
+								<div class="col-md-3">
+									<input type="number" name="warterDegrees"  dataType="Double" msg="请输入水表读数！" placeholder="请输入水表读数"  id="warterDegrees" value="" class="form-control inputChange2"/>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+							<div class="form-group" >
+								<label class="col-md-2 control-label">燃气帐号：</label>
+								<div class="col-md-3">
+									<input type="text" name="cardgas"  placeholder="请输入燃气帐号"  id="cardgas" value="" class="form-control inputChange2" maxlength="20"/>
+								</div>
+								<label class="col-md-2 control-label">燃气读数：</label>
+								<div class="col-md-3">
+									<input type="number" name="gasDegrees" placeholder="请输入燃气读数"  id="gasDegrees" value="" class="form-control inputChange2"/>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+						 </div>
+						 </div>
+						<div id="chief" class="row tab-pane fade">
+							厨房卫生间
+						</div>
+						<div id="attachmentInfo" class="row tab-pane fade">
+							<div class="row">
+								<div class="form-group">
+									<label class="col-md-2 control-label"><b style="color: red">*</b> 上传房产证附件：</label>
+									<div class="col-md-8 ">
+										<div class="dropzone" id="myAwesomeDropzone"></div>
+										<div class="row"></div>
+									</div>
+									<input type="hidden"   name="picPath" id="picPath" />
+								</div>
+								<div class="col-md-1"></div>
+						  	</div>
+							<div class="row">
+								<div class="form-group">
+									<label class="col-md-2 control-label"><b style="color: red">*</b> 上传产权人附件：</label>
+									<div class="col-md-8 ">
+										<div class="dropzone" id="propertyAttachment"></div>
+										<div class="row"></div>
+									</div>
+									<input type="hidden"   name="propertyPath" id="propertyPath" />
+								</div>
+								<div class="col-md-1"></div>
+						  	</div>
+							<div class="row">
+								<div class="form-group">
+									<label class="col-md-2 control-label"> 上传代理人附件：</label>
+									<div class="col-md-8 ">
+										<div class="dropzone" id="agentAttachment"></div>
+										<div class="row"></div>
+									</div>
+									<input type="hidden"   name="agentPath" id="agentPath" />
+								</div>
+								<div class="col-md-1"></div>
+						  	</div>
+						</div>
+						<div class="text-center">
+							<br/>
+							<button class="btn btn-info" id="house_sign_bnt" type="button">确定提交</button>
+							<br/>
+						</div>
+				</form>
+			</div>
+		</div>
+	</section>
+	
+	<!--设施选择  -->
+	<div class="modal fade" id="sbModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" style="width: 600px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">原始配套</h4>
+					<span class="closeDialog">关闭</span>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<div class="row" style="text-align: right;">
+							<div class="col-sm-2"></div>
+							<div class="col-sm-10">
+								<form class="form-inline">
+									<div class="form-group">
+										<div class="btn-group">
+											<select id="mcate_select" class="form-control"><option value="-1">请选择</option></select>
+										</div>
+									</div>
+									<div class="form-group">
+										<input type="email" class="form-control"
+											id="exampleInputEmail2">
+									</div>
+									<button type="button" id="serchmcate"class="btn btn-default"> 搜索</button>
+								</form>
+							</div>
+						</div>
+						<div class="row" style="height:320px;overflow:scroll">
+							<div class="col-sm-12">
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th>配套设施</th>
+											<th>配套数据</th>
+										</tr>
+									</thead>
+									<tbody id="tbody_mcate">
+									 
+									</tbody>
+								</table>
+							</div>
+							<div class="col-sm-12">
+								<ul id="pageul" data-am-widget="pagination"
+									class="am-pagination am-pagination-default">
+								</ul>
+							</div>
+							<div class="am-cf">
+								<div style="float: left;">
+									<a id="totalCount" style="top:20px;">共 0 条记录</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary"
+						onClick="house_sign.clearMcatePage()">清空选择</button>
+					<button type="button" class="btn btn-primary"
+						onClick="house_sign.setMcatePage()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<form id="form3" action="" method="post" target="_blank">
+		<input type="hidden" name="content" id="content" value="" /> 
+		<input type="hidden" name="signed" id="signed" value="" />
+		<input type="hidden" name="key" id="key" value="" /> 
+		<input type="hidden" name="apiid" id="apiid" value="" />
+	</form>
+</body>
+<script type="text/javascript" src="/html/js/house/houseInfo/Map.js"></script>
+<script type="text/javascript" src="/html/js/house/houseInfo/new_house_agreement.js"></script>
+</html>

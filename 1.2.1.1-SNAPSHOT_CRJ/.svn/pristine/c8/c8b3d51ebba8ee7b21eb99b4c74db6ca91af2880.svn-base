@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>收房管理</title>
+<style type="text/css">
+	.paddingClass
+	{
+		padding: 1px 10px !important;
+	}
+	.ulClass
+	{
+		min-width: 10px;
+	}
+</style>
+</head>
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+					<form class="form-inline" role="form">
+						<div class="form-group">
+							<label for="exampleInputEmail2">区域:</label> <select
+								class="form-control" id="areaid" name="areaid">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">商圈:</label> 
+							<select id="trading" class="form-control">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">状态:</label> <select
+								class="form-control" id="status" name="status">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">收房管家:</label> <select
+								class="form-control" id="accountid" name="accountid">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group" style="cursor: pointer;">
+							 <input type="checkbox" name="isSelf" id="isSelf" value="1" /><label id="myDiv">本人网格</label> 
+						</div>
+						<span class="form-group tools"> <a href="javascript:;"
+							class="fa fa-search yc_seach" table="agreementList_table" id="serach">查询</a> </span>
+						&nbsp;&nbsp;
+					</form>
+					<br>
+					<form class="form-inline" role="form" style="">
+						<div class="form-group">
+							<label for="exampleInputEmail2">创建时间:</label> <input type="text"
+								style="width: 275px" name="createtime" readonly="readonly"
+								id="createtime" class="form-control"
+								placeholder="2016-01-01~2016-12-31" class="span4" />
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">关键字:</label> <input type="text"
+								class="form-control" id="keyword" name="keyword"
+								placeholder="模糊查询名称，编码，地址，业主姓名">
+						</div>
+					</form>
+				</div>
+			</section>
+			<div class="adv-table">
+				<table id="agreementList_table"
+					class="display tablehover table table-bordered dataTable"
+					cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+							<th>合同编码</th>
+							<th>合同名称</th>
+							<th>区域</th>
+							<th>业主</th>
+							<th>合约日期</th>
+							<th>状态</th>
+							<th>总价</th>
+							<th>管家</th>
+							<th></th> 
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+</body> 
+<script type="text/javascript" src="/html/js/house/agreement/agreementList.js"></script>
+</html>

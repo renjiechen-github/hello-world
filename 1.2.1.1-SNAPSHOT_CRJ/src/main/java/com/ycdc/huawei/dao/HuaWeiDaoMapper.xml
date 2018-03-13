@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ycdc.huawei.dao.IHuaWeiDao">
+	<!-- 绑定虚拟号码 -->
+	<insert id="bindVirtual" parameterType="com.ycdc.huawei.model.entity.VirBindEntity">
+		insert into yc_virtual_bind(virtualNumber,aParty,bParty,isRecord,bindDirection,cityCode,createTime,endTime,subscriptionId,type) 
+		values (#{virtualNumber},#{aParty},#{bParty},#{isRecord},#{bindDirection},#{cityCode},#{createTime},#{endTime},#{subscriptionId},#{type});
+		insert into yc_virtual_bind(virtualNumber,aParty,bParty,isRecord,bindDirection,cityCode,createTime,endTime,subscriptionId,operId,type) 
+		values (#{virtualNumber},#{aParty},#{bParty},#{isRecord},#{bindDirection},#{cityCode},#{createTime},#{endTime},#{subscriptionId},#{operId},#{type});
+	</insert>
+	<!-- 获取绑定关系id -->
+	<select id="getSubscriptionId" resultType="String">
+		select subscriptionId 
+		from yc_virtual_bind 
+		where virtualNumber=#{virtualNumber, jdbcType=VARCHAR} 
+		and aParty=#{aParty, jdbcType=VARCHAR} 
+		and bParty=#{bParty, jdbcType=VARCHAR}
+	</select>
+	<!-- 解绑虚拟号码 -->
+	<insert id="unbindVirtual">
+		insert into yc_virtual_bindrecord(virtualNumber,aParty,bParty,isRecord,bindDirection,cityCode,createTime,endTime,subscriptionId,operId,type) 
+		(SELECT vb2.virtualNumber,vb2.aParty,vb2.bParty,vb2.isRecord,bindDirection,cityCode, #{createTime, jdbcType=VARCHAR} as createTime,endTime,subscriptionId,#{operId, jdbcType=VARCHAR} as operId, 0 as type 
+		from yc_virtual_bindrecord vb2 
+		where subscriptionId=#{subscriptionId, jdbcType=VARCHAR} 
+		and type<![CDATA[<>]]>0
+		order by vb2.id desc 
+		limit 0,1);
+	</insert>
+	<delete id="deleteBindVirtual" parameterType="String">
+		delete from yc_virtual_bind where subscriptionId=#{subscriptionId};
+	</delete>
+	<!-- 插入通话记录 -->
+	<insert id="createCalledEvent" parameterType="com.ycdc.huawei.model.entity.CallEventInfo">
+		insert into yc_virtual_callEventInfo(callIdentifier,notificationMode,calling,called,virtualNumber,event,timeStamp,isRecord,rawCalling,rawCallingNOA,rawCalled,rawCalledNOA,ReleaseReason,UniqueId,BindID,StartTime,Duration) 
+		values(#{callIdentifier, jdbcType=VARCHAR}, #{notificationMode, jdbcType=VARCHAR},#{calling, jdbcType=VARCHAR},#{called, jdbcType=VARCHAR},#{virtualNumber, jdbcType=VARCHAR},#{event, jdbcType=VARCHAR},#{timeStamp, jdbcType=VARCHAR},#{isRecord, jdbcType=VARCHAR},#{extInfo.rawCalling, jdbcType=VARCHAR},#{extInfo.rawCallingNOA, jdbcType=VARCHAR},#{extInfo.rawCalled, jdbcType=VARCHAR},#{extInfo.rawCalledNOA, jdbcType=VARCHAR},#{extInfo.extParas.ReleaseReason, jdbcType=VARCHAR},#{extInfo.extParas.UniqueId, jdbcType=VARCHAR},#{extInfo.extParas.BindID, jdbcType=VARCHAR},#{extInfo.extParas.StartTime, jdbcType=VARCHAR},#{extInfo.extParas.Duration, jdbcType=VARCHAR})
+	</insert>
+	<!-- 更新虚拟号码状态 -->
+	<update id="updateVirtualNumberStatus">
+		update yc_virtual_number 
+		set status=#{status, jdbcType=INTEGER} 
+		where virtualNumber=#{virtualNumber, jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 转绑新的B方账号 -->
+	<update id="modifyBind">
+		update yc_virtual_bind
+		set bParty=#{bPartyNew, jdbcType=VARCHAR}
+		where subscriptionId=#{subscriptionId, jdbcType=VARCHAR}
+		and type<![CDATA[<>]]>0;
+	</update>
+	<insert id="insertModifyRecord">
+		insert into yc_virtual_bindrecord(virtualNumber,aParty,bParty,isRecord,bindDirection,cityCode,createTime,endTime,subscriptionId,operId,type) 
+		(SELECT vb2.virtualNumber,vb2.aParty,#{bPartyNew, jdbcType=VARCHAR} bParty,vb2.isRecord,bindDirection,cityCode, #{createTime, jdbcType=VARCHAR} as createTime,endTime,subscriptionId,#{operId, jdbcType=VARCHAR} as operId, 3 as type 
+		from yc_virtual_bindrecord vb2 
+		where subscriptionId=#{subscriptionId, jdbcType=VARCHAR} 
+		and type<![CDATA[<>]]>0
+		order by vb2.id desc 
+		limit 0,1);
+	</insert>
+	<!-- 添加下载文件地址到拨号记录 -->
+	<update id="addRecordFilePath">
+		<if test="#{callIdentifier} != null">
+			update yc_virtual_calleventinfo vc
+			set vc.RecordFilePath=#{path, jdbcType=VARCHAR} 
+			and vc.operId=#{operId}
+			vc.callIdentifier = "#{callIdentifier, jdbcType=VARCHAR}"
+		</if>
+		<if test="#{callIdentifier} == null">
+			update yc_virtual_calleventinfo vc, 
+			(select vb.virtualNumber,vb.aParty,vb.bParty 
+				from yc_virtual_bind vb 
+				where subscriptionId=#{subscriptionId, jdbcType=VARCHAR}) subVb
+			set vc.RecordFilePath=#{path, jdbcType=VARCHAR}, vc.operId=#{operId, jdbcType=VARCHAR}
+			where subVb.virtualNumber = vc.virtualNumber
+			and ((subVb.aParty = vc.calling
+			and subVb.bParty = vc.called) or (subVb.aParty = vc.called
+			and subVb.bParty = vc.calling))
+			and vc.StartTime = #{startTime, jdbcType=VARCHAR}
+		</if>
+	</update>
+</mapper>

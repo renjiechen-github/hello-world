@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	<context:component-scan
+		base-package="pccom.web.action, pccom.web.server,pccom.common, pccom.web.interfaces, pccom.web.flow, pccom.web.mobile, com.ycdc, pccom.web.job, com.room1000, com.yc">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!--引入配置文件 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:jdbc.properties" />
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://114.55.218.179:3306/room1000?user=ycroom&amp;password=Room1000+&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;characterSetResults=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
+		<property name="username" value="ycroom" />
+		<property name="password" value="Room1000+" />
+
+		<!--初始化连接大小 -->
+		<property name="initialSize" value="0"></property>
+		<!--连接池最大数量 -->
+		<property name="maxActive" value="50"></property>
+		<!--连接池最大空闲 -->
+		<property name="maxIdle" value="20"></property>
+		<!--连接池最小空闲 -->
+		<property name="minIdle" value="2"></property>
+		<!--获取连接最大等待时间 -->
+		<property name="maxWait" value="60000"></property>
+	</bean>
+
+	<!-- 开启事务注解驱动 -->
+	<tx:annotation-driven />
+
+	<bean
+		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+	<!-- 加载角色权限信息 -->
+	<bean id="roleManagerPostProcessor" class="com.yc.rm.caas.appserver.util.RoleManagerPostProcessor" />
+	<bean id="roleBean" class="com.yc.rm.caas.appserver.model.privilege.PublicRoleBean">
+		<property name="_privilegeServImpl" ref="_privilegeServImpl" />
+	</bean>
+	<bean id="springPipelineFactory" class="com.geccocrawler.gecco.spring.SpringPipelineFactory" />
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 拦截器方式配置事物 -->
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" />
+			<tx:method name="save*" rollback-for="Exception" />
+			<tx:method name="update*" rollback-for="Exception" />
+			<tx:method name="modify*" rollback-for="Exception" />
+			<tx:method name="edit*" rollback-for="Exception" />
+			<tx:method name="delete*" rollback-for="Exception" />
+			<tx:method name="remove*" rollback-for="Exception" />
+			<tx:method name="repair" rollback-for="Exception" />
+			<tx:method name="*WithTrans" propagation="REQUIRED"
+				rollback-for="Exception" />
+			<tx:method name="deleteAndRepair" />
+			<tx:method name="get*" propagation="SUPPORTS" />
+			<tx:method name="find*" propagation="SUPPORTS" />
+			<tx:method name="load*" propagation="SUPPORTS" />
+			<tx:method name="search*" propagation="SUPPORTS" />
+			<tx:method name="datagrid*" propagation="SUPPORTS" />
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<!-- 第一个*代表任何返回值 -->
+		<!-- rml.service..*Impl:代表你要拦截rml.service..*Impl类 -->
+		<!-- .*(..)：这个代表任意方法，就是说上面那些类的任意方法，()里面的点，代表任意参数 -->
+		<!-- pointcut代表切面在哪里 -->
+		<aop:pointcut id="transactionPointcut"
+			expression="execution(* com.room1000.service.impl.*.*(..))" />
+		<!-- advisor代表在切面上要如何操作，该项目中是按照上面配置的transactionAdvice执行操作 -->
+		<aop:advisor pointcut-ref="transactionPointcut"
+			advice-ref="transactionAdvice" />
+	</aop:config>
+
+	<!-- 编程式事务管理 -->
+	<bean id="transactionTemplate"
+		class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- 操作LOB配置 -->
+	<!-- (just needed for oracleLobHandler) -->
+	<bean id="nativeJdbcExtractor"
+		class="org.springframework.jdbc.support.nativejdbc.SimpleNativeJdbcExtractor"
+		lazy-init="true" />
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler"
+		lazy-init="true">
+		<property name="nativeJdbcExtractor" ref="nativeJdbcExtractor" />
+	</bean>
+
+	<!-- 自增长id生成器 -->
+	<bean id="idGenarater"
+		class="org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer">
+		<property name="incrementerName" value="forumidtable" />
+		<property name="columnName" value="sequence_id" />
+		<property name="cacheSize" value="10" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="dbHelper" class="pccom.common.util.DBHelperSpring">
+		<property name="dataSource" ref="dataSource" />
+		<property name="transactionTemplate" ref="transactionTemplate" />
+		<property name="lobHandler" ref="lobHandler" />
+	</bean>
+	<bean id="springHelper" class="pccom.common.util.SpringHelper" />
+	<!-- <bean id="tsUtil" class="pccom.common.util.TsUtil" init-method="pushMessage"></bean> -->
+
+	<!-- MyBatis 分页拦截器 -->
+	<bean id="paginationInterceptor" class="com.ycdc.util.page.PageInterceptor">
+		<property name="databaseType" value="mysql" />
+	</bean>
+        
+        <!-- 事务拦截操作处理 -->
+        <tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!--spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!--自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="classpath*:**/dao/**/*.xml" />
+
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<property name="properties">
+						<value>
+							helperDialect=mysql
+							pageSizeZero=true
+						</value>
+					</property>
+				</bean>
+				<bean class="com.ycdc.util.page.PageInterceptor">
+					<property name="databaseType" value="mysql" />
+				</bean>
+			</array>
+		</property>
+
+	</bean>
+	<!--DAO接口所在包名，Spring会自动查找其下的类 -->
+	<bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="**.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	<bean id="multipartResolver"
+	        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <property name="defaultEncoding">
+	        <value>UTF-8</value>
+	    </property>
+	    <property name="maxUploadSize">
+	        <value>32505856</value><!-- 上传文件大小限制为31M，31*1024*1024 -->
+	    </property>
+	    <property name="maxInMemorySize">
+	        <value>4096</value>
+	    </property>
+	</bean>
+	<!-- sql拦截器 -->
+	<bean id="sqlAdvice" class="pccom.common.aop.SqlAdvice" ></bean>
+	<aop:config> 
+		<aop:pointcut id="methodPoint" expression="execution(* pccom.common.util.DBHelperSpring.*(..)) "/>
+		<aop:advisor pointcut-ref="methodPoint" advice-ref="sqlAdvice"/>
+	</aop:config>
+        
+	<!-- logger配置信息 -->
+	<import resource="classpath:spring/applicationContext-logger.xml" />
+	<!-- activiti配置 -->
+	<import resource="classpath:spring/applicationContext-activiti.xml" />
+	<!-- 加载任务信息 -->
+	<import resource="classpath:spring/applicationContext-job.xml" />
+        
+</beans>

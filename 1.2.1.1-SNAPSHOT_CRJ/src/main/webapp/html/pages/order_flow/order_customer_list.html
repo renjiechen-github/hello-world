@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+
+<title>服务订单管理</title>
+</head>
+<body>
+	<section class="panel">
+		<!-- 待支付-->
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+					<form class="form-inline" role="form">
+						<div class="form-group">
+							<label for="exampleInputEmail2">订单类型:</label> <select
+								class="form-control" id="order_type" name="order_type">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">订单状态:</label> <select class="form-control" id="order_state" name="order_state">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<!-- <div class="form-group">
+							<label for="exampleInputEmail2">用户名:</label> <input type="text" class="form-control" id="user_name" name="user_name" placeholder="请填写用户名">
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">手机号:</label> <input type="text" class="form-control" id="user_mobile" name="user_mobile" placeholder="请填写用户手机">
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">订单编号:</label> <input type="text" class="form-control" id="order_code" name="user_mobile" placeholder="请填写订单编号">
+						</div> -->
+						<div class="form-group">
+							<label for="exampleInputEmail2">模糊查询:</label> <input type="text" class="form-control suitable" id="keyword"  placeholder="用户名、用户手机、订单编号">
+						</div>
+						<span class="form-group tools"><a href="javascript:;" class="fa fa-search yc_seach" id="search" table="customerOrder">查询</a>
+						</span>
+					</form>
+				</div>
+			</section>
+				<div class="panel-body">
+					<div class="adv-table">
+			        	<table id="customerOrder" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+					        <thead>
+					            <tr>	
+					            	<th></th>
+					             	<th></th>
+					                <th>编码</th>
+					                <th>订单名称</th>
+					                <th>订单类型</th>
+					                <th>创建时间</th>
+					                <th>用户名称</th>
+					                <th>用户手机号码</th>
+					                <th>状态</th>
+					                <th>处理人/角色</th>
+					                <th></th>
+					            </tr>
+					        </thead>
+					    </table>
+			        </div>
+				</div>
+	</section>
+</body>
+<script type="text/javascript" src="/html/js/order_flow/order_newAction/order_customer_list.js"></script>
+</html>

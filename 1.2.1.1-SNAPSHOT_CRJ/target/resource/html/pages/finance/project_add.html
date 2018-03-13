@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>新增</title>
+
+</head>
+
+<body>
+       <section class="panel">
+        <div class="panel-body">
+        	 <form id="form2" class="form-horizontal adminex-form" role="form">
+	            <div class="form-group">
+                     <label class="col-sm-2 control-label">财务项目名称：</label>
+                     <div class="col-sm-3">
+                         <input type="text" dataType="Require" msg="请填写财务项目名称！" class="form-control" placeholder="请填写财务项目名称" id="name" name="name" >
+                     </div>
+                     <label class="col-sm-2 control-label">结算类型：</label>
+                     <div class="col-sm-3">
+                         <select dataType="Require" msg="请选择结算类型！" class="form-control m-bot15" id="type" name="type" >
+                             <option >请选择...</option>
+                         </select>
+                     </div>
+	            </div>
+	            <div class="form-group">
+                     <label class="col-sm-2 control-label"> 实收款项：</label>
+                     <div class="col-sm-3">
+                         <input type="text" dataType="Double" msg="请填写 实收款项！" class="form-control" placeholder="请填写 实收款项,如：1.31" id="capital_receivable" name="capital_receivable" >
+                     </div>
+                     <label class="col-sm-2 control-label"> 实付款项：</label>
+                     <div class="col-sm-3">
+                         <input type="text" dataType="Double" msg="请填写 实付款项！" class="form-control" placeholder="请填写 实付款项,如：1.31" id="capital_payable" name="capital_payable" >
+                     </div>
+	            </div>
+	            <div class="form-group">
+                     <label class="col-sm-2 col-sm-2 control-label"> 备注：</label>
+                     <div class="col-sm-10">
+                         <textarea rows="6" class="form-control" id="remark" name="remark" ></textarea>
+                     </div>
+	            </div>
+	            <!-- <div class="text-center">
+			         <button class="btn btn-info" id="project_add_bnt" type="button">确定提交</button>&nbsp;&nbsp;&nbsp;
+			         <button class="btn btn-danger" onclick="layer.closeAll();" type="button">关闭页面</button>
+		         </div> -->
+	         </form>
+	         
+	         <br />
+	         <!-- 财务收入 -->
+	         <section class="panel panel-primary">
+                <header class="panel-heading">
+                    项目支出
+                    <span class="tools pull-right" style="    margin-top: -5px;" >
+                        <a class="fa fa-chevron-down" href="javascript:;"></a>
+                    </span>
+                </header>
+                <div class="panel-body" style="display: block;">
+                    <table id="pay_pro_tab" class="display tablehover table table-bordered dataTable" >
+                    	<tr>
+                    		<td>名称</td>
+                    		<td>计划支付时间</td>
+                    		<td>实际支付时间</td>
+                    		<td>金额</td>
+                    		<td>状态</td>
+                    	</tr>
+                    </table>
+                </div>
+            </section>
+            <br />
+            <!-- 财务支出 -->
+            <section class="panel panel-primary">
+                <header class="panel-heading">
+                    项目收入
+                    <span class="tools pull-right" style="    margin-top: -5px;">
+                        <a class="fa fa-chevron-down" href="javascript:;"></a>
+                    </span>
+                </header>
+                <div class="panel-body" style="display: block;">
+                    <table id="res_pro_tab" class="display tablehover table table-bordered dataTable" >
+                    	<tr>
+                    		<td>名称</td>
+                    		<td>计划支付时间</td>
+                    		<td>实际支付时间</td>
+                    		<td>金额</td>
+                    		<td>状态</td>
+                    	</tr>
+                    </table>
+                </div>
+            </section>
+            <!-- 财务支出 -->
+            <section class="panel panel-primary">
+                <header class="panel-heading">
+                    支出费用分摊
+                    <span class="tools pull-right" style="    margin-top: -5px;">
+                        <a class="fa fa-chevron-down" href="javascript:;"></a>
+                    </span>
+                </header>
+                <div class="panel-body" style="display: block;">
+                    <table id="qd_pro_tab" class="display tablehover table table-bordered dataTable" >
+                    	<tr>
+                    		<td>名称</td>
+                    		<td>年份</td>
+                    		<td>1月</td>
+                    		<td>2月</td>
+                    		<td>3月</td>
+                    		<td>4月</td>
+                    		<td>5月</td>
+                    		<td>6月</td>
+                    		<td>7月</td>
+                    		<td>8月</td>
+                    		<td>9月</td>
+                    		<td>10月</td>
+                    		<td>11月</td>
+                    		<td>12月</td>
+                    	</tr>
+                    </table>
+                </div>
+            </section>
+            <!-- 财务支出 -->
+            <section class="panel panel-primary">
+                <header class="panel-heading">
+                    收入费用分摊
+                    <span class="tools pull-right" style="    margin-top: -5px;">
+                        <a class="fa fa-chevron-down" href="javascript:;"></a>
+                    </span>
+                </header>
+                <div class="panel-body" style="display: block;">
+                    <table id="qdres_pro_tab" class="display tablehover table table-bordered dataTable" >
+                    	<tr>
+                    		<td>名称</td>
+                    		<td>年份</td>
+                    		<td>1月</td>
+                    		<td>2月</td>
+                    		<td>3月</td>
+                    		<td>4月</td>
+                    		<td>5月</td>
+                    		<td>6月</td>
+                    		<td>7月</td>
+                    		<td>8月</td>
+                    		<td>9月</td>
+                    		<td>10月</td>
+                    		<td>11月</td>
+                    		<td>12月</td>
+                    	</tr>
+                    </table>
+                </div>
+            </section>
+	    </div>
+   	</section>
+   	<script type="text/javascript" src="/html/js/finance/project_add.js" ></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package pccom.common.aop;
+
+import java.lang.reflect.Method;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.time.StopWatch;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
+import pccom.common.annotation.LogAnnotation;
+import pccom.web.beans.Login;
+import pccom.web.listener.SessionManage;
+
+/**
+ *
+ * @author admin
+ */
+@Order(1)
+@Aspect
+@Service
+public class LogAdivce {
+
+    public final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Around("execution(* pccom.web.server..*(..)) or execution(* pccom.web.server..*(..)) ")
+//    @Around("execution(public * *(..))")
+    public Object around(ProceedingJoinPoint pj) {
+        StopWatch clock = new StopWatch();
+        clock.start(); //计时开始
+        Object result = null;
+        Signature s = pj.getSignature();
+        String className = pj.getTarget().getClass().getName();
+        String methodName = s.getName();
+        MethodSignature ms = (MethodSignature) s;
+        Method m = ms.getMethod();
+        try {
+            LogAnnotation logAnnotation = m.getAnnotation(LogAnnotation.class);
+//            logger.debug("--" + logAnnotation);
+            String userid = "";
+            String mobile = "";
+            String value = "";
+            String type = "APP";
+            if (logAnnotation != null) {
+                value = logAnnotation.value();
+//                logger.debug("value:" + value);
+
+                userid = request.getHeader("userid");
+                
+                if (!"".equals(userid) && userid != null) {
+
+                } else {
+                    type = "PC";
+                    String username = getCookie(request, "username");
+//                    logger.debug("username:" + username);
+                    Object o = SessionManage.getSession(username);
+                    Login login = null;
+                    if (o != null) {
+                        login = (Login) o;
+                    }
+                    userid = login.getUser().getId();
+                    mobile = login.getMobile();
+                }
+                logger.debug("userid:" + userid);
+                
+                MDC.put("className", className);
+                MDC.put("methodName", methodName);
+                MDC.put("userid", userid);
+                MDC.put("remark", value);
+                MDC.put("type",type);
+                if (request != null) {
+                    MDC.put("requestURL", request.getRequestURL().toString());
+                    MDC.put("queryString", request.getQueryString());
+                }
+            }
+            //前置通知  
+            //执行目标方法  
+            result = pj.proceed();
+            if (logAnnotation != null) {
+                clock.stop();
+                if (request != null) {
+                    logger.info("此方法作用说明："+value+" 访问类名与方法：" + className + "【" + methodName + "】　总执行时间：" + clock.getTime() + "m 访问人userid：" + userid);
+                    logger.info("访问链接：" + request.getRequestURL());
+                    logger.info("请求参数：" + request.getQueryString());
+                } else {
+                    logger.info("此方法作用说明："+value+" 访问类名与方法：" + className + "【" + methodName + "】　总执行时间：" + clock.getTime() + "m 访问人userid：" + userid);
+                }
+                if (result != null) {
+                    logger.info("返回参数：" + result.toString());
+                } else {
+                    logger.info("返回参数：无");
+                }
+            }
+            //返回通知  
+        } catch (Throwable e) {
+            logger.error("日志记录出现异常：", e);
+        }
+        return result;
+    }
+
+    /**
+     * 获取cookie
+     *
+     * @author 雷杨
+     * @param request
+     * @param name
+     * @return
+     */
+    public String getCookie(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        //logger.debug("----------"+request.getCookies());
+        if (cookies == null) {
+            logger.debug("cookies:" + name + "wei kong ");
+            return "";
+        }
+        for (int i = 0; i < cookies.length; i++) {
+            if (name.equals(cookies[i].getName())) {
+                return cookies[i].getValue();
+            }
+        }
+        return "";
+    }
+}

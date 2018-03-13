@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>待办任务</title>
+    <link rel="stylesheet" type="text/css" href="../../css/gtasks.css"/>
+    <script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+</head>
+<body>
+	<div id="header">
+      <h3>待办任务</h3>
+    </div>
+    <div style="width:auto;margin:20px;">
+    	<div id="seabor">
+<!--     		<div id="seaico"> -->
+    			<img src="../../images/ico-search.png" style="width:20px;float:left;margin:7px 10px auto 12px;"/>
+    			<input type="text" id="seatxt"/>
+<!--     		</div> -->
+<!--     		<div id="seat"> -->
+    			
+<!--     		</div> -->
+    	</div>
+    </div>
+    <div style="width:auto;margin:20px;">
+    	<div id="incb">
+    		<span id="tit">收房审批</span><span id="date">2016.06.28&nbsp;15:00</span>
+		</div>
+		<div id="box">
+    		<div id="ads">
+    			<div id="addres_money">清河南苑12-3083室2厅1卫&nbsp;精装修&nbsp;3000元/月</div>
+    		</div>
+    		<div id="adsv">
+    			<div id="sname">张修果</div>
+			</div>
+		</div>
+		<div id="opt">
+			<div id="no" class="oj">拒绝</div><div id="dividing"></div>
+			<div id="ok" class="oj">同意</div>
+		</div>
+    </div>
+    <div style="width:auto;margin:20px;">
+    	<div id="incb">
+    		<span id="tit">支付审批</span><span id="date">2016.06.28&nbsp;15:00</span>
+		</div>
+		<div id="box">
+    		<div id="ads"><div id="addres_money">清河南苑12-3083室2厅1卫&nbsp;精装修&nbsp;3000元/月</div></div>
+    		<div id="adsv">
+    			<div id="sname">
+    				张修果
+				</div>
+			</div>
+		</div>
+		<div id="opt">
+			<div id="no" class="oj">拒绝</div><div id="dividing"></div>
+			<div id="ok" class="oj">同意</div>
+		</div>
+    </div>
+    <script>    
+   	$(".oj").hover(function(){
+   		$(this).css({"color":"#FFFFFF","background":"#383635"});
+   	},function(){
+   		$(this).css({"color":"#8b8a8a","background":"#FFFFFF"});
+   	});
+    </script>
+</body>
+</html>

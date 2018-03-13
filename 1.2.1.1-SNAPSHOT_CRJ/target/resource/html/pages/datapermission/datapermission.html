@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<link rel="shortcut icon" href="#" type="image/png">
+<link rel="stylesheet" href="/html/pages/datapermission/datapermission.css">
+<title>数据权限</title>
+</head>
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<section class="panel panel-info panel-seach" style="margin-bottom: 0px;">
+				<div class="panel-body">
+					<form class="form-inline">
+						<div class="form-group">
+							<label style="margin-right: 5px;">角色</label>
+							<select class="form-select"></select>
+						</div>
+						<div class="form-group">
+							<span class="form-group tools"> 
+								<a href="javascript:;" class="form-a fa fa-search yc_seach" id="serach">查询</a>
+							</span>
+						</div>
+					</form>
+				</div>
+			</section>
+			
+			<div class="panel-body">
+				<section class="panel panel-info panel-seach">
+				
+					<div class="panel-body-div panel-body" style="border-top: 0px;">
+						<div class="left">
+							<div style="height: 22px;">
+								<div class="div-body left" style="background-color: #F7B52C;">
+									<img alt="合约" src="../../../html/pages/datapermission/img/dingdan.png" width="18px;" height="16px;">
+								</div>
+								<div class="left">
+									<span class="font-span" style="color: #F7B52C;">导出</span>
+								</div>
+							</div>
+							<div>
+								<hr width="2" color="#F1F1F3" class="hr-body" style="height: 20px;">
+							</div>
+						</div>
+						<div class="left div-ul">
+							<ul>
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac">
+											<img class="word-img" alt="" src="../../../html/pages/datapermission/img/huangdian.png">
+											<hr class="word-hr">
+											<span class="word-span" style="">导出信息</span>
+										</div>
+										<div id="exportInfo" class="word-div left">
+											<div class="checkbox-inline">
+												<input id="exportInfoOperate" type="checkbox" /> 
+												<label class="font-label" for="exportInfoOperate">导出</label>
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>				
+				
+					<div class="panel-body-div panel-body">
+						<div class="left">
+							<div style="height: 22px;">
+								<div class="div-body left">
+									<img alt="订单" src="../../../html/pages/datapermission/img/dingdan.png" width="18px;" height="16px;">
+								</div>
+								<div class="left">
+									<span class="font-span">订单</span>
+								</div>
+							</div>
+							<div>
+								<hr width="2" color="#F1F1F3" class="hr-body">
+							</div>
+						</div>
+						<div class="left div-ul">
+							<ul>
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac">
+											<img class="word-img" alt="看房订单" src="../../../html/pages/datapermission/img/hongdian.png">
+											<hr class="word-hr">
+											<span class="word-span">看房订单</span>
+										</div>
+										<div id="houseLook" class="word-div left" data="">
+											<div class="checkbox-inline">
+												<input id="houseLookAdd" type="checkbox" /> 
+												<label class="font-label" for="houseLookAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="houseLookQuery" type="checkbox" /> 
+												<label class="font-label" for="houseLookQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="houseLookUpdate" type="checkbox" onclick="datapermission.chanageAdd('houseLookQuery','houseLookUpdate','houseLookAssign','houseLookClose');" />
+												<label class="font-label" for="houseLookUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="houseLookAssign" type="checkbox" onclick="datapermission.chanageAdd('houseLookQuery','houseLookUpdate','houseLookAssign','houseLookClose');" /> 
+												<label class="font-label" for="houseLookAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="houseLookClose" type="checkbox" onclick="datapermission.chanageAdd('houseLookQuery','houseLookUpdate','houseLookAssign','houseLookClose');" /> 
+												<label class="font-label" for="houseLookClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac">
+											<img class="word-img" alt="维修订单" src="../../../html/pages/datapermission/img/hongdian.png">
+											<hr class="word-hr">
+											<span class="word-span">维修订单</span>
+										</div>
+										<div id="repair" class="word-div left" data="">
+											<div class="checkbox-inline">
+												<input id="repairAdd" type="checkbox"  />
+												<label class="font-label" for="repairAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="repairQuery" type="checkbox" /> 
+												<label class="font-label" for="repairQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="repairUpdate" type="checkbox" onclick="datapermission.chanageAdd('repairQuery','repairUpdate','repairAssign','repairClose');" />
+												<label class="font-label" for="repairUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="repairAssign" type="checkbox" onclick="datapermission.chanageAdd('repairQuery','repairUpdate','repairAssign','repairClose');" />
+												<label class="font-label" for="repairAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="repairClose" type="checkbox" onclick="datapermission.chanageAdd('repairQuery','repairUpdate','repairAssign','repairClose');" /> 
+												<label class="font-label" for="repairClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac">
+											<img class="word-img" alt="保洁订单" src="../../../html/pages/datapermission/img/hongdian.png">
+											<hr class="word-hr">
+											<span class="word-span">保洁订单</span>
+										</div>
+										<div id="cleaning" class="word-div left" data="">
+											<div class="checkbox-inline">
+												<input id="cleaningAdd" type="checkbox" /> 
+												<label class="font-label" for="cleaningAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="cleaningQuery" type="checkbox" />
+												<label class="font-label" for="cleaningQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="cleaningUpdate" type="checkbox" onclick="datapermission.chanageAdd('cleaningQuery','cleaningUpdate','cleaningAssign','cleaningClose');" /> 
+												<label class="font-label" for="cleaningUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="cleaningAssign" type="checkbox" onclick="datapermission.chanageAdd('cleaningQuery','cleaningUpdate','cleaningAssign','cleaningClose');" /> 
+												<label class="font-label" for="cleaningAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="cleaningClose" type="checkbox" onclick="datapermission.chanageAdd('cleaningQuery','cleaningUpdate','cleaningAssign','cleaningClose');" /> 
+												<label class="font-label" for="cleaningClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac">
+											<img class="word-img" alt="" src="../../../html/pages/datapermission/img/hongdian.png">
+											<hr class="word-hr">
+											<span class="word-span">投诉订单</span>
+										</div>
+										<div id="complaint" class="word-div left" data="">
+											<div class="checkbox-inline">
+												<input id="complaintAdd" type="checkbox" /> 
+												<label class="font-label" for="complaintAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="complaintQuery" type="checkbox" /> 
+												<label class="font-label" for="complaintQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="complaintUpdate" type="checkbox" onclick="datapermission.chanageAdd('complaintQuery','complaintUpdate','complaintAssign','complaintClose');" /> 
+												<label class="font-label" for="complaintUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="complaintAssign" type="checkbox" onclick="datapermission.chanageAdd('complaintQuery','complaintUpdate','complaintAssign','complaintClose');" /> 
+												<label class="font-label" for="complaintAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="complaintClose" type="checkbox" onclick="datapermission.chanageAdd('complaintQuery','complaintUpdate','complaintAssign','complaintClose');" /> 
+												<label class="font-label" for="complaintClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac">
+											<img class="word-img" alt="退租订单" src="../../../html/pages/datapermission/img/hongdian.png">
+											<hr class="word-hr">
+											<span class="word-span">退租订单</span>
+										</div>
+										<div id="cancelLease" class="word-div left" data="">
+											<div class="checkbox-inline">
+												<input id="cancelLeaseAdd" type="checkbox" /> 
+												<label class="font-label" for="cancelLeaseAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="cancelLeaseQuery" type="checkbox" /> 
+												<label class="font-label" for="cancelLeaseQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="cancelLeaseUpdate" type="checkbox" onclick="datapermission.chanageAdd('cancelLeaseQuery','cancelLeaseUpdate','cancelLeaseAssign','cancelLeaseClose');" /> 
+												<label class="font-label" for="cancelLeaseUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="cancelLeaseAssign" type="checkbox" onclick="datapermission.chanageAdd('cancelLeaseQuery','cancelLeaseUpdate','cancelLeaseAssign','cancelLeaseClose');" /> 
+												<label class="font-label" for="cancelLeaseAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="cancelLeaseClose" type="checkbox" onclick="datapermission.chanageAdd('cancelLeaseQuery','cancelLeaseUpdate','cancelLeaseAssign','cancelLeaseClose');" /> 
+												<label class="font-label" for="cancelLeaseClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac">
+											<img class="word-img" alt="其他订单" src="../../../html/pages/datapermission/img/hongdian.png">
+											<hr class="word-hr">
+											<span class="word-span">其他订单</span>
+										</div>
+										<div id="other" class="word-div left">
+											<div class="checkbox-inline">
+												<input id="otherAdd" type="checkbox" /> 
+												<label class="font-label" for="otherAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="otherQuery" type="checkbox" /> 
+												<label class="font-label" for="otherQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="otherUpdate" type="checkbox" onclick="datapermission.chanageAdd('otherQuery','otherUpdate','otherAssign','otherClose');"  /> 
+												<label class="font-label" for="otherUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="otherAssign" type="checkbox" onclick="datapermission.chanageAdd('otherQuery','otherUpdate','otherAssign','otherClose');"  /> 
+												<label class="font-label" for="otherAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="otherClose" type="checkbox" onclick="datapermission.chanageAdd('otherQuery','otherUpdate','otherAssign','otherClose');"  /> 
+												<label class="font-label" for="otherClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac" style="margin-right: 57px;">
+											<img class="word-img" alt="" src="../../../html/pages/datapermission/img/hongdian.png">
+											<hr class="word-hr">
+											<span class="word-span">业主维修订单</span>
+										</div>
+										<div id="owerRepair" class="word-div left">
+											<div class="checkbox-inline">
+												<input id="owerRepairAdd" type="checkbox" /> 
+												<label class="font-label" for="owerRepairAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="owerRepairQuery" type="checkbox" /> 
+												<label class="font-label" for="owerRepairQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="owerRepairUpdate" type="checkbox" onclick="datapermission.chanageAdd('owerRepairQuery','owerRepairUpdate','owerRepairAssign','owerRepairClose');" /> 
+												<label class="font-label" for="owerRepairUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="owerRepairAssign" type="checkbox" onclick="datapermission.chanageAdd('owerRepairQuery','owerRepairUpdate','owerRepairAssign','owerRepairClose');" /> 
+												<label class="font-label" for="owerRepairAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="owerRepairClose" type="checkbox" onclick="datapermission.chanageAdd('owerRepairQuery','owerRepairUpdate','owerRepairAssign','owerRepairClose');" /> 
+												<label class="font-label" for="owerRepairClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac" style="margin-right: 57px;">
+											<img class="word-img" alt="" src="../../../html/pages/datapermission/img/hongdian.png">
+											<hr class="word-hr">
+											<span class="word-span">例行保洁订单</span>
+										</div>
+										<div id="routineCleaning" class="word-div left">
+											<div class="checkbox-inline">
+												<input id="routineCleaningAdd" type="checkbox" /> 
+												<label class="font-label" for="routineCleaningAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="routineCleaningQuery" type="checkbox" /> 
+												<label class="font-label" for="routineCleaningQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="routineCleaningUpdate" type="checkbox" onclick="datapermission.chanageAdd('routineCleaningQuery','routineCleaningUpdate','routineCleaningAssign','routineCleaningClose');" /> 
+												<label class="font-label" for="routineCleaningUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="routineCleaningAssign" type="checkbox" onclick="datapermission.chanageAdd('routineCleaningQuery','routineCleaningUpdate','routineCleaningAssign','routineCleaningClose');" /> 
+												<label class="font-label" for="routineCleaningAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="routineCleaningClose" type="checkbox" onclick="datapermission.chanageAdd('routineCleaningQuery','routineCleaningUpdate','routineCleaningAssign','routineCleaningClose');" /> 
+												<label class="font-label" for="routineCleaningClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac" style="margin-right: 57px;">
+											<img class="word-img" alt="" src="../../../html/pages/datapermission/img/hongdian.png">
+											<hr class="word-hr">
+											<span class="word-span">入住问题订单</span>
+										</div>
+										<div id="livingProblem" class="word-div left">
+											<div class="checkbox-inline">
+												<input id="livingProblemAdd" type="checkbox" /> 
+												<label class="font-label" for="livingProblemAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="livingProblemQuery" type="checkbox" /> 
+												<label class="font-label" for="livingProblemQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="livingProblemUpdate" type="checkbox" onclick="datapermission.chanageAdd('livingProblemQuery','livingProblemUpdate','livingProblemAssign','livingProblemClose');" /> 
+												<label class="font-label" for="livingProblemUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="livingProblemAssign" type="checkbox" onclick="datapermission.chanageAdd('livingProblemQuery','livingProblemUpdate','livingProblemAssign','livingProblemClose');" /> 
+												<label class="font-label" for="livingProblemAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="livingProblemClose" type="checkbox" onclick="datapermission.chanageAdd('livingProblemQuery','livingProblemUpdate','livingProblemAssign','livingProblemClose');" /> 
+												<label class="font-label" for="livingProblemClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="panel-body-div panel-body" style="border-top: 0px;">
+						<div class="left">
+							<div style="height: 22px;">
+								<div class="div-body left" style="background-color: #F7B52C;">
+									<img alt="合约" src="../../../html/pages/datapermission/img/dingdan.png" width="18px;" height="16px;">
+								</div>
+								<div class="left">
+									<span class="font-span" style="color: #F7B52C;">合约</span>
+								</div>
+							</div>
+							<div>
+								<hr width="2" color="#F1F1F3" class="hr-body" style="height: 65px;">
+							</div>
+						</div>
+						<div class="left div-ul">
+							<ul>
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac">
+											<img class="word-img" alt="" src="../../../html/pages/datapermission/img/huangdian.png">
+											<hr class="word-hr">
+											<span class="word-span" style="">租客合约</span>
+										</div>
+										<div id="renterAgreement" class="word-div left">
+											<div class="checkbox-inline">
+												<input id="renterAgreementAdd" type="checkbox" /> 
+												<label class="font-label" for="renterAgreementAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="renterAgreementQuery" type="checkbox" /> 
+												<label class="font-label" for="renterAgreementQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="renterAgreementUpdate" type="checkbox" onclick="datapermission.chanageAdd('renterAgreementQuery','renterAgreementUpdate','renterAgreementAssign','renterAgreementClose');" /> 
+												<label class="font-label" for="renterAgreementUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="renterAgreementAssign" type="checkbox" onclick="datapermission.chanageAdd('renterAgreementQuery','renterAgreementUpdate','renterAgreementAssign','renterAgreementClose');" /> 
+												<label class="font-label" for="renterAgreementAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="renterAgreementClose" type="checkbox" onclick="datapermission.chanageAdd('renterAgreementQuery','renterAgreementUpdate','renterAgreementAssign','renterAgreementClose');" /> 
+												<label class="font-label" for="renterAgreementClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+								<li class="one-li">
+									<div>
+										<div class="word-div left word-spac">
+											<img class="word-img" alt="" src="../../../html/pages/datapermission/img/huangdian.png">
+											<hr class="word-hr">
+											<span class="word-span">业主合约</span>
+										</div>
+										<div id="ownerAgreement" class="word-div left">
+											<div class="checkbox-inline">
+												<input id="ownerAgreementAdd" type="checkbox" /> 
+												<label class="font-label" for="ownerAgreementAdd">新增</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="ownerAgreementQuery" type="checkbox" /> 
+												<label class="font-label" for="ownerAgreementQuery">查看</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="ownerAgreementUpdate" type="checkbox" onclick="datapermission.chanageAdd('ownerAgreementQuery','ownerAgreementUpdate','ownerAgreementAssign','ownerAgreementClose');" /> 
+												<label class="font-label" for="ownerAgreementUpdate">修改</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="ownerAgreementAssign" type="checkbox" onclick="datapermission.chanageAdd('ownerAgreementQuery','ownerAgreementUpdate','ownerAgreementAssign','ownerAgreementClose');" /> 
+												<label class="font-label" for="ownerAgreementAssign">指派</label>
+											</div>
+											<div class="checkbox-inline checkbox-div">
+												<input id="ownerAgreementClose" type="checkbox" onclick="datapermission.chanageAdd('ownerAgreementQuery','ownerAgreementUpdate','ownerAgreementAssign','ownerAgreementClose');" /> 
+												<label class="font-label" for="ownerAgreementClose">关闭</label>
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<div class="panel-body">
+				
+				<div style="margin-left: 400px;">
+				
+				<div class="dt_container btn_none">
+					<a class="dt_button DTTT_button_text"> 
+						<span>提交</span>
+					</a>
+				</div>
+				
+				<div class="DTTT_container btn_info" style="display: none;">
+					<a class="DTTT_button DTTT_button_text"> 
+						<span>提交</span>
+					</a>
+				</div>
+				
+				<div class="DTTT_container cancel_info" style="margin-left: 30px;">
+					<a class="DTTT_button DTTT_button_text">
+						<span>清除</span>
+					</a>
+				</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+</body>
+<script type="text/javascript" src="/html/pages/datapermission/datapermission.js"></script>
+</html>

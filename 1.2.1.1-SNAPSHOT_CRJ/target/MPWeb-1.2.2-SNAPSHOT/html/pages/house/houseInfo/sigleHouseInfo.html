@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<link rel="stylesheet" href="/html/css/house/house_add.min.css">
+<title>房间信息</title>
+<style type="text/css">
+.border_0 {
+	border: 0px;
+}
+</style>
+</head>
+
+<body>
+	<section class="panel">
+		<input type="hidden" id="houseId" />
+		<div class="panel-body">
+			<form id="form2" class="form-horizontal adminex-form" role="form">
+				<div id="myTabContent" class="tab-content">
+					<div class="col-md-12">
+						<div class="panel" data-collapsed="0">
+							<div class="panel-body">
+								<div class="row">
+									<div class="form-group">
+										<label class="col-md-2 control-label">房源编码：</label>
+										<div class="col-md-4">
+											<span id="house_code" class="form-control border_0"></span>
+										</div>
+
+										<label class="col-md-2 control-label">所属房源：</label>
+										<div class="col-md-4">
+											<span id="house_name" class="form-control border_0"></span>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-2 control-label">房源标题：</label>
+										<div class="col-md-4">
+											<span id="house_title" class="form-control border_0"></span>
+										</div>
+
+										<label class="col-md-2 control-label">楼层：</label>
+										<div class="col-md-4">
+											<span id="house_floor" class="form-control border_0"></span>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-2 control-label">户型：</label>
+										<div class="col-md-4">
+											<span id="house_hx" class="form-control border_0"></span>
+										</div>
+										<label class="col-md-2 control-label">出租方式：</label>
+										<div class="col-md-4">
+											<span id="house_czfs" class="form-control border_0"></span>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-2 control-label">房源面积：</label>
+										<div class="col-md-4">
+											<span id="house_arear" class="form-control border_0"></span>
+										</div>
+
+										<label class="col-md-2 control-label">出租单价：</label>
+										<div class="col-md-4">
+											<span id="house_price" class="form-control border_0"></span>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-2 control-label">房源地址：</label>
+										<div class="col-md-10">
+											<span id="house_address" class="form-control border_0"></span>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-2 control-label">房源图片：</label>
+										<div class="col-md-10">
+											<div class="dropzone" id="house_pic"></div>
+											<div class="row"></div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-2 control-label">房源描述：</label>
+										<div class="col-md-10">
+											<textarea id="house_desc" rows="20"
+												class="form-control border_0"></textarea>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div>
+					<button class="btn" style="margin-left: 300px;" id="tijiaoBtn">提交</button>
+				</div>
+			</form>
+		</div>
+	</section>
+</body>
+<script type="text/javascript"
+	src="/html/adminX/js/dropzone/dropzone.js"></script>
+<script type="text/javascript"
+	src="/html/js/house/houseInfo/sigleHouseInfo.js"></script>
+</html>

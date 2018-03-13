@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.rm.caas.appserver.bus.dao.contract.IContractDao" >
+   <select id="getRankAgreementIdByRankHouseId" resultType="java.lang.String">
+   		select group_concat(a.`id`) from yc_agreement_tab a where a.`house_id` = ${id} and a.`type` = 2  group by a.house_id
+   </select>
+   <select id="getRankAgreementInfo" resultType="com.yc.rm.caas.appserver.model.house.RankAgreement">
+   	<![CDATA[
+   		SELECT (CASE WHEN a.status = 2 THEN fn_checkTaskDo(a.id) ELSE 1 END) is_tj, b.id rankId,h.`house_name`, h.address,a.code agree_code,
+   			   fn_getarearname(a.areaid) areaName, a.`desc_text`,agents,c.email, payway, a.notaryid,
+   			   case when rank_type = 0 then SUBSTRING_INDEX(b.`rank_spec`,'|',1) else 1 end rentRoomCnt,
+   			   SUBSTRING_INDEX(b.`rank_spec`,'|',1) totalRoomCnt, rank_code, b.fee baseMonery,
+   			   case when (to_days(a.begin_time) - to_days(now()) <= 0) and (to_days(a.end_time) - to_days(now()) >= 0) then 1 else 0  end tjflag,
+   			   PERIOD_DIFF(DATE_FORMAT(a.end_time,'%Y%m'), DATE_FORMAT(a.begin_time,'%Y%m')) rent_month,
+   			   a.deposit,a.code, fn_getagentname(a.`agents`) agentName, certificateno, username,
+   			   fn_getdictitemname('GROUP.RANK.AGREEMENT',a.`status`) rankstatus, a.id, a.name, a.type, a.user_id,
+   			   c.`mobile`, a.`begin_time`, a.`end_time`, a.`father_id`, b.`house_id`, ((to_days(a.end_time) - to_days(now())) + 1) surplusDay,
+   			   (case when (to_days(a.end_time) - to_days(now()) <= 14) and (to_days(now()) - to_days(a.begin_time) > 0) then 1 else 0 end) signFlag,
+   			   serviceMonery,propertyMonery,watercard,water_meter,gas_meter,gascard,electriccard,electricity_meter_h,electricity_meter_l,electricity_meter,old_matched,
+   			   (case when length(file_path) > 0 then CONCAT(#{newfilepath},REPLACE(a.file_path,'|',#{filepath})) else '' end) file_path, a.`status`, 
+   			   a.`cost`, a.`cost_a`, a.`agents`, a.`pay_type`, a.`areaid`, b.title, fn_getdictitemname('RANKHOUSE.TYPE',b.`rank_type`) rankType, b.`rank_area`, b.rank_type 
+   	     FROM yc_agreement_tab a  LEFT JOIN yc_userinfo_tab c ON c.id = a.user_id, yc_houserank_tab b,yc_house_tab h  
+   	    WHERE h.id = b.house_id 
+   	      AND b.`id` = a.`house_id` 
+   	      AND a.isdelete = 1 
+   	      AND a.type = 2 
+	   	  AND a.id in (${id})
+	   ]]>
+   </select>
+   <select id="checkAgreementISNotPay" resultType="map">
+   		<![CDATA[
+   		select case when (timestampdiff(minute,max(date_format(a.create_time,'%Y-%m-%d %H:%i:%s')),now()) - 60) < 0 then 1 else 0 end as cnt
+ 		  from yc_agreement_tab a 
+ 		 where a.type = 2 
+ 		   and a.`status` in (11,12)  
+ 		   and isdelete = 1
+ 		   and a.`house_id` = #{house_id}
+ 		 ]]>
+   </select>
+     <select id="loadValidRankAgreementMaxEndTime" resultType="string">
+   		 select max(a.`end_time`) from yc_agreement_tab a where a.`status` = 2 and a.`type` = 2 and a.`house_id` = #{houseId}
+   </select>
+   <select id="checkDays" resultType="map">
+   		<![CDATA[ select item_id from yc_dictionary_item a where a.`group_id` = 'SIGN.DAY' and to_days(#{time}) - to_days(now()) >= item_id ]]>
+   </select>
+    <select id="getRankAgreementFatherId" resultType="com.yc.rm.caas.appserver.model.contract.ContractBean">
+   		SELECT a.`id`, areaid FROM yc_agreement_tab a WHERE a.`house_id` = #{house_id} AND a.`isdelete` = 1 and type = 1
+   </select>
+   
+   
+   <select id="calcEndTime" resultType="map">
+   		select ADDDATE(#{begin_time},INTERVAL #{rent_month} * #{count} MONTH) endtime
+   </select>
+   
+   <insert id="insertRankAgreement" parameterType="com.yc.rm.caas.appserver.model.house.RankAgreement" useGeneratedKeys="true" keyProperty="id">
+   		INSERT INTO yc_agreement_tab(NAME,TYPE,user_id,user_mobile,begin_time,end_time,father_id,house_id,desc_text,status,cost,create_time,isdelete,agents,pay_type,cost_a,pay_time,operid,areaid,serviceMonery,propertyMonery,watercard,water_meter,gas_meter,gascard,electriccard,electricity_meter_h,electricity_meter_l,electricity_meter,old_matched,payway,deposit,rent_deposit) 
+   			 values (#{name},2,#{user_id},#{mobile},#{begin_time},ADDDATE(#{begin_time},INTERVAL #{rent_month} MONTH),#{father_id},#{rankId},#{desc_text},11,#{rent_month} * #{price},now(),1,#{agents},#{pay_type}, #{price},#{begin_time},#{operId},#{areaid},#{serviceMonery},#{propertyMonery},#{watercard},#{water_meter},#{gas_meter},#{gascard},#{electriccard},#{electricity_meter_h},#{electricity_meter_l},#{electricity_meter},#{old_matched},#{payway},#{deposit},#{rent_deposit})
+   </insert>
+   
+   <select id="agreementList"  resultType="com.yc.rm.caas.appserver.model.contract.ContractBean" parameterType="com.yc.rm.caas.appserver.bus.controller.house.fo.HouseFo">
+   		select * from (select a.id, a.`name`,a.`code`,fn_getarearname(a.`areaid`) areaid, a.`begin_time`,a.`end_time`, c.username,
+   			   a.`cost`,fn_getagentname(a.`agents`) agentName, fn_getdictitemname('GROUP.AGREEMENT',a.`status`) status 
+   		  from yc_agreement_tab a LEFT JOIN  yc_userinfo_tab c  on a.user_id = c.id
+   		 where a.`type` = 1 AND a.`isdelete` = 1 and c.`is_delete` = 1
+   		<if test="status != null and status != ''">
+   			and status = #{status}
+   		</if>
+   		 <if test="signStatus == '$1'">
+   			<![CDATA[ and a.`status` = 2 and date_add(now(), interval 16 day) > a.`end_time` and date_format(now(),'%Y-%m-%d') < date_format(a.`end_time`,'%Y-%m-%d')  ]]>
+	   	 </if>
+   		<if test="contractManage != null and contractManage != ''">
+   			and agents = #{contractManage}
+   		</if>
+   		<if test="areaid != null and areaid != ''">
+   			and areaid = #{areaid}
+   		</if>
+   		<if test="trading != null and trading != ''">
+   			and a.areaid in (select areaid from yc_group_tab b where b.trading = #{trading})
+   		</if>
+   		<if test="keyWord != null and keyWord != ''">
+   			and (a.name like concat('%',#{keyWord},'%') or c.username like concat('%',#{keyWord},'%') or a.user_mobile like concat('%',#{keyWord},'%') or code like upper(concat('%',#{keyWord},'%'))) 
+   		</if>
+   		order by a.id desc) a 
+   		limit ${startPage} , ${pageSize}
+   </select>
+   <update id="updateRankAgreemtCode">
+   		update yc_agreement_tab set code = CONCAT(#{rank_code},'A',DATE_FORMAT(NOW(),'%y'),'R',#{id}), file_path = #{file_path} where id = #{id}
+   </update>
+    <update id="updateAgreement">
+   		update yc_agreement_tab set ${columns} where id = #{id} and type = #{type}
+   </update>
+    <update id="updateRankAgreementInfo" parameterType="com.yc.rm.caas.appserver.model.house.RankAgreement">
+   		UPDATE yc_agreement_tab SET NAME = #{name}, begin_time = #{begin_time}, end_time = ADDDATE(#{begin_time},INTERVAL #{rent_month} MONTH), file_path = #{file_path}, desc_text = #{desc_text}, cost_a = #{price}, agents = #{agents}, pay_type = #{pay_type},  cost = #{rent_month} * #{price}, pay_time = #{begin_time} WHERE id = #{id}
+   </update>
+   <select id="checkAgreementStatus" resultType="java.lang.Integer">
+   		SELECT COUNT(1) FROM yc_agreement_tab a WHERE a.id = #{id} AND a.`status` = #{status} and type = #{type}
+   </select>
+   <select id="getAgreementInfo" resultType="com.yc.rm.caas.appserver.model.contract.ContractBean">
+		SELECT a.id, a.code, a.name, a.type, a.user_id, 
+			   a.user_mobile, a.begin_time, a.end_time, a.house_id,ac.name agentName,
+   			   a.file_path, a.desc_text, a.status, a.cost, a.isdelete,
+			   a.agents, a.bankcard, a.bankid, a.cardbank, a.new_old_matched,
+   			   a.cardowen, a.watercard, a.electriccard, a.gascard, a.pay_type, 
+   			   d.item_name payType, a.sbcode, a.cost_a, a.pay_time, 
+   			   a.free_period, a.water_meter, a.gas_meter, a.electricity_meter_l, 
+   			   a.electricity_meter_h, a.end_time,a.electricity_meter, 
+			   a.is_cubicle, a.keys_count, a.old_matched, 
+   			   a.areaid, a.operid, a.father_id, a.freeRankType,a.propertyType,
+   			   a.mortgage,a.propertyCode,a.propertyPerson,a.co_owner,a.wtuserid,a.dluserid,
+   			   a.wtmobile,a.wtAddress,a.wtIDCard,a.wtname,a.wtemail,
+   			   a.wtrealAddress,a.dlmobile,a.dlAddress,a.dlIDCard,a.dlname,a.dlemail,
+   			   u.username `username`,b.`house_name`,c.`certificateno`,
+   			   PERIOD_DIFF(DATE_FORMAT(a.end_time,'%Y%m'), DATE_FORMAT(a.begin_time,'%Y%m'))/12 rentMonth,
+               (case when length(file_path) > 0 
+                     then CONCAT(#{newfilepath},REPLACE(a.file_path,'|',#{filepath})) 
+                     else '' end) pic_path,
+   			   (case when length(propertyPath) > 0 
+   			         then CONCAT(#{newfilepath},REPLACE(a.propertyPath,'|',#{filepath})) 
+   			         else '' end) propertyPath,
+   			   (case when length(agentPath) > 0 
+   			         then CONCAT(#{newfilepath},REPLACE(a.agentPath,'|',#{filepath})) 
+   			         else '' end) agentPath
+   		  FROM yc_agreement_tab a 
+   		  LEFT JOIN yc_userinfo_tab c ON c.id = a.`user_id`
+   		  LEFT JOIN yc_house_tab b    ON a.`house_id` = b.id 
+	   	  LEFT JOIN yc_userinfo_tab u on b.user_id = u.id
+	      LEFT JOIN yc_account_tab ac on ac.id = a.`agents`
+	      LEFT JOIN yc_dictionary_item d on d.item_id = a.pay_type and d.group_id = 'AGREEMENT.PAYTYPE'
+   		 WHERE a.type = 1 and a.`isdelete` = 1
+   		<if test="house_id != null and house_id != ''">
+   		  AND a.`house_id` = #{house_id}
+   		</if>
+   		<if test="agreementid != null and agreementid != ''">
+   		  AND a.`id` = #{agreementid}
+   		</if>
+   </select>
+   <insert id="saveHouseAgreement" parameterType="com.yc.rm.caas.appserver.model.contract.ContractBean" useGeneratedKeys="true" keyProperty="id">
+   		insert into yc_agreement_tab(name,type,user_id,user_mobile,begin_time,end_time,house_id,file_path,desc_text,status,cost,create_time,isdelete,agents,bankcard,cardbank,cardowen,watercard,electriccard,gascard,pay_type,cost_a,pay_time,free_period,water_meter,gas_meter,electricity_meter_h,electricity_meter_l,electricity_meter,is_cubicle,keys_count,new_old_matched,areaid,operid,bankid,freeRankType,propertyType,mortgage,propertyCode,propertyPerson,co_owner,wtuserid,dluserid,wtmobile,wtAddress,wtIDCard,wtname,wtemail,wtrealAddress,dlmobile,dlAddress,dlIDCard,dlname,dlemail)
+   		 values (#{name},'1',#{user_id},#{user_mobile},#{begin_time},adddate(#{begin_time},INTERVAL #{rentMonth} * 12 MONTH),#{house_id},#{pic_path},#{desc_text},11,#{cost},now(),1,${agents},#{bankcard},#{cardbank},#{cardowen},#{watercard},#{electriccard},#{gascard},#{pay_type},#{cost_a},#{begin_time},#{free_period},#{water_meter},#{gas_meter},#{electricity_meter_h},#{electricity_meter_l},#{electricity_meter},#{is_cubicle},#{keys_count},#{new_old_matched},#{areaid},#{operid},#{bankId},#{freeRankType},#{propertyType},#{mortgage},#{propertyCode},#{propertyPerson},#{co_owner},#{wtuserid},#{dluserid},#{wtmobile},#{wtAddress},#{wtIDCard},#{wtname},#{wtemail},#{wtrealAddress},#{dlmobile},#{dlAddress},#{dlIDCard},#{dlname},#{dlemail})
+   </insert>
+   <select id="rankAgreementList"  resultType="com.yc.rm.caas.appserver.model.house.RankAgreement" parameterType="com.yc.rm.caas.appserver.bus.controller.house.fo.HouseFo">
+  		select * from (
+  		 SELECT fn_getarearname(a.areaid) areaName, a.code, fn_getagentname(a.`agents`) agentName, c.`username`,
+  			 	case when #{signStatus} = '$1' then 1 else 0 end signFlag, 
+				fn_getdictitemname('GROUP.RANK.AGREEMENT',a.`status`) rankstatus, a.id, a.name, c.`mobile`, a.`cost`,
+				fn_getdictitemname('RANKHOUSE.TYPE',b.`rank_type`) rankType, b.`rank_area`,end_time, ((to_days(end_time) - to_days(now())) + 1) surplusDay
+	       FROM yc_agreement_tab a 
+	       left join yc_userinfo_tab c on c.id = a.user_id and c.is_delete = 1 , yc_houserank_tab b
+	      WHERE b.`id` = a.`house_id` 
+        	and a.isdelete = 1
+        	and a.type = 2
+         <if test="status != null and status != ''">
+   			and a.status = #{status}
+	   	 </if>
+         <if test="signStatus == '$2'">
+         	<![CDATA[ AND EXISTS(SELECT 1 FROM financial_receivable_tab c WHERE c.`secondary` = a.`id` AND DATE_SUB(c.start_time,INTERVAL 15 DAY) <= NOW() AND c.status = 0  AND c.isdelete = 1 AND c.`category` = 1 AND NOT EXISTS(SELECT 1 FROM yc_task_financial_receivable d WHERE d.is_over = 0 AND d.`payable_tab_id` = c.`id` ))  ]]>
+	   	 </if>
+         <if test="signStatus == '$1'">
+   			<![CDATA[ and a.`status` = 2 and date_add(now(), interval 14 day) > a.`end_time` and date_format(now(),'%Y-%m-%d') <= date_format(a.`end_time`,'%Y-%m-%d') ]]>
+	   	 </if>
+	   	 <if test="contractManage != null and contractManage != ''">
+	   		and agents = #{contractManage}
+	   	 </if>
+	   	 <if test="areaid != null and areaid != ''">
+	   		and areaid = #{areaid}
+	   	 </if>
+	   	 <if test="trading != null and trading != ''">
+	   		and a.`areaid` IN (SELECT f.`areaid` FROM yc_group_tab f WHERE f.`trading` = #{trading})
+	   	 </if>
+	   	 <if test="user_id != null and user_id != ''">
+	   	 	and exists (select  1   
+	   	 				from yc_house_tab e   
+	   	 				left join yc_group_tab f on f.id = e.`group_id`, yc_agreement_tab d 
+	   	 				left join cf_team_member_area tma on f.`id` = tma.`area_id`
+					    where e.`delete_state` = 1 
+					      and d.`type` = 1 
+					      and a.`father_id` = d.`id` 
+					      and d.`house_id` = e.`id` 
+					      and tma.`user_id` = #{user_id})  
+	   	 </if>
+	   	 <if test="keyWord != null and keyWord != ''">
+	   		and (a.name like concat('%',#{keyWord},'%') or c.username like concat('%',#{keyWord},'%') or user_mobile like concat('%',#{keyWord},'%') or a.code like upper(concat('%',#{keyWord},'%')))
+	   	 </if>
+	   	 <if test="userId != null and userId != '' ">
+	   	 	and a.user_id = #{userId} and a.`status` = 2
+	   	 </if>
+         order by a.id desc) a 
+        limit ${startPage} , ${pageSize}
+  </select>
+   <select id="loadRankAgreementList" resultType="com.yc.rm.caas.appserver.model.house.RankAgreement">
+   		SELECT a.`name`, c.`username`, fn_getdictitemname ('RANKHOUSE.TYPE', b.`rank_type`) rankType, a.`code`, a.id,
+   			   b.`rank_area`, a.`cost`, fn_getdictitemname ('GROUP.RANK.AGREEMENT', a.`status`) rankstatus, b.rank_code  
+   		 FROM  (yc_agreement_tab a LEFT JOIN yc_userinfo_tab c ON c.`id` = a.`user_id`), yc_houserank_tab b 
+   		WHERE  a.`house_id` = b.`id` 
+   		  AND a.`type` = 2 
+   		  AND a.`isdelete` = 1
+   		  AND a.`house_id` = #{id}
+   </select>
+</mapper>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>市场报表</title>
+
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link href="/html/css/home.css" rel="stylesheet" />
+</head>
+
+<body>
+	<div class="row">
+		<section class="panel">
+			<header class="panel-heading custom-tab">
+				<ul class="nav nav-tabs">
+					<li class="active">
+						<a href="#home-2" data-toggle="tab"> 
+							<i class="fa fa-home"></i>市场
+						</a>
+					</li>
+				</ul>
+				<div style="position: absolute;top: 14px;right: 10px;">
+					<div class="input-group date form_datetime xs-col-12">
+						<input id="datetimepicker1" style="width: 80px;"
+							placeholder="请选择日期" class="form-control" size="16" type="text"
+							value="" readonly="">
+					</div>
+				</div>
+			</header>
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+				</div>
+			</section>
+			<div class="panel-body">
+				<div class="tab-content">
+					<div class="tab-pane active" id="home-2">
+						<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+						<div id="main"
+							style="width: 100%;height:500px;display:inline-block;"></div>
+						<div class="adv-table">
+							<table id="home_sc_table" class="table table-bordered"
+								style="width: 100%">
+								<tr>
+									<td colspan="10">南京 <b id="hometableMonth"></b>月
+									</td>
+								</tr>
+								<tr>
+									<td>地区</td>
+									<td>项目</td>
+									<td>本月</td>
+									<td title="本月数量/上年本月数量 X 100%">同比</td>
+									<td title="本月数量/上月数量 X 100%">环比</td>
+									<td>地区</td>
+									<td>项目</td>
+									<td>本月</td>
+									<td title="本月数量/上年本月数量 X 100%">同比</td>
+									<td title="本月数量/上月数量 X 100%">环比</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div class="tab-pane" id="about-2">About</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</body>
+<!-- 引入 ECharts 文件 -->
+<script src="js/echarts.js"></script>
+<script src="js/home/home.js"></script>
+</html>

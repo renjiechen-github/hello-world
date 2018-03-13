@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>详情</title>
+</head>
+
+<body>
+	<section class="panel">
+		<ul id="myTab" class="nav nav-tabs">
+			<li class="active"><a href="#addIndex" data-toggle="tab">基本信息</a>
+			</li>
+			<!-- <li><a href="#addElse" data-toggle="tab">定位坐标</a>
+			</li> -->
+			 <li><a href="#addrelation" data-toggle="tab">户型关系</a>
+			</li> 
+			<li><a href="#houserelation" data-toggle="tab">房源报表</a>
+			</li>
+		</ul>
+		<form id="form2" class="form-horizontal adminex-form " role="form">
+			<div id="myTabContent" class="tab-content">
+				<!-- 基本信息-->
+				<div class="tab-pane fade in active" id="addIndex">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"></label>
+						<div class="col-sm-6"></div>
+						<div class="col-sm-4"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">所属区域：</label>
+						<div class="col-sm-3">
+							<span id="area_select" class="form-control" style="border: 0"></span>
+						</div>
+						<label class="col-sm-2  control-label">所属商圈：</label>
+						<div class="col-sm-3">
+							<span id="areaid" class="form-control" style="border: 0"></span>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2  control-label">小区名称：</label>
+						<div class="col-sm-8">
+							<span id="groupName" class="form-control"style="border: 0"></span>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"> 小区类型：</label>
+						<div class="col-sm-3">
+							<span id="groupType" class="form-control"style="border: 0"></span>
+						</div>
+						<label class="col-sm-2  control-label"> 建造日期：</label>
+						<div class="col-sm-3">
+							<span id="groupDate" class="form-control"style="border: 0"></span>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">开发商：</label>
+						<div class="col-sm-3">
+							<span id="groupDeveloper" class="form-control"style="border: 0"></span>
+						</div>
+						<label class="col-sm-2  control-label">物业公司：</label>
+						<div class="col-sm-3">
+							<span id="groupProperty" class="form-control"style="border: 0"></span>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">交通说明：</label>
+						<div class="col-sm-3">
+							<span id="groupTraffic" class="form-control"style="border: 0"></span>
+						</div>
+						<label class="col-sm-2  control-label">绿化率：</label>
+						<div class="col-sm-3">
+							<span id="greenRate" class="form-control"style="border: 0"></span>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">总户数：</label>
+						<div class="col-sm-3">
+							<span id="houseCount" class="form-control"style="border: 0"></span>
+						</div>
+						<label class="col-sm-2 col-sm-2 control-label">面积：</label>
+						<div class="col-sm-3">
+							<span id="groupArea" class="form-control"style="border: 0"></span>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">停车位：</label>
+						<div class="col-sm-3">
+							<span id="parkCount" class="form-control"style="border: 0"></span>
+						</div>
+						<label class="col-sm-2  control-label">容积率：</label>
+						<div class="col-sm-3">
+							<span id="plotRatio" class="form-control"style="border: 0"></span>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">小区描述：</label>
+						<div class="col-sm-8">
+							<span id="groupDesc" class="form-control"style="border: 0"></span>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2  control-label">图片：</label>
+						<div class="col-sm-8">
+							<div id="imageview"></div>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					 <div class="form-group">
+						<label class="col-sm-2  control-label">房源地址：</label>
+						<div class="col-sm-6">
+							<span id="groupAddress" class="form-control"style="border: 0"></span>
+						</div>
+						<div class="col-sm-4"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">地图坐标：</label>
+						<div class="col-sm-6">
+							<span id="groupCoordinate" class="form-control"style="border: 0"></span>
+						</div>
+						<div class="col-sm-4"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">地图坐标：</label>
+						<div class="col-sm-10">
+							<div id="groupMap"
+								style="width: 600px;height: 300px;overflow: hidden;margin:0;font-family:"微软雅黑";"></div>
+						</div>
+					</div>
+				</div>
+              
+				<!-- 定位坐标 
+				<div class="tab-pane fade in " id="addElse">
+					
+				</div>-->
+
+				<!--小区户型关系 -->
+				<div class="tab-pane fade in " id="addrelation">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"></label>
+						<div class="col-sm-6"></div>
+						<div class="col-sm-4"></div>
+					</div>
+					<div id="selectspec"></div>
+				</div>
+				<!--小区房源报表 -->
+				<div class="tab-pane fade in " id="houserelation">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"></label>
+						<div class="col-sm-6"></div>
+						<div class="col-sm-4"></div>
+					</div>
+					<div class="row state-overview">
+						<div class="col-md-3 col-xs-12 col-md-3">
+							<div class="panel purple" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-gavel"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr0">230</span>
+									</div>
+									<div class="title">房源总计</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-3 col-xs-12 col-md-3">
+							<div class="panel red" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-tags"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr1">230</span>
+									</div>
+									<div class="title">待开工</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 col-xs-12 col-md-3">
+							<div class="panel blue" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-tags"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr2">230</span>
+									</div>
+									<div class="title">待出租</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 col-xs-12 col-md-3">
+							<div class="panel green" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-tags"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr3">230</span>
+									</div>
+									<div class="title">出租中</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+
+			<div class="text-center">
+				<button class="btn btn-info" id="group_cancel" type="button">关闭</button>
+			</div>
+
+		</form>
+	</section>
+</body>
+<script type="text/javascript"
+	src="/html/adminX/js/dropzone/dropzone.js"></script>
+<script type="text/javascript" src="/html/js/house/group/group_view.js"></script>
+</html>

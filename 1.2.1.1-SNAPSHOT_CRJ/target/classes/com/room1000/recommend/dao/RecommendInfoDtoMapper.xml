@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.recommend.dao.RecommendInfoDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.recommend.dto.RecommendInfoDto">
+    <!-- @mbg.generated -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="area_id" jdbcType="INTEGER" property="areaId" />
+    <result column="open_id" jdbcType="INTEGER" property="openId" />
+    <result column="open_time" jdbcType="TIMESTAMP" property="openTime" />
+    <result column="kf_time" jdbcType="TIMESTAMP" property="kfTime" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="state_time" jdbcType="TIMESTAMP" property="stateTime" />
+    <result column="agreement_id" jdbcType="INTEGER" property="agreementId"/>
+    <association property="openUser" javaType="com.room1000.core.user.dto.UserDto">
+      <id column="ou_id" jdbcType="BIGINT" property="id" />
+      <result column="ou_username" jdbcType="VARCHAR" property="username" />
+      <result column="ou_mobile" jdbcType="VARCHAR" property="mobile" />
+      <result column="ou_certificateno" jdbcType="VARCHAR" property="certificateno" />
+      <result column="ou_qq" jdbcType="VARCHAR" property="qq" />
+      <result column="ou_email" jdbcType="VARCHAR" property="email" />
+      <result column="ou_wechat" jdbcType="VARCHAR" property="wechat" />
+      <result column="ou_sex" jdbcType="INTEGER" property="sex" />
+      <result column="ou_birthday" jdbcType="VARCHAR" property="birthday" />
+      <result column="ou_photourl" jdbcType="VARCHAR" property="photourl" />
+      <result column="ou_registertime" jdbcType="TIMESTAMP" property="registertime" />
+      <result column="ou_desc_text" jdbcType="VARCHAR" property="descText" />
+      <result column="ou_is_delete" jdbcType="INTEGER" property="isDelete" />
+      <result column="ou_password" jdbcType="VARCHAR" property="password" />
+      <result column="ou_type" jdbcType="INTEGER" property="type" />
+      <result column="ou_lastlogintime" jdbcType="TIMESTAMP" property="lastlogintime" />
+      <result column="ou_equipment" jdbcType="VARCHAR" property="equipment" />
+      <result column="ou_ipadress" jdbcType="VARCHAR" property="ipadress" />
+      <result column="ou_ca_author" jdbcType="INTEGER" property="caAuthor" />
+      <result column="ou_registrationid" jdbcType="VARCHAR" property="registrationid" />
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!-- @mbg.generated -->
+    id, name, mobile, area_id, open_id, open_time, kf_time, state,
+    state_time, agreement_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    a.id, a.name, a.mobile, a.area_id, a.open_id, a.open_time, a.kf_time,
+    a.state, a.state_time,
+    a.remarktext, a.type, a.house_id, a.agreement_id,
+    b.id ou_id, b.username ou_username, b.mobile ou_mobile, b.certificateno
+    ou_certificateno, b.qq ou_qq, b.email ou_email, b.wechat ou_wechat,
+    b.sex ou_sex, b.birthday ou_birthday, b.photourl ou_photourl,
+    b.registertime ou_registertime, b.desc_text ou_desc_text, b.is_delete
+    ou_is_delete, b.password ou_password, b.type ou_type, b.lastlogintime
+    ou_lastlogintime, b.equipment ou_equipment, b.ipadress ou_ipadress,
+    b.ca_author ou_ca_author, b.registrationid ou_registrationid,
+    b.wc_username ou_wc_username
+    from yc_recommend_info a
+    left join yc_userinfo_tab b on a.open_id = b.id
+    where a.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectValidInfo" parameterType="java.lang.String" resultType="com.room1000.recommend.dto.RecommendInfoDto">
+    select
+    <include refid="Base_Column_List" />
+    from yc_recommend_info
+    where mobile = #{mobile, jdbcType=VARCHAR}
+    and state in (1, 4)
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!-- @mbg.generated -->
+    delete from yc_recommend_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.room1000.recommend.dto.RecommendInfoDto">
+    <!-- @mbg.generated -->
+    insert into yc_recommend_info (id, name, mobile,
+    area_id, open_id, open_time,
+    kf_time, state, state_time, agreement_id
+    )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
+    #{mobile,jdbcType=VARCHAR},
+    #{areaId,jdbcType=INTEGER}, #{openId,jdbcType=INTEGER}, #{openTime,jdbcType=TIMESTAMP},
+    #{kfTime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER},
+    #{stateTime,jdbcType=TIMESTAMP}, #{agreementId, jdbcType=INTEGER}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.recommend.dto.RecommendInfoDto">
+    <!-- @mbg.generated -->
+    insert into yc_recommend_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="areaId != null">
+        area_id,
+      </if>
+      <if test="openId != null">
+        open_id,
+      </if>
+      <if test="openTime != null">
+        open_time,
+      </if>
+      <if test="kfTime != null">
+        kf_time,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="stateTime != null">
+        state_time,
+      </if>
+      <if test="agreementId != null">
+        agreement_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="areaId != null">
+        #{areaId,jdbcType=INTEGER},
+      </if>
+      <if test="openId != null">
+        #{openId,jdbcType=INTEGER},
+      </if>
+      <if test="openTime != null">
+        #{openTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="kfTime != null">
+        #{kfTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="stateTime != null">
+        #{stateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="agreementId != null">
+        #{agreementId, jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.recommend.dto.RecommendInfoDto">
+    <!-- @mbg.generated -->
+    update yc_recommend_info
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="areaId != null">
+        area_id = #{areaId,jdbcType=INTEGER},
+      </if>
+      <if test="openId != null">
+        open_id = #{openId,jdbcType=INTEGER},
+      </if>
+      <if test="openTime != null">
+        open_time = #{openTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="kfTime != null">
+        kf_time = #{kfTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="stateTime != null">
+        state_time = #{stateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="agreementId != null">
+        agreement_id = #{agreementId, jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.recommend.dto.RecommendInfoDto">
+    <!-- @mbg.generated -->
+    update yc_recommend_info
+    set name = #{name,jdbcType=VARCHAR},
+    mobile = #{mobile,jdbcType=VARCHAR},
+    area_id = #{areaId,jdbcType=INTEGER},
+    open_id = #{openId,jdbcType=INTEGER},
+    open_time = #{openTime,jdbcType=TIMESTAMP},
+    kf_time = #{kfTime,jdbcType=TIMESTAMP},
+    state = #{state,jdbcType=INTEGER},
+    state_time = #{stateTime,jdbcType=TIMESTAMP},
+    agreement_id = #{agreementId, jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

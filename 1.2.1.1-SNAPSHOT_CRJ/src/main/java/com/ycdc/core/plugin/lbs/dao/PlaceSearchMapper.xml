@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.core.plugin.lbs.dao.PlaceSearchDAO">
+
+  <!-- 更新坐标 -->
+  <update id="updateLocationById" parameterType="map">
+    update yc_group_tab a 
+    <set>
+    	<choose>
+    		<when test="location != '' and location != null">
+    			a.coordinate=#{location}
+    		</when>
+    		<otherwise>
+    			a.coordinate=null
+    		</otherwise>
+    	</choose>
+    </set>
+    where a.id=#{id}
+  </update>
+
+  <!-- 获取所有小区信息 -->
+  <select id="getGroupByAll" resultType="map">
+    select 
+    a.id as "id",
+    a.group_name as "group_name",
+    a.coordinate as "coordinate"
+    from yc_group_tab a
+  </select>
+  
+  <!-- 根据ID，获取小区信息 -->
+  <select id="getGroupById" resultType="map">
+    select
+    a.id as "id",
+    a.group_name as "group_name",
+    a.coordinate as "coordinate"
+    from yc_group_tab a where a.id=#{id}
+  </select>
+  
+  <!-- 根据小区ID，更新小区周边交通信息 -->
+  <update id="updateRrafficById">
+    update yc_group_tab a 
+    <set>
+    	<choose>
+    		<when test="traffic != '' and traffic != null">
+    			a.traffic=#{traffic}
+    		</when>
+    		<otherwise>
+    			a.traffic=null
+    		</otherwise>
+    	</choose>
+    </set>    
+    where a.id=#{id}
+  </update>
+
+</mapper>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<style type="text/css">
+.bzh{
+    background-color: red !important;
+    color: white !important;
+}
+.bzh td {
+    color: white !important;
+}
+</style>
+<title>服务订单管理</title>
+</head>
+<body>
+	<section class="panel">
+		<div class="row state-overview">
+			<div class="col-md-3 col-xs-12">
+				<div class="panel red" style="height:120px;">
+					<div class="symbol" style="vertical-align: top">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="count0">230</span>
+						</div>
+						<div class="title">订单总计(未完成量)</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 col-xs-12">
+				<div class="panel green" style="height:120px;">
+					<div class="symbol">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="typeA">230</span>
+						</div>
+						<div class="title">退租订单</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-3 col-xs-12">
+				<div class="panel blue" style="height:120px">
+					<div class="symbol">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="typeD">230</span>
+						</div>
+						<div class="title">预约看房</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 col-xs-12">
+				<div class="panel green" style="height:120px">
+					<div class="symbol">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="typeH">230</span>
+						</div>
+						<div class="title">维修订单</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row state-overview">
+			<div class="col-md-2 col-xs-12">
+				<div class="panel blue" style="height:120px">
+					<div class="symbol">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="typeB">230</span>
+						</div>
+						<div class="title">保洁订单</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-2 col-xs-12">
+				<div class="panel green" style="height:120px">
+					<div class="symbol">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="typeC">230</span>
+						</div>
+						<div class="title">投诉订单</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-2 col-xs-12">
+				<div class="panel blue" style="height:120px">
+					<div class="symbol">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="typeF">230</span>
+						</div>
+						<div class="title">其他订单</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-2 col-xs-12">
+				<div class="panel green" style="height:120px">
+					<div class="symbol">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="typeE">230</span>
+						</div>
+						<div class="title">入住问题</div>
+					</div>
+				</div>
+			</div>
+			
+			
+			<div class="col-md-2 col-xs-12">
+				<div class="panel green" style="height:120px">
+					<div class="symbol">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="typeI">230</span>
+						</div>
+						<div class="title">例行保洁</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-2 col-xs-12 col-md-2">
+				<div class="panel green" style="height:120px">
+					<div class="symbol">
+						<i class="fa fa-tags"></i>
+					</div>
+					<div class="state-value">
+						<div class="value">
+							<span id="typeG">230</span>
+						</div>
+						<div class="title">业主预约</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 待支付-->
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+					<form class="form-inline" role="form">
+						<!-- <div class="form-group tools">
+							<div class="btn-group">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">新增订单 <span class="caret"></span></button>
+								<ul class="dropdown-menu" id="addul" style="min-width:100px">
+								</ul>
+							</div>
+						</div> -->
+						
+						<div class="form-group">
+							<label for="addul" class="control-label" style="padding-top: 0.5rem;color: green;font-weight:bold;">新增订单: </label>
+							<select class="form-control" id="addul" name="order_type">
+								<option value="">...</option>
+							</select>
+						</div>
+						
+						<div class="form-group">
+							<label for="order_type" class="control-label" style="padding-top: 0.5rem;">订单类型:</label>
+							<select class="form-control" id="order_type" name="order_type">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="order_state" class="control-label" style="padding-top: 0.5rem;">订单状态:</label>
+							<select class="form-control" id="order_state" name="order_state">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="order_grade" class="control-label" style="padding-top: 0.5rem;">总体评分:</label>
+							<select class="form-control" id="order_grade" name="order_grade">
+							<option value="">请选择...</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>
+						</div><br />
+            <div class="form-group">
+              <label for="exampleInputEmail2">查询时间:</label> 
+              <input id="createtime" style="width: 300px;" type="text" readonly="readonly" class="form-control span4" />
+            </div>
+						<div class="form-group">
+							<label for="keyword" class="control-label" style="padding-top: 0.5rem;">模糊查询:</label> <input type="text" class="form-control suitable" id="keyword"  placeholder="用户名、用户手机、订单编号">
+						</div>
+						<span class="form-group tools"><a href="javascript:;" class="btn-block fa fa-search yc_seach" style="margin-top: 0.5rem" id="search" table="workOrderTable">查询</a>
+						</span>
+					</form>
+				</div>
+			</section>
+				<div class="panel-body">
+					<div class="adv-table">
+			        	<table id="workOrderTable" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+					        <thead>
+					            <tr>	
+					            	<th></th>
+					             	<th></th>
+					                <th>编码</th>
+					                <th>订单名称</th>
+					                <th>订单类型</th>
+					                <th>创建时间</th>
+					                <th>用户名称</th>
+					                <th>用户手机号码</th>
+					                <th>当前状态</th>
+									<th>评分</th>
+					                <th>处理人/角色</th>
+					                <th>总时长（小时）</th>
+					                <th>当前步骤时长（小时）</th>
+					                <th></th>
+					            </tr>
+					        </thead>
+					    </table>
+			        </div>
+				</div>
+	</section>
+</body>
+<script type="text/javascript" src="/html/js/order_flow/order_newAction/order_list.js"></script>
+</html>

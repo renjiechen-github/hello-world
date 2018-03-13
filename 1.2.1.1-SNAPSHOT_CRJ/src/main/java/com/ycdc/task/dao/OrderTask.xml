@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.task.dao.OrderTaskDAO">
+
+	<select id="isExist" parameterType="com.ycdc.task.entitys.Order" resultType="int">
+		select count(1) 
+		from order_tab 
+		where user_id=#{user_id} and order_type=9 and order_status=4
+		and date_format(create_time, '%Y-%m')=date_format(now(), '%Y-%m')	
+	</select>
+	
+	<select id="getUserInfo" resultType="com.ycdc.task.entitys.Order">
+	  select 
+	  a.id as "correspondent",
+	  a.user_id as "user_id",
+	  a.user_mobile as "user_mobile",
+	  a.name as "name",
+	  c.username as "user_name",
+	  d.area_name as "area_name",
+	  group_concat(concat(c.username,':',a.user_mobile)) as "order_desc"
+	  from yc_agreement_tab a left join yc_houserank_tab b on a.house_id=b.id
+	  left join yc_userinfo_tab c on a.user_id=c.id left join yc_area_tab d on a.areaid=d.id 
+	  where a.type=2 and a.status=2 and a.isdelete=1 and b.rank_type=1 
+	  group by b.house_id
+	  order by b.house_id
+	</select>
+	
+	<select id="getSingleUserInfo" resultType="com.ycdc.task.entitys.Order">
+	  select 
+	  a.id as "correspondent",
+	  a.user_id as "user_id",
+	  a.user_mobile as "user_mobile",
+	  a.name as "name",
+	  c.username as "user_name",
+	  d.area_name as "area_name",
+	  group_concat(concat(c.username,':',a.user_mobile)) as "order_desc"
+	  from yc_agreement_tab a left join yc_houserank_tab b on a.house_id=b.id
+	  left join yc_userinfo_tab c on a.user_id=c.id left join yc_area_tab d on a.areaid=d.id 
+	  where a.type=2 and a.status=2 and a.isdelete=1 and b.rank_type=1 and a.id=#{id} 	 
+	</select>
+	
+	<insert id="insertAndGetId" useGeneratedKeys="true" keyProperty="id" parameterType="com.ycdc.task.entitys.Order">
+    insert into order_tab(
+    	order_type,
+    	order_name,
+    	order_status,
+    	create_time,
+    	user_id,
+    	user_name,
+    	user_mobile,
+    	order_cost,
+    	order_desc,
+    	service_time,
+    	owner,
+    	childtype,
+    	action_time,
+    	correspondent,
+    	task_id)  
+    values(
+    	9,
+    	#{name},
+    	4,
+    	now(),
+    	#{user_id},
+    	#{user_name},
+    	#{user_mobile},
+    	0,
+    	#{order_desc},
+    	now(),
+    	0,
+    	0,
+    	now(),
+    	#{correspondent},
+    	0
+    	)  		
+	</insert>
+	
+	<update id="updateOrderCode" parameterType="com.ycdc.task.entitys.Order">
+		update order_tab 
+		set order_code=#{order_code}
+		where id=#{id}
+	</update>
+	
+</mapper>

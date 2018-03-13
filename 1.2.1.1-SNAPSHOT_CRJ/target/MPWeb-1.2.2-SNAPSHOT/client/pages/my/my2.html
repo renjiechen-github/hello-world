@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>我的</title>
+    <link rel="stylesheet" type="text/css" href="../../css/my.css"/>
+    <script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="../../js/common.client.js"></script>
+<!--     <style> -->
+<!--     	#myinfo:active{	background:#EBEBEB;} -->
+<!-- 		#myinfos:active{background:#EBEBEB;} -->
+<!--     </style> -->
+</head>
+<body>
+<div style="margin-top: 50px"></div>
+<div style="position: relative;margin-top: 20dp">
+	<div id="header">
+      <h3 style="padding-top: 15px;">我的</h3>
+    </div>
+</div>
+    <div style="margin-top:20px;">
+    	 <input type="text" value="" name="client_lat" id="client_lat" />
+    	 <input type="text" value="" name="client_lng" id="client_lng" />
+    	 <input type="text" value="" name="client_addr" id="client_addr" />
+    	<div id="myinfo" class="logOut">
+    		<div id="set">
+    			<div id="logoc"><img src="../../images/logOut.png" style="width:23px;" /></div>
+    			<div id="tit">退出登录</div>
+    			<div id="mark"></div>
+    		</div>
+    	</div>
+    </div> 
+   <script>
+   $(function(){
+	   njyc.phone.getLocation('');
+	 	$('.logOut').click(function(){
+	   		njyc.phone.getLocation('');
+	   	});
+   });
+   
+  	
+   </script>   
+</body>
+</html>

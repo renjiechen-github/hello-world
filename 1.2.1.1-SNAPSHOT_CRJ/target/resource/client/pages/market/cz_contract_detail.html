@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+<title>房源出租详细页面</title>
+<link rel="stylesheet" type="text/css"
+	href="../../css/normalize.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="../../css/market/cz_contract_detail.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="../../css/uploadImage/uploadImage.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="../../css/preImage/lightbox.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="../../css/xcConfirm/xcConfirm.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="../../css/mobiscroll_date/mobiscroll_date.min.css" />
+</head>
+
+<body>
+	<form action="" id="form2">
+		<div class="body">
+			<div class="b1 com cons1 active">
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>所属房源</p>
+						</div>
+						<div class="weui_cell_ft" id="house_name"></div>
+						<input id="rank_id" name="rank_id" type="hidden" /> <input
+							id="houseId" name="houseId" type="hidden" /> <input id="id"
+							name="id" type="hidden" />
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>合约类型</p>
+						</div>
+						<div class="weui_cell_ft" id="rankType"></div>
+					</div>
+				</div>
+				<div class="weui_cells" id="agreementDiv" style="display: none;">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>合约编码</p>
+						</div>
+						<div class="weui_cell_ft">
+							<input type="text" id="agreement_span" readonly="readonly" />
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>合约名称</p>
+						</div>
+						<div class="weui_cell_ft">
+							<input type="text" class="inputChange2" name="agreement_name"
+								id="agreement_name" dataType="Custom"
+								regexp="^([\u4e00-\u9fa5A-Za-z0-9_-]{1,})$" msg="请输入合法的合约名称！"
+								placeholder="请输入合约名称" />
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells" style="display: none;">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>合约编号</p>
+						</div>
+						<div class="weui_cell_ft">
+							<input type="number" class="inputChange2" maxlength="10"
+								name="agreement_code" id="agreement_code" placeholder="请输入合约编号" />
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>租客号码</p>
+						</div>
+						<div class="weui_cell_ft">
+							<input id="mobile" name="mobile" msg="请输入11位数字格式的手机号码"
+								dataType="Mobile" placeholder="请输入数字格式租客号码" maxlength="11"
+								class="inputChange2" type="number" />
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>租客姓名</p>
+						</div>
+						<div class="weui_cell_ft">
+							<input id="name" name="name" dataType="Require" msg="请输入租客姓名！"
+								maxlength="5" placeholder="请输入租客姓名" class="inputChange2"
+								type="text" />
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>身份证号</p>
+						</div>
+						<div class="weui_cell_ft">
+							<input id="certificateno" name="certificateno" dataType="IdCard"
+								msg="请输入有效身份证号！" placeholder="请输入有效身份证号" class="inputChange2"
+								type="text" />
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>签约管家</p>
+						</div>
+						<div class="weui_cell_ft">
+							<select id="manageId" name="manageId" dataType="Require"
+								msg="请选择签约管家！" msg="请选择管家"><option value="">请选择...</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>合约租金</p>
+						</div>
+						<div class="weui_cell_ft">
+							<input id="rankPrice" name="rankPrice" dataType="Double"
+								maxlength="8" msg="请填写合约租金！" class="inputChange2" type="number" />
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>租期</p>
+						</div>
+						<div class="weui_cell_ft">
+							<select id="rankDate" dataType="Require" name="rankDate"
+								msg="请选择租期">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>生效日期</p>
+						</div>
+						<div class="weui_cell_ft">
+							<input id="validateDate" dataType="Require" msg="请选择生效时间！"
+								readonly="readonly" name="validateDate" class="inputChange2"
+								type="text" />
+						</div>
+					</div>
+				</div>
+				<div class="weui_cells">
+					<div class="weui_cell">
+						<div class="weui_cell_bd weui_cell_primary">
+							<p>付款方式</p>
+						</div>
+						<div class="weui_cell_ft">
+							<select id="payType" name="payType" dataType="Require"
+								msg="请选择付款方式！">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="weui_cell3">
+					<div class="weui_cell">
+						<div class="weui_cell_ft">
+							<textarea rows="5" class="inputChange2" id="agreementDes"
+								placeholder="请输入合约描述" name="agreementDes"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="weui_cell3"
+					style="margin-bottom: 4px;border-bottom: 0px;">
+					<div class="weui_cell" id="selectImage">
+						<a href="">选择文件上传</a>
+					</div>
+					<ul class="ipost-list ui-sortable js_fileList"></ul>
+					<input type="hidden" value="4" name="picSize" id="picSize" /> <input
+						type="hidden" value="" name="picPath" id="picPath" />
+				</div>
+			</div>
+		</div>
+		<div class="common_button">
+			<div class="right3">
+				<button id="saveBtn" type="button" class="">保存</button>
+			</div>
+			<div class="left3">
+				<button id="submitBtn" type="button" class="">提交</button>
+			</div>
+		</div>
+		<div class="divCenter" id="tzDiv">
+			<div class="body" style="padding-top: 50%">
+				<div style="background-color: #ffffff">
+					<div class="b1 com cons1 active">
+						<div class="weui_cells">
+							<div class="weui_cell">
+								<div class="weui_cell_bd weui_cell_primary">
+									<p style="color: black;">退租时间</p>
+								</div>
+								<div class="weui_cell_ft">
+									<input id="tzDate" readonly="readonly" name="tzDate"
+										class="inputChange2" type="text" />
+								</div>
+							</div>
+						</div>
+						<div class="weui_cells">
+							<div class="weui_cell">
+								<div class="weui_cell_bd weui_cell_primary">
+									<p style="color: black;">退租类型</p>
+								</div>
+
+								<div class="weui_cell_ft">
+									<select id="tzType" name="tzType">
+										<option value="0">正常退租</option>
+										<option value="1">违约退租</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="common_button">
+							<div class="right3">
+								<button id="tjBtn" type="button" class="">确定</button>
+							</div>
+							<div class="left3">
+								<button id="colseBtn" type="button" class="">关闭</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	</form>
+</body>
+<script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+<script type="text/javascript"
+	src="../../js/preImage/lightbox-2.6.js"></script>
+<script type="text/javascript" src="../../js/jquery.form.js"></script>
+<script type="text/javascript" src="../../js/xcConfirm/xcConfirm.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../js/common.client.js"></script>
+<script type="text/javascript"
+	src="../../js/mobile_scroll_date/mobiscroll_date.js"></script>
+<script type="text/javascript"
+	src="../../js/mobile_scroll_date/mobiscroll.js"></script>
+<script type="text/javascript"
+	src="../../js/rank_agreement/rank_agreement_info.js"></script>
+</html>

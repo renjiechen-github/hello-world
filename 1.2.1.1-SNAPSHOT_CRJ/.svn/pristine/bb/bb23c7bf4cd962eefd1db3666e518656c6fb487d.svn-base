@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ycdc.appserver.bus.dao.flow.IFlowDao">
+	<select id="loadTaskType" resultType="map">
+		SELECT a.`type_id`, a.`type_name` FROM yc_task_type a WHERE a.`super_id` = #{super_id} AND a.`state` = 1
+	</select>
+	
+	<select id="loadAreaList" resultType="map">
+	     SELECT id,area_name,area_type FROM yc_area_tab  WHERE  area_type=#{super_id}
+	</select>
+	
+	<select id="myStartTask" resultType="map">
+	select * from (
+	select
+	a.task_cfg_id,
+    a.state,
+    a.task_id,
+    b.typenames,
+    a.task_code,
+    a.name,
+    DATE_FORMAT(a.create_time, '%Y-%m-%d %k:%i') createtime,
+    fn_getdictitemname ('FLOW.INFO.STATUS', a.state) statename,
+    fn_getTaskStepState (a.`task_id`) step_id,
+    fn_getTaskStepName (a.`task_id`) step_name,
+    fn_getOperName(fn_getStep_Now_Oper(a.`task_id`)) AS opername,
+    fn_getRoleName( fn_getStep_NowRole_Id(a.`task_id`)) AS rolename,
+    o.tradingname,
+	o.areaname,
+	o.address
+	from yc_task_info_tab a LEFT JOIN ((SELECT
+	g.g_id,h.address,fn_getarearname(g.`trading`)
+	tradingname,fn_getarearname(g.`areaid`)
+	areaname,g.trading,g.`areaid`,o.`id` FROM yc_houserank_tab r
+	,yc_group_tab g,yc_house_tab h, order_tab o
+	WHERE r.`house_id`=h.`id`
+	AND h.`group_id`=g.`id` AND o.correspondent=r.id and o.`order_type` in
+	(0)
+	)UNION ALL
+	(SELECT g.g_id,h.address,fn_getarearname(g.`trading`)
+	tradingname,fn_getarearname(g.`areaid`)
+	areaname,g.trading,g.`areaid`,o.`id` FROM yc_agreement_tab a ,
+	yc_agreement_tab al,yc_house_tab h, yc_group_tab g ,order_tab o
+	WHERE
+	h.group_id=g.id AND h.id=a.house_id AND a.id = al.father_id AND
+	a.type=1 AND al.type=2 AND o.correspondent=al.id and o.`order_type` in
+	(1,2,7,9))) o ON
+	o.id=a.`resource_id` , yc_task_type b, yc_task_cfg_tab
+	c
+	where a.task_cfg_id = c.id
+	and c.type = b.type_id
+	and a.create_oper = ${operId}
+		   <if test="keyWord != null and keyWord != '' ">
+		   		and (a.name like  CONCAT('%',#{keyWord},'%')  or  a.task_code like  CONCAT('%',#{keyWord},'%'))
+		   </if>
+		   <if test="state != null and state != '' ">
+		   		and a.state = #{state} 
+		   </if>
+		   <!-- <if test="typeId != null and typeId != '' ">
+		   		 and (b.typeids = #{typeId} or concat('-',b.`typeids`,'-') like  concat('%-',#{typeId},'-%'))
+		   </if> -->
+		     <if test="typeids != null and typeids != '' ">
+		   	  and (b.typeids = CONCAT(${typeId},'-',${typeids}) or CONCAT('-',b.`typeids`,'-') LIKE  CONCAT('%',${typeids},'%')) 
+		   </if> 
+		    <if test="area_id != null and area_id != '' ">
+		   	   and o.areaid = ${area_id} 
+		   </if>
+		   <if test="trading != null and trading != '' ">
+		   	   and o.trading = ${trading} 
+		   </if>
+		   order by a.create_time desc 
+		   ) a 
+		   limit ${startPage} , ${pageSize}
+	</select>
+	
+<select id="disposetTask" resultType="map">
+		select * from (
+		<if test="g_id == null or g_id == '' ">
+	SELECT
+	c.html_path,
+	c.dispose_class,
+	a.task_cfg_id,
+	f.step_id,
+	a.task_id,
+	b.typenames,
+	a.task_code,
+	a.name,
+	DATE_FORMAT(a.create_time, '%Y-%m-%d %k:%i') createtime,
+	fn_getdictitemname ('FLOW.INFO.STATUS', a.state) statename,
+	fn_getdictitemname ('FLOW.STEP.STATUS', f.state) step_state_name,
+	fn_getOperName (f.`now_oper`) AS opername,
+	fn_getRoleName (f.`now_role_id`) AS rolename,
+	f.`step_name`,
+	o.tradingname,
+	o.areaname,
+	o.address
+	FROM
+	yc_task_info_tab a LEFT JOIN ((SELECT g.g_id,h.address,fn_getarearname(g.`trading`)
+	tradingname,fn_getarearname(g.`areaid`)
+	areaname,g.trading,g.`areaid`,o.`id` FROM yc_houserank_tab r
+	,yc_group_tab g,yc_house_tab h, order_tab o
+	WHERE r.`house_id`=h.`id` AND h.`group_id`=g.`id` AND o.correspondent=r.id and o.`order_type` in (0)
+	)UNION ALL
+	(SELECT g.g_id,h.address,fn_getarearname(g.`trading`)
+	tradingname,fn_getarearname(g.`areaid`)
+	areaname,g.trading,g.`areaid`,o.`id` FROM yc_agreement_tab a ,
+	yc_agreement_tab al,yc_house_tab h, yc_group_tab g ,order_tab o
+	WHERE h.group_id=g.id AND h.id=a.house_id AND a.id = al.father_id AND
+	a.type=1 AND al.type=2 AND o.correspondent=al.id and o.`order_type` in (1,2,7,9))) o ON
+	o.id=a.`resource_id` ,
+	yc_task_type b,
+	yc_task_cfg_tab c,
+	yc_task_step_info_tab f
+	WHERE a.task_cfg_id = c.id
+	AND a.`task_id` = f.`task_id`
+	AND c.type = b.type_id
+	AND f.state IN (0, 1, 4, 5, 6)
+	and exists(select 1 from yc_task_step_info_tab e where e.`step_id` =
+	f.`step_id` and e.`task_id` = a.`task_id` and ( e.`now_role_id` is null or e.`now_role_id` = '' 
+	 ${rule} ) and (e.`now_org_id` is null  or e.`now_org_id` = '' 
+	 ${org} ) and (e.`now_oper` is null   or e.`now_oper` = ''  or e.`now_oper` =
+	${operId} ))
+	</if>
+	<if test="g_id != null and g_id != '' ">
+	SELECT
+	c.html_path,
+	c.dispose_class,
+	a.task_cfg_id,
+	f.step_id,
+	a.task_id,
+	b.typenames,
+	a.task_code,
+	a.name,
+	DATE_FORMAT(a.create_time, '%Y-%m-%d %k:%i') createtime,
+	fn_getdictitemname ('FLOW.INFO.STATUS', a.state) statename,
+	fn_getdictitemname ('FLOW.STEP.STATUS', f.state) step_state_name,
+	f.`step_name`,
+	o.tradingname,
+	o.areaname,
+	o.address,
+	fn_getOperName (f.`now_oper`) AS opername,
+	fn_getRoleName (f.`now_role_id`) AS rolename,
+	CASE WHEN f.`now_role_id` IS NULL AND f.now_oper IS NULL THEN 1 WHEN
+	f.`now_role_id` NOT IN ( SELECT a.role_id FROM yc_account_role_tab a
+	WHERE a.user_id= #{operId})
+	AND f.`now_oper` &lt;&gt; #{operId} THEN 0 ELSE 1 END ll
+	FROM
+	yc_task_info_tab a LEFT JOIN ((SELECT g.g_id,h.address,fn_getarearname(g.`trading`)
+	tradingname,fn_getarearname(g.`areaid`)
+	areaname,g.trading,g.`areaid`,o.`id` FROM yc_houserank_tab r
+	,yc_group_tab g,yc_house_tab h, order_tab o
+	WHERE r.`house_id`=h.`id` AND h.`group_id`=g.`id` AND o.correspondent=r.id and o.`order_type` in (0)
+	)UNION ALL
+	(SELECT g.g_id,h.address,fn_getarearname(g.`trading`)
+	tradingname,fn_getarearname(g.`areaid`)
+	areaname,g.trading,g.`areaid`,o.`id` FROM yc_agreement_tab a ,
+	yc_agreement_tab al,yc_house_tab h, yc_group_tab g ,order_tab o
+	WHERE h.group_id=g.id AND h.id=a.house_id AND a.id = al.father_id AND
+	a.type=1 AND al.type=2 AND o.correspondent=al.id and o.`order_type` in (1,2,7,9))) o ON
+	o.id=a.`resource_id` ,
+	yc_task_type b,
+	yc_task_cfg_tab c,
+	yc_task_step_info_tab f
+	WHERE a.task_cfg_id = c.id
+	AND a.`task_id` = f.`task_id`
+	AND c.type = b.type_id
+	AND f.state IN (0, 1, 4, 5, 6)  
+		   </if>
+		   <if test="g_id != null and g_id != '' and read_all==1 ">
+		        and o.g_id= #{g_id}
+		   </if>
+		   <if test="g_id != null and g_id != '' and read_all==0 ">
+		   
+		   </if>
+		   <if test="keyWord != null and keyWord != '' ">
+		   	   and (a.name like  CONCAT('%',#{keyWord},'%')  or  a.task_code like  CONCAT('%',#{keyWord},'%'))
+		   </if>
+		   <if test="state != null and state != '' ">
+		   	   and a.state = #{state} 
+		   </if>
+		   
+		   <if test="typeids != null and typeids != '' ">
+		   	  and (b.typeids = CONCAT(${typeId},'-',${typeids}) or CONCAT('-',b.`typeids`,'-') LIKE  CONCAT('%',${typeids},'%')) 
+		   </if>
+		   
+		   <if test="area_id != null and area_id != '' ">
+		   	   and o.areaid = ${area_id} 
+		   </if>
+		   <if test="trading != null and trading != '' ">
+		   	   and o.trading = ${trading} 
+		   </if>
+		   	order by a.create_time desc
+		   ) a 
+		   limit ${startPage} , ${pageSize}
+	</select>
+	<select id="yetTaskList" resultType="map">
+	select * from (
+	SELECT
+	a.task_id,
+	b.typenames,
+	a.task_code,
+	a.name,
+	DATE_FORMAT(a.create_time,'%Y-%m-%d %k:%i') createtime,
+	fn_getdictitemname('FLOW.INFO.STATUS',a.state) statename,
+	fn_getTaskStepState(a.`task_id`) step_id,
+	fn_getTaskStepName(a.`task_id`) step_name,
+	o.tradingname,
+	o.areaname,
+	o.address,
+	fn_getOperName(fn_getStep_Now_Oper(a.`task_id`)) AS opername,
+        fn_getRoleName( fn_getStep_NowRole_Id(a.`task_id`)) AS rolename
+	FROM yc_task_info_tab a LEFT JOIN ((SELECT g.g_id,h.address,fn_getarearname(g.`trading`)
+	tradingname,fn_getarearname(g.`areaid`)
+	areaname,g.trading,g.`areaid`,o.`id` FROM yc_houserank_tab r
+	,yc_group_tab g,yc_house_tab h, order_tab o
+	WHERE r.`house_id`=h.`id` AND h.`group_id`=g.`id` AND o.correspondent=r.id AND o.`order_type` IN (0)
+	)UNION ALL
+	(SELECT g.g_id,h.address,fn_getarearname(g.`trading`)
+	tradingname,fn_getarearname(g.`areaid`)
+	areaname,g.trading,g.`areaid`,o.`id` FROM yc_agreement_tab a ,
+	yc_agreement_tab al,yc_house_tab h, yc_group_tab g ,order_tab o
+	WHERE h.group_id=g.id AND h.id=a.house_id AND a.id = al.father_id AND
+	a.type=1 AND al.type=2 AND o.correspondent=al.id AND o.`order_type` IN (1,2,7,9))) o ON
+	o.id=a.`resource_id` , yc_task_type b, yc_task_cfg_tab c
+	WHERE a.task_cfg_id = c.id
+	AND c.type = b.type_id
+	AND a.`task_id` IN (SELECT e.`task_id` FROM yc_task_step_info_tab e WHERE
+	e.`oper_id` =#{operId})
+	<if test="keyWord != null and keyWord != '' ">
+		and (a.name like CONCAT('%',#{keyWord},'%') or a.task_code like CONCAT('%',#{keyWord},'%'))
+	</if>
+	<if test="state != null and state != '' ">
+		and a.state = #{state}
+	</if>
+	<if test="typeids != null and typeids != '' ">
+		and (b.typeids = CONCAT(${typeId},'-',${typeids}) or CONCAT('-',b.`typeids`,'-') LIKE CONCAT('%',${typeids},'%'))
+	</if>
+	<if test="area_id != null and area_id != '' ">
+		and o.areaid = ${area_id}
+	</if>
+	<if test="trading != null and trading != '' ">
+		and o.trading = ${trading}
+	</if>
+	   order by a.create_time desc) a 
+	   limit ${startPage} , ${pageSize}
+	</select>
+</mapper>

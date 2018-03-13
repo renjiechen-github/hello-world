@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>房源出租</title>
+	<meta charset="utf-8">
+	<meta name="viewport"
+	content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="keywords" content="keyword1,keyword2,keyword3">
+    <meta name="description" content="this is my page">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../../../css/market/publish_house.min.css">
+    <link rel="stylesheet" type="text/css" href="../../../css/uploadImage/uploadImage.min.css"/>
+     <link rel="stylesheet" type="text/css" href="../../../css/preImage/lightbox.min.css"/>   
+  </head>
+  
+  <body>
+     <form action="" id="form1">
+     	<input type="hidden" name="houseId" id="houseId">
+	   <div id="contentDiv">	    	
+			  
+ 	   </div>
+    </form>		
+  </body>
+  <script type="text/javascript" src="../../../js/jquery-1.10.2.js"></script>
+  <script type="text/javascript" src="../../../js/jquery.form.js"></script>
+  <script type="text/javascript" src="../../../js/preImage/lightbox-2.6.js"></script>
+  <script type="text/javascript" src="../../../js/common.js"></script>
+  <script type="text/javascript" src="../../../js/common.client.js"></script>
+  <script type="text/javascript" src="../../../js/house_info/publish_house.js"></script>
+</html>

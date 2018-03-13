@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>我的</title>
+	<style type="text/css">
+		*{
+			font-family: 微软雅黑;
+		}
+		p{
+			-webkit-margin-before: initial;
+   	 		-webkit-margin-after: initial;
+		}
+		#header {
+			color: #000000;
+			text-align: center;
+			left: 0;
+			right: 0;
+			border-bottom: thin solid rgb(255, 255, 255);
+		}
+		h3{
+			-webkit-margin-before: 0em;
+    		-webkit-margin-after: 0em;
+    		padding-top:20px;
+    		padding-bottom:15px;
+		}
+		#set {
+			margin-bottom: 9px;
+			text-align: center;
+		    margin-top: 10%;
+		}
+		#set img{
+			width:80px;
+		}
+		.color{
+			color:#bdbcbc;
+			padding: 10px;
+		}
+		.color1{
+			color:#f38847;
+		}
+	</style>
+</head>
+<body style="background-color: rgb(239, 239, 239);"> 
+<div style="position: relative;margin-top: 20dp">
+	<div id="header">
+      <h3>待办任务</h3>
+    </div>
+   <div id="set">
+    	<p class="color1">马不停蹄开发中,将给您带来全新服务</p>
+    	<p class="color">敬请期待……</p>
+    </div>
+
+</div>
+</body>
+<script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="../../js/common.client.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var flag = njyc.phone.queryString("flag");
+		if(flag==1)
+		{
+			$('h3').html('房源管理');
+		}
+	})
+</script>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>待处理任务</title>
+    <link rel="stylesheet" type="text/css" href="/client/css/normalize.min.css"/>
+    <!-- <link rel="stylesheet" type="text/css" href="../../css/mission/waiting_task_detail.min.css"/> -->
+    <link rel="stylesheet" type="text/css" href="/client/css/mission/create_task_detail.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/html/adminX/css/bootstrap.css"/>
+</head>
+<body>
+
+<div class="header">
+	<div class="navdiv" >
+		<ul class="nav-pills">
+			<div class="con right active" rl="b4"><li role="presentation">管家录入数据</li></div>
+			<div class="con right " rl="b1"><li role="presentation">租务清算信息</li></div>
+			<div class="con right" rl="b2"><li role="presentation">财务收入数据</li></div>
+			<div class="con right" rl="b3"><li role="presentation">财务支出数据</li></div>
+		</ul>
+	</div>
+</div>	
+     <div class="body">
+		<div class="b4 com cons1 active">
+			<div class="info" id="createCost2"></div>
+		</div>
+		
+		<div class="b1 com cons1 ">
+			<div class="info" id="createCost1"></div>
+		</div>
+		
+		<div class="b2 com cons1">
+			<div class="info" id="receives"></div>
+		</div>
+		
+		<div class="b3 com cons1">
+			<div class="info" id="pay"></div>
+		</div>
+		
+	</div>
+<script type="text/javascript" src="/client/js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="/client/js/common.client.js"></script>
+<script type="text/javascript" src="/html/pages/flow/js/order/miLeaseorder/viewF.js"></script>
+<script type="text/javascript" >
+
+function showOrHide(hide1) {
+	var id = "#" + hide1;
+	var display = $(id).css('display');
+	if (display == 'none') {
+		$(id).show();
+	} else {
+		$(id).hide();
+	}
+}
+	$('.navdiv .con').click(function(){
+		var rl = $(this).attr('rl');
+		$('.navdiv .con').removeClass('active');
+		$(this).addClass('active');
+		$('.body .com').removeClass('active');
+		$('.body .'+rl).addClass('active');
+	});
+</script>
+
+
+</body>
+</html>

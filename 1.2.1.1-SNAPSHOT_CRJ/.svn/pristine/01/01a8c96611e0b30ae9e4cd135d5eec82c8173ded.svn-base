@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.nbms.comments.dao.CommentsDao">
+
+	<select id="selectCommentsList" parameterType="object" resultType="hashmap">
+		<![CDATA[
+		select a.* from yc_comments a
+		]]>
+		<where>
+			<if test="map.module_id != null and map.module_id != ''">
+				and a.module_id = '${map.module_id}'
+			</if>
+			<if test="map.module_text_id != null and map.module_text_id != ''">
+				and a.module_text_id = '${map.module_text_id}'
+			</if>
+			<if test="map.person_id != null and map.person_id != ''">
+				and a.person_id = '${map.person_id}'
+			</if>
+			<if test="map.person_nickname != null and map.person_nickname != ''">
+				and a.person_nickname = '${map.person_nickname}'
+			</if>
+			<if test="map.start_date != null and map.start_date != ''">
+				<![CDATA[
+					and a.comments_date >= '${map.start_date}'
+				]]>
+			</if>
+			<if test="map.end_date != null and map.end_date != ''">
+				<![CDATA[
+					and a.comments_date <= '${map.end_date}'
+				]]>
+			</if>
+			<if test="map.state != null and map.state != ''">
+				and a.state = '${map.state}'
+			</if>
+		</where>
+	</select>
+
+	<update id="updateComment" parameterType="hashmap">
+		<![CDATA[
+			update yc_comments t set t.state = #{map.state} and t.state_date = #{map.state_date} where t.id = #{map.id}
+		]]>
+	</update>
+	<insert id="insertComment" useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[
+			insesrt into yc_comments(parent_id, module_id, module_text_id, comments, person_id, person_nickname, comments_date, state, state_date)
+			values (#{map.parent_id}, #{map.module_id}, #{map.module_text_id}, #{map.comments}, #{map.person_id}, #{map.person_nickname}, #{map.comments_date}, #{map.state}, #{map.state_date})
+		]]>
+	</insert>
+</mapper>

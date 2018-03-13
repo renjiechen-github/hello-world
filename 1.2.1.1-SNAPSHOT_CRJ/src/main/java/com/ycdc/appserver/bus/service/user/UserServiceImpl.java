@@ -1,0 +1,193 @@
+
+package com.ycdc.appserver.bus.service.user;
+
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import com.alibaba.fastjson.JSONObject;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import pccom.common.util.StringHelper;
+
+import com.ycdc.appserver.base.interceptor.LoggedInterceptor;
+import com.ycdc.appserver.base.token.Token;
+import com.ycdc.appserver.bus.dao.syscfg.SyscfgMapper;
+import com.ycdc.appserver.bus.dao.user.IUserDao;
+import com.ycdc.appserver.bus.service.BaseService;
+import com.ycdc.appserver.model.user.User;
+
+@Service("userLoginService")
+public class UserServiceImpl extends BaseService implements IUserService {
+
+  @Resource
+  private IUserDao userDao;
+  @Resource
+  private SyscfgMapper syscfgMapper;
+
+  /*
+   * @see com.ycdc.appserver.bus.service.IUserService#checkLogin(java.lang.String,
+   * java.lang.String)
+   */
+  @Transactional
+  public User checkLogin(User u, HttpServletRequest request) {
+    log.info("into checkLogin");
+    // 验证用户名和密码是否正确
+    User user = userDao.checkLogin(u);
+    log.debug("user:" + com.alibaba.fastjson.JSONObject.toJSONString(user));
+    String powerId = "";
+    String url = request.getRequestURI();
+
+    // 用户名或密码不正确
+    if (null == user) {
+      user = new User();
+      user.setLoginStatus("-1");
+      user.setLoginMsg("用户名和密码不匹配");
+    }
+    /**
+     * SQL中强制定义status=1 根本查不出非1的状态 // 用户被停用 else if (!"1".equals(user.getState())) {
+     * user.setLoginStatus("-2"); user.setLoginMsg("该用户被禁用,请联系管理员"); }
+     */
+    // 用户登录成功
+    else {
+      // 判断账号是否停用
+      String state = String.valueOf(user.getState());
+      if (!state.equals("1")) {
+        user = new User();
+        user.setLoginStatus("-2");
+        user.setLoginMsg("此账号已经停用！");
+      } else {
+        if (null != u.getRegistrationID()
+            && !"null".equals(u.getRegistrationID().trim().toLowerCase())
+            && !"".equals(u.getRegistrationID().trim())) {
+          user.setRegistrationID(u.getRegistrationID());
+          int flag = userDao.updateUserRegistrationId(user);
+          if (flag > 0) {
+            log.debug("修改成功！");
+          } else {
+            log.debug("没有进行修改！");
+          }
+        }
+        // 用户角色信息：角色名和角色ID
+        User rolesInfo = userDao.getUserRoles(user);
+        // 登录时间
+        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        user.setLoginMsg("登录成功!");
+        user.setLoginStatus("1");
+        user.setLoginDate(date);
+        if (rolesInfo != null) {
+          user.setRolesId(rolesInfo.getRolesId());
+          user.setRolesName(rolesInfo.getRolesName());
+        }
+        // 用户所属组织
+        User orgInfo = userDao.getUserOrgIds(user);
+        if (orgInfo != null) {
+          user.setOrgIds(orgInfo.getOrgIds());
+          user.setOrgnames(orgInfo.getOrgnames());
+        }
+        // 获取终端类型
+        String terminaltype = u.getTerminaltype();
+        if (terminaltype == null || "".equals(terminaltype)) {
+          terminaltype = "ios";
+        }
+        // 获取版本号
+        String version_code = StringHelper.get(syscfgMapper.getMaxVesion(terminaltype), "version_code");
+        user.setToken(Token.initToken(user.getId(), date));
+        user.setVersion_code(version_code);
+        HttpSession session = request.getSession();
+        session.setAttribute("user", user);
+
+        // 添加访问记录
+        addHistory(user.getId(), powerId, url, "", request);
+      }
+    }
+    return user;
+  }
+
+  /**
+   * @param json
+   * @return
+   * @date 2017年2月6日
+   */
+  @Override
+  public List<Map<String, String>> loadUserList(JSONObject json, HttpServletRequest request) {
+    // TODO Auto-generated method stub
+    String userId = StringHelper.get(json, "userId");
+    String teamIds = StringHelper.get(json, "teamIds");
+    String keyWord = StringHelper.get(json, "keyWord");
+    String pageNumber = StringHelper.get(json, "pageNumber");
+    String pageSize = StringHelper.get(json, "pageSize");
+    String regx = "^\\d+$";
+    Pattern pattern = Pattern.compile(regx);
+    Matcher matcher = pattern.matcher(pageNumber);
+    if (!matcher.matches()) {
+      pageNumber = "0";
+    }
+    matcher = pattern.matcher(pageSize);
+    if (!matcher.matches()) {
+      pageSize = "25";
+    }
+    BigInteger startPage = new BigInteger(pageNumber).multiply(new BigInteger(
+        pageSize));
+    List<Map<String, String>> resultList = userDao.loadUserList(keyWord,
+        startPage.intValue(), Integer.valueOf(pageSize), userId, teamIds);
+    if (resultList == null) {
+      return new ArrayList<>();
+    }
+    List<Map<String, String>> newList = new ArrayList<>();
+    for (Map<String, String> map : resultList) {
+      Map<String, String> tmpMap = new HashMap<>();
+      tmpMap.put("id", StringHelper.get(map, "id"));
+      tmpMap.put("certificateno", StringHelper.get(map, "certificateno"));
+      tmpMap.put("username", StringHelper.get(map, "username"));
+      tmpMap.put("registertime", StringHelper.get(map, "registertime"));
+      tmpMap.put("photourl", StringHelper.get(map, "photourl"));
+      tmpMap.put("desc_text", StringHelper.get(map, "desc_text"));
+      tmpMap.put("email", StringHelper.get(map, "email"));
+      tmpMap.put("wechat", StringHelper.get(map, "wechat"));
+      tmpMap.put("qq", StringHelper.get(map, "qq"));
+      tmpMap.put("mobile", StringHelper.get(map, "mobile"));
+      tmpMap.put("sex", StringHelper.get(map, "sex"));
+      tmpMap.put("birthday", StringHelper.get(map, "birthday"));
+      newList.add(tmpMap);
+    }
+    return newList;
+  }
+
+  /**
+   * 添加访问记录
+   *
+   * @param userId
+   * @param powerId
+   * @param url
+   * @param menuId
+   */
+  public void addHistory(String userId, String powerId, String url, String menuId,
+                         HttpServletRequest request) {
+    String ip = this.getIP(request);
+    String heads = "";
+    Enumeration<String> en = request.getHeaderNames();
+    while (en.hasMoreElements()) {
+      String name = (String) en.nextElement();
+      String value = request.getHeader(name);
+      heads += "," + name + ":" + value;
+    }
+    if (!"".equals(heads)) {
+      heads = heads.substring(1);
+    }
+    syscfgMapper.addHistory(ip, userId, heads, powerId, menuId, url);
+  }
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<title>新增</title>
+</head>
+<body>
+	<section class="panel">
+		<ul id="myTab" class="nav nav-tabs">
+			<li class="active"><a href="#addIndex" data-toggle="tab">基本信息</a>
+		</ul>
+		<form id="form2" class="form-horizontal adminex-form " role="form">
+			<div id="myTabContent" class="tab-content">
+				<!-- 基本信息-->
+				<div class="tab-pane fade in active" id="addIndex">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"></label>
+						<div class="col-sm-6"></div>
+						<div class="col-sm-4"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>姓名：</label>
+						<div class="col-sm-3">
+							<input id="username" maxlength="40" type="text" name="username"
+								dataType="Require" class="form-control" msg= 请输入姓名   />
+						</div>
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>性别：</label>
+						<div class="col-sm-3">
+							<select class="form-control m-bot15" id="sex" name="sex" dataType="Require" msg= 请选择性别 >
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>手机号码：</label>
+						<div class="col-sm-3">
+							<input id="mobile"  type="text"  dataType="Mobile"  name="mobile" class="form-control" placeholder="手机号码"  msg= 请输入正确手机号码>
+						</div>
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>证件号码：</label>
+						<div class="col-sm-3">
+							<input id="certificateno"  type="text"   dataType="IdCard"  class="form-control"   placeholder="证件号码"  msg= 请输入证件号码   />
+						</div>
+							<div class="col-sm-2"></div>
+							
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2  control-label"> QQ号：</label>
+						<div class="col-sm-3">
+							<input id="qq" maxlength="12" type="text" name="qq"
+								class="form-control" required onkeyup="this.value=this.value.replace(/[^\d]/g,'') "
+							    onafterpaste="this.value=this.value.replace(/[^\d]/g,'') "
+								placeholder="QQ号"  />
+						</div>
+						<label class="col-sm-2  control-label">电子邮箱：</label>
+						<div class="col-sm-3">
+							<input id="email" maxlength="" type="text" name="email"
+								class="form-control"
+								placeholder="email"  Email />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">微信号：</label>
+						<div class="col-sm-3">
+							<input id="wechat" maxlength="40" type="text" name="wechat"
+								class="form-control"	required />
+						</div>
+						<label class="col-sm-2  control-label">出生日期：</label>
+						<div class="col-sm-3">
+							<input type="text" name="birthday" readonly="readonly"
+								id="groupDate" class="form-control"
+								placeholder="2013-01-02 " />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+			<div class="text-center">
+				<button class="btn btn-info" id="user_add_bnt" type="button">保存</button>
+			</div>
+		</form>
+	</section>
+</body>
+<script type="text/javascript" src="/html/adminX/js/dropzone/dropzone.js"></script>
+<script type="text/javascript" src="/html/js/house/user/user_add.js"></script>
+</html>

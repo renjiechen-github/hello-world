@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<script>
+var totalRows = common.getWindowsData('costImportResult').totalRows;
+
+$(".result").html("<span>本次成功导入</span> <span style='font-weight:bold;font-size:18px'>"+totalRows+"</span> <span>条记录。</span>")
+</script>
+<style>
+.title {
+	width: 50%;
+	float: none;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #e0e0e0;
+}
+</style>
+<body>
+	<div class="panel panel-default">
+
+	<div class="panel panel-default title">
+		<div class="panel-body lader">
+			<span>1.上传文件</span> <span>></span> <span>2.结果预览</span> <span>></span>
+			<span style="color:red;font-weight:bold;">3.导入完成</span>
+		</div>
+	</div>
+	
+		<img alt="" src="">
+		<div class="panel-body result"> 
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="/html/js/costImport/costImport.js"></script>
+</html>

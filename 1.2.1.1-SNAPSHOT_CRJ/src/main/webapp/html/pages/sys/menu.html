@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+  <link rel="stylesheet" type="text/css" href="/html/adminX/js/jstree/themes/default/style.css" />
+  <link rel="stylesheet" type="text/css" href="/html/adminX/css/zTree/zTreeStyle.css" />
+  
+  <title>财务类目</title>
+
+</head>
+
+<body>
+       <section class="panel">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+		        		<span class="form-group tools">
+			            	<a href="javascript:void(0);" class="fa fa-plus bnt_add">新增</a>
+		                	<a href="javascript:;" class="fa fa-search " id="searchmenu"  >查询</a>
+			            </span>
+	                    <div class="form-group">
+	                        <label for="menuname">名称:</label>
+	                        <input type="text" class="form-control" id="menuname" name="menuname" placeholder="请输入菜单名称">
+	                    </div>
+	                </form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<div id="flatTree3" class="tree tree-plus-minus tree-solid-line tree-unselectable">
+	        	</div>
+	        </div>
+	    </div>
+   	</section>
+   	<script src="/html/adminX/js/jstree/jstree.js"></script>
+   	<script src="/html/js/sys/menu.js"></script>
+</body>
+</html>

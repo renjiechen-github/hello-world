@@ -1,0 +1,979 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.workorder.dao.WorkOrderDtoMapper">
+	<resultMap id="BaseResultMap" type="com.room1000.workorder.dto.WorkOrderDto">
+		<!-- @mbg.generated -->
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="type" jdbcType="CHAR" property="type" />
+		<result column="ref_id" jdbcType="INTEGER" property="refId" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="code" jdbcType="VARCHAR" property="code" />
+		<result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+		<result column="created_staff_id" jdbcType="INTEGER" property="createdStaffId" />
+		<result column="created_user_id" jdbcType="INTEGER" property="createdUserId" />
+		<result column="house_id" jdbcType="INTEGER" property="houseId" />
+		<result column="take_house_order_id" jdbcType="INTEGER" property="takeHouseOrderId" />
+		<result column="rental_lease_order_id" jdbcType="INTEGER" property="rentalLeaseOrderId" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="user_phone" jdbcType="VARCHAR" property="userPhone" /> 
+		<result column="staff_id" jdbcType="INTEGER" property="staffId" />
+		<result column="appointment_date" jdbcType="TIMESTAMP" property="appointmentDate" />
+		<result column="state" jdbcType="CHAR" property="state" />
+		<result column="state_date" jdbcType="TIMESTAMP" property="stateDate" />
+		<result column="sub_order_state" jdbcType="VARCHAR" property="subOrderState" />
+		<result column="sub_actual_dealer_id" jdbcType="INTEGER" property="subActualDealerId" />
+		<result column="sub_assigned_dealer_id" jdbcType="INTEGER" property="subAssignedDealerId" />
+		<result column="sub_assigned_dealer_role_id" jdbcType="INTEGER" property="subAssignedDealerRoleId" />
+		<result column="sub_comments" jdbcType="VARCHAR" property="subComments" />
+		<result column="paid_money" jdbcType="VARCHAR" property="paidMoney" />
+		<result column="payable_money" jdbcType="VARCHAR" property="payableMoney" />
+		<result column="created_staff_name" jdbcType="VARCHAR" property="createdStaffName" />
+		<result column="created_user_name" jdbcType="VARCHAR" property="createdUserName" />
+		<result column="sub_actual_dealer_name" jdbcType="VARCHAR" property="subActualDealerName" />
+		<result column="sub_assigned_dealer_name" jdbcType="VARCHAR" property="subAssignedDealerName" />
+		<result column="sub_assigned_dealer_role_name" jdbcType="VARCHAR" property="subAssignedDealerRoleName" />
+		<result column="state_name" jdbcType="VARCHAR" property="stateName" />
+		<result column="sub_state_name" jdbcType="VARCHAR" property="subStateName" />
+		<result column="type_name" jdbcType="VARCHAR" property="typeName" />
+		<result column="created_date_str" jdbcType="VARCHAR" property="createdDateStr" />
+		<result column="appointment_date_str" jdbcType="VARCHAR" property="appointmentDateStr" />
+		<result column="state_date_str" jdbcType="VARCHAR" property="stateDateStr" />
+	</resultMap>
+	<resultMap id="orderCountResultMap" type="com.room1000.timedtask.dto.Staff4OrderCountDto">
+		<result column="dealer_id" jdbcType="INTEGER" property="dealerId" />
+		<result column="dealer_name" jdbcType="VARCHAR" property="dealerName" />
+		<result column="dealer_phone" jdbcType="VARCHAR" property="dealerPhone" />
+		<collection ofType="com.room1000.timedtask.dto.OrderCountDto" property="orderCountList">
+			<result column="order_type" jdbcType="VARCHAR" property="orderType" />
+			<result column="order_type_name" jdbcType="VARCHAR" property="orderTypeName" />
+			<result column="cnt" jdbcType="INTEGER" property="cnt" />
+		</collection>
+	</resultMap>
+	<sql id="Base_Column_List">
+		<!-- @mbg.generated -->
+		id, type, ref_id, name, code, created_date, created_staff_id, created_user_id, house_id, take_house_order_id,
+		rental_lease_order_id,
+		user_name, user_phone, staff_id, appointment_date, state, state_date, sub_order_state,
+		sub_actual_dealer_id, sub_assigned_dealer_id,
+		sub_assigned_dealer_role_id, sub_comments, paid_money, payable_money
+	</sql>
+	<select id="queryHousekeeperDealWithInfo" resultType="map">
+		select 
+		a.id,
+		a.code,
+		b.mobile,
+		b.name,
+		date_format(a.created_date, '%Y-%m-%d') as "created_date",
+		a.sub_comments,
+		b.id as "user_id"
+		from work_order a 
+		left join cancel_lease_order c on a.id=c.work_order_id
+		left join yc_account_tab b on a.sub_assigned_dealer_id=b.id
+		where a.sub_order_state='D' and a.`type` in ('A', 'N') 
+		and b.name is not null and b.mobile is not null
+		and date_format(c.butler_get_house_date, '%Y-%m-%d')=date_format(date_sub(now(),interval -${time} day), '%Y-%m-%d')
+	</select>
+	<select id="getManagerInfo" resultType="int">
+		select count(1) from yc_account_role_tab a where a.role_id=1 and a.user_id=#{id}
+	</select>
+	<select id="getTeamLeaderInfo" resultType="map">
+		select
+		a.id as "team_id",
+		a.parent_teamid as "parent_teamid",
+		c.leader_id as "leader_id"
+		from cf_team a
+		left join cf_team_rel b on a.id=b.team_id
+		left join cf_team_leaders c on b.team_id=c.team_id
+		where b.user_id=#{user_id}
+	</select>
+	<select id="getTeamParInfo" resultType="map">
+		select a.id as "team_id",
+		a.parent_teamid as "parent_teamid",
+		b.leader_id
+		as "leader_id"
+		from cf_team a
+		left join cf_team_leaders b on a.id=b.team_id
+		where a.id=#{team_id}
+	</select>
+	<select id="getRoleIds" resultType="string">
+		select group_concat(distinct b.role_id) as "roleIds"
+		from yc_account_tab a
+		left join yc_account_role_tab b on a.id=b.user_id
+		where a.id in (${idStr}) and b.role_id is not null and b.role_id != ''
+	</select>
+	<select id="getUserIdsByTeamIds" resultType="com.yc.rm.caas.appserver.model.user.User">
+		select a.user_id as "userId" from cf_team_rel a where a.team_id in (${teamIds})
+	</select>
+	<select id="getLeaderIdsByTeamIds" resultType="map">
+		select a.leader_id as "leader_id" from cf_team_leaders a where a.team_id in (${teamIds})
+	</select>	
+	<select id="selectTeamTask" parameterType="object" resultType="hashmap">
+		select distinct a.id, a.type, a.ref_id, a.name, a.code, a.created_date, a.created_staff_id, a.created_user_id,
+		a.house_id, a.take_house_order_id, a.rental_lease_order_id,a.user_name, a.user_phone, a.staff_id,
+		a.appointment_date, a.state, a.state_date, a.sub_order_state, a.sub_actual_dealer_id, a.sub_assigned_dealer_id,
+		a.sub_assigned_dealer_role_id, a.sub_comments, truncate(a.paid_money/100, 2) paid_money,
+		truncate(a.payable_money/100, 2) payable_money,b.type_name,c.state_name,
+		date_format(a.appointment_date, '%Y-%m-%d %T') appointment_date_str,
+		date_format(a.created_date, '%Y-%m-%d %T') created_date_str,
+		date_format(a.state_date, '%Y-%m-%d %T') state_date_str,d.name created_staff_name,g.name sub_actual_dealer_name,
+		h.name sub_assigned_dealer_name,i.role_name sub_assigned_dealer_role_name,j.username created_user_name,
+		k.state_name sub_state_name,o.address,n.code agreement_code,
+		'${map.leaderStr}' as "leaderStr", '${map.userId}' as "userId", '${map.roleId}' as "roleIds", '${map.currentDealerRoleIds}' as "dealerRoleIds",
+		'${map.currentDealerId}' as "currentDealerIds", '${map.isManager}' as "managerDesc"
+		from work_order a
+		left join work_order_type b on a.type = b.type
+		left join work_order_state c on a.state = c.state
+		left join yc_account_tab d on a.created_staff_id = d.id
+		left join work_order_his e on a.id = e.id
+		left join yc_account_tab f on a.created_staff_id = f.id
+		left join yc_account_tab g on a.sub_actual_dealer_id = g.id
+		left join yc_account_tab h on a.sub_assigned_dealer_id = h.id
+		left join yc_role_new_tab i on a.sub_assigned_dealer_role_id = i.role_id
+		left join yc_userinfo_tab j on a.created_user_id = j.id
+		left join sub_order_state k on a.sub_order_state = k.state
+		left join order_commentary l on a.id = l.work_order_id and l.type = 'A'
+		left join yc_agreement_tab m on a.rental_lease_order_id = m.id
+		left join yc_agreement_tab n on m.father_id = n.id
+		left join yc_house_tab o on n.house_id = o.id
+		<where>
+			<if test="map.type != null">
+				and a.type in (${map.type}) 
+			</if>
+			<if test="map.createdDateStart != null">
+				and a.created_date &gt;= #{map.createdDateStart}
+			</if>
+			<if test="map.createdDateEnd != null">
+				and a.created_date &lt;= #{map.createdDateEnd}
+			</if>
+			<if test="map.state != null">
+				and a.sub_order_state = #{map.state}
+			</if>
+			<if test="map.keyword != null">
+				and (a.name like concat('%', '${map.keyword}', '%') or a.code like concat('%', '${map.keyword}', '%')
+				or a.user_name like concat('%', '${map.keyword}', '%') or a.user_phone like concat('%', '${map.keyword}', '%'))
+			</if>
+			<if test="map.currentDealerId != '' and map.currentDealerRoleIds != '' and map.ids != ''">
+				and (a.sub_assigned_dealer_id in (${map.currentDealerId}) or a.sub_assigned_dealer_role_id in (${map.currentDealerRoleIds}) or a.id in (${map.ids}))	
+			</if>
+			<if test="map.currentDealerId != '' and map.currentDealerRoleIds == '' and map.ids == ''">
+				and a.sub_assigned_dealer_id in (${map.currentDealerId})					
+			</if>
+			<if test="map.currentDealerId == '' and map.currentDealerRoleIds != '' and map.ids == ''">
+				and a.sub_assigned_dealer_role_id in (${map.currentDealerRoleIds})					
+			</if>
+			<if test="map.currentDealerId == '' and map.currentDealerRoleIds == '' and map.ids != ''">
+				and a.id in (${map.ids})				
+			</if>
+			<if test="map.currentDealerId != '' and map.currentDealerRoleIds != '' and map.ids == ''">
+				and (a.sub_assigned_dealer_id in (${map.currentDealerId}) or a.sub_assigned_dealer_role_id in (${map.currentDealerRoleIds}))				
+			</if>
+			<if test="map.currentDealerId != '' and map.currentDealerRoleIds == '' and map.ids != ''">
+				and (a.sub_assigned_dealer_id in (${map.currentDealerId}) or a.id in (${map.ids}))				
+			</if>
+			<if test="map.currentDealerId == '' and map.currentDealerRoleIds != '' and map.ids != ''">
+				and (a.sub_assigned_dealer_role_id in (${map.currentDealerRoleIds}) or a.id in (${map.ids}))		
+			</if>
+		</where>
+	</select>
+	<select id="selectStaff4OrderCount" resultMap="orderCountResultMap">
+		select
+		t.sub_assigned_dealer_id dealer_id,
+		a.name dealer_name,
+		a.mobile dealer_phone,
+		t.type order_type,
+		b.type_name order_type_name,
+		count(1) cnt
+		from work_order t
+		left join yc_account_tab a on t.sub_assigned_dealer_id = a.id
+		left join work_order_type b on t.type = b.type
+		where t.sub_assigned_dealer_id is not null
+		and t.sub_assigned_dealer_id not in (-2, 0, 1)
+		group by t.sub_assigned_dealer_id, t.type
+	</select>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		<!-- @mbg.generated -->
+		select
+		<include refid="Base_Column_List" />
+		from work_order
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectOvertimeCommentWorkOrder" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from work_order
+		where state = 'D'
+		<![CDATA[and date_format(state_date,'%Y%m%d') <= date_format(DATE_SUB(NOW(), INTERVAL #{overtime, jdbcType=INTEGER} DAY),'%Y%m%d') ]]>
+	</select>
+	<select id="selectDetailById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select
+		a.id, a.type, a.ref_id, a.name,
+		a.code, a.created_date, a.created_staff_id, a.created_user_id, a.house_id, a.take_house_order_id,
+		a.rental_lease_order_id,
+		a.user_name, a.user_phone, a.staff_id, a.appointment_date, a.state, a.state_date,
+		a.sub_order_state, a.sub_actual_dealer_id, a.sub_assigned_dealer_id,
+		a.sub_assigned_dealer_role_id, a.sub_comments,
+		a.paid_money, a.payable_money,
+		b.name created_staff_name,
+		c.name sub_actual_dealer_name,
+		d.name
+		sub_assigned_dealer_name,
+		e.role_name sub_assigned_dealer_role_name,
+		f.state_name
+		sub_order_state,
+		g.username
+		created_user_name,
+		h.state_name sub_state_name
+		from work_order a
+		left join yc_account_tab b on a.created_staff_id =
+		b.id
+		left join yc_account_tab c on a.sub_actual_dealer_id = c.id
+		left
+		join yc_account_tab d on a.sub_assigned_dealer_id
+		= d.id
+		left join yc_role_new_tab e on a.sub_assigned_dealer_role_id
+		= e.role_id
+		left join sub_order_state f on a.state
+		= f.state
+		left join yc_userinfo_tab g on a.created_user_id = g.id
+		left join sub_order_state h on a.sub_order_state =
+		h.state
+		where a.id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="select4CustomerService" parameterType="object" resultType="hashmap">
+		select t.*,
+		date_format(t.appointment_date, '%Y-%m-%d %T') appointment_date_str,
+		date_format(t.created_date, '%Y-%m-%d
+		%T') created_date_str, '${map.roleId}' as "roleIds",
+		truncate(t.payable_money/100, 2) payable_money,
+		c.address
+		from work_order_4_customer_service t
+		left join yc_agreement_tab a on t.rental_lease_order_id = a.id
+		left join yc_agreement_tab b on a.father_id = b.id
+		left join yc_house_tab c on b.house_id = c.id
+		<where>
+			<if test="map.type != null">
+				and t.type in (${map.type}) 
+			</if>
+			<if test="map.userName != null">
+				and t.user_name like concat('%', '${map.userName}', '%')
+			</if>
+			<if test="map.userPhone != null">
+				and t.user_phone like concat('%', '${map.userPhone}', '%')
+			</if>
+			<if test="map.subOrderState != null">
+				and t.sub_order_state = '${map.subOrderState}'
+			</if>
+			<if test="map.name != null">
+				and t.name like concat('%', '${map.name}', '%')
+			</if>
+			<if test="map.code != null">
+				and t.code like concat('%', '${map.code}', '%')
+			</if>
+			<if test="map.keyword != null">
+				and (
+				t.name like concat('%', '${map.keyword}', '%') or
+				t.code like concat('%', '${map.keyword}', '%')
+				or
+				t.user_name like concat('%', '${map.keyword}', '%') or
+				t.user_phone like concat('%', '${map.keyword}', '%')
+				)
+			</if>
+		</where>
+		order by t.created_date desc
+	</select>
+
+	<select id="queryTimeCode" resultType="string">
+		select a.value as "timeCode"
+		from yc_systemparameter_tab a where a.key='ORDER_OVERLENGTH_LIMIT'
+	</select>
+	
+	<select id="querySendHousekeeperDealWithTimeCode" resultType="string">
+		select a.value as "timeCode"
+		from yc_systemparameter_tab a where a.key='SEND_HOUSEKEEPER_DEALWITH_TIME'
+	</select>
+
+	<select id="selectByCond" parameterType="object" resultType="hashmap">
+		select distinct a.id, a.type, a.ref_id, a.name, a.code, a.created_date, a.created_staff_id, a.created_user_id,
+		a.house_id, a.take_house_order_id, a.rental_lease_order_id,b.type_name,c.state_name,
+		a.user_name, a.user_phone, a.staff_id,a.appointment_date, a.state,
+		a.state_date, a.sub_order_state, a.sub_actual_dealer_id, a.sub_assigned_dealer_id,
+		a.sub_assigned_dealer_role_id, a.sub_comments, truncate(a.paid_money/100, 2) paid_money,
+		truncate(a.payable_money/100, 2) payable_money,o.address,n.code agreement_code,
+		date_format(a.appointment_date, '%Y-%m-%d %T') appointment_date_str,
+		date_format(a.created_date, '%Y-%m-%d %T') created_date_str,
+		date_format(a.state_date, '%Y-%m-%d %T') state_date_str, '${map.currentDealerRoleIds}' as "roleIds",
+		d.name created_staff_name,g.name sub_actual_dealer_name,h.name sub_assigned_dealer_name,
+		i.role_name sub_assigned_dealer_role_name,j.username created_user_name,k.state_name sub_state_name
+		from work_order a
+		left join work_order_type b on a.type = b.type
+		left join work_order_state c on a.state = c.state
+		left join yc_account_tab d on a.created_staff_id = d.id
+		left join work_order_his e on a.id = e.id
+		left join yc_account_tab f on a.created_staff_id = f.id
+		left join yc_account_tab g on a.sub_actual_dealer_id = g.id
+		left join yc_account_tab h on a.sub_assigned_dealer_id = h.id
+		left join yc_role_new_tab i on a.sub_assigned_dealer_role_id = i.role_id
+		left join yc_userinfo_tab j on a.created_user_id = j.id
+		left join sub_order_state k on a.sub_order_state = k.state
+		left join order_commentary l on a.id = l.work_order_id and l.type = 'A'
+		left join yc_agreement_tab m on a.rental_lease_order_id = m.id
+		left join yc_agreement_tab n on m.father_id = n.id
+		left join yc_house_tab o on n.house_id = o.id
+		<where>
+			<if test="map.type != null">
+				and a.type in (${map.type})
+			</if>
+			<if test="map.code != null">
+				and a.code like concat('%', '${map.code}', '%')
+			</if>
+			<if test="map.name != null">
+				and a.name like concat('%', '${map.name}', '%')
+			</if>
+			<if test="map.createdDateStart != null">
+				and a.created_date &gt;= '${map.createdDateStart}'
+			</if>
+			<if test="map.createdDateEnd != null">
+				and a.created_date &lt;= '${map.createdDateEnd}'
+			</if>
+			<if test="map.createdStaffId != null">
+				and a.created_staff_id = '${map.createdStaffId}'
+			</if>
+			<if test="map.createdUserId != null">
+				and a.created_user_id = '${map.createdUserId}'
+			</if>
+			<if test="map.userName != null">
+				and a.user_name like concat('%', '${map.userName}', '%')
+			</if>
+			<if test="map.userPhone != null">
+				and a.user_phone like concat('%', '${map.userPhone}', '%')
+			</if>
+			<if test="map.state != null">
+				and a.state = '${map.state}'
+			</if>
+			<if test="map.totalScore != null">
+				and l.score = '${map.totalScore}'
+			</if>
+			<if test="map.keyword != null">
+				and (
+				a.name like concat('%', '${map.keyword}', '%') or
+				a.code like concat('%', '${map.keyword}', '%')
+				or
+				a.user_name like concat('%', '${map.keyword}', '%') or
+				a.user_phone like concat('%', '${map.keyword}', '%')
+				)
+			</if>
+			<if test="map.stateList != null">
+				and a.state in
+				<foreach collection="map.stateList" item="stateItem" open="(" separator="," close=")">
+					#{stateItem}
+				</foreach>
+			</if>
+			<if test="map.subOrderState != null">
+				and a.sub_order_state = '${map.subOrderState}'
+			</if>
+			<if test='map.currentDealerFlag != null and map.currentDealerFlag == "Y"'>
+				<choose>
+					<when test="map.currentDealerRoleIds != null and map.currentDealerId != null">
+						and (a.sub_assigned_dealer_id = '${map.currentDealerId}' or a.sub_assigned_dealer_role_id in (${map.currentDealerRoleIds}))
+					</when>
+					<when test="map.currentDealerRoleIds == null and map.currentDealerId != null">
+						and a.sub_assigned_dealer_id = '${map.currentDealerId}'
+					</when>
+					<when test="map.currentDealerRoleIds != null and map.currentDealerId == null">
+						and a.sub_assigned_dealer_role_id in (${map.currentDealerRoleIds}))
+					</when>
+					<otherwise></otherwise>
+				</choose>
+			</if>
+			<if test='map.currentDealerDealtOrder != null and map.currentDealerDealtOrder == "Y"'>
+				<!-- and e.sub_actual_dealer_id = '${map.currentDealerId}' -->
+				<if test="map.ids != null">
+					and a.id in (${map.ids})
+				</if>
+				<if test="map.ids == null">
+					and 1 != 1
+				</if>
+			</if>
+			<if test='map.currentDealerStartedOrder != null and map.currentDealerStartedOrder == "Y"'>
+				and a.created_staff_id = '${map.createdStaffId}'
+			</if>
+		</where>
+	</select>
+	<select id="selectTeamTaskByCon" parameterType="com.room1000.workorder.dto.request.TeamWorkOrderPagerListRequest"
+		resultMap="BaseResultMap">
+		select distinct a.id, a.type, a.ref_id, a.name, a.code, a.created_date, a.created_staff_id, a.created_user_id,
+		a.house_id, a.take_house_order_id, a.rental_lease_order_id,a.user_name, a.user_phone, a.staff_id,
+		a.appointment_date, a.state, a.state_date, a.sub_order_state, a.sub_actual_dealer_id, a.sub_assigned_dealer_id,
+		a.sub_assigned_dealer_role_id, a.sub_comments, truncate(a.paid_money/100, 2) paid_money,
+		truncate(a.payable_money/100, 2) payable_money,b.type_name,c.state_name,
+		date_format(a.appointment_date, '%Y-%m-%d%T') appointment_date_str,
+		date_format(a.created_date, '%Y-%m-%d %T') created_date_str,
+		date_format(a.state_date,'%Y-%m-%d %T') state_date_str,
+		d.name created_staff_name,g.name sub_actual_dealer_name,h.name sub_assigned_dealer_name,
+		i.role_name sub_assigned_dealer_role_name,j.username created_user_name,k.state_name sub_state_name
+		from work_order a
+		left join work_order_type b on a.type=b.type
+		left join work_order_state c on a.state=c.state
+		left join yc_account_tab d on a.created_staff_id = d.id
+		left join work_order_his e on a.id = e.id
+		left join yc_account_tab f on a.created_staff_id = f.id
+		left join yc_account_tab g on a.sub_actual_dealer_id = g.id
+		left join yc_account_tab h on a.sub_assigned_dealer_id = h.id
+		left join yc_role_new_tab i on a.sub_assigned_dealer_role_id=i.role_id
+		left join yc_userinfo_tab j on a.created_user_id = j.id
+		left join sub_order_state k on a.sub_order_state=k.state
+		<where>
+			a.state != 'C' and a.state != 'D'
+			<if test="createdDateStart != null">
+				and a.created_date &gt;= #{createdDateStart, jdbcType=TIMESTAMP}
+			</if>
+			<if test="createdDateEnd != null">
+				and a.created_date &lt;= #{createdDateEnd, jdbcType=TIMESTAMP}
+			</if>
+			<if test="stateList != null">
+				and a.sub_order_state in
+				<foreach collection="stateList" item="stateItem" open="(" separator="," close=")">
+					#{stateItem}
+				</foreach>
+			</if>
+			<if test="typeList != null">
+				and a.type in
+				<foreach collection="typeList" item="excludeTypeItem" open="(" separator="," close=")">
+					#{excludeTypeItem}
+				</foreach>
+			</if>
+			<if test='currentDealerDealtOrder != null and currentDealerDealtOrder == "Y"'>
+				and e.sub_actual_dealer_id = #{currentDealerId, jdbcType=INTEGER}
+			</if>
+			<if test='currentDealerStartedOrder != null and currentDealerStartedOrder == "Y"'>
+				and a.created_staff_id = #{createdStaffId, jdbcType=INTEGER}
+			</if>
+			<if test="keyword != null">
+				and (
+				a.name like concat('%', #{keyword,jdbcType=VARCHAR}, '%') or
+				a.code like concat('%', #{keyword,jdbcType=VARCHAR}, '%') or
+				a.user_name like concat('%', #{keyword,jdbcType=VARCHAR}, '%') or
+				a.user_phone like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+				)
+			</if>
+			<if test="currentDealerIds != '' and ids != ''">
+			and (a.sub_assigned_dealer_id in (${currentDealerIds}) or a.sub_assigned_dealer_role_id in (${currentDealerRoleIds}) or a.id in (${ids}))
+			</if>
+			<if test="currentDealerIds != null and ids == ''">
+				and (a.sub_assigned_dealer_id in (${currentDealerIds}) or a.sub_assigned_dealer_role_id in (${currentDealerRoleIds}))
+			</if>
+			<if test="currentDealerIds == null and ids != ''">
+				and (a.id in (${ids}))
+			</if>
+		</where>
+		<if test="sequenceWay != null">
+			<choose>
+				<when test="sequenceWay == 1">
+					order by a.created_date desc
+				</when>
+				<when test="sequenceWay == 2">
+					order by a.created_date asc
+				</when>
+				<when test="sequenceWay == 3">
+					order by a.state_date desc
+				</when>
+				<when test="sequenceWay == 4">
+					order by a.state_date asc
+				</when>
+				<when test="sequenceWay == 5">
+					order by a.created_date desc
+				</when>				
+				<when test="sequenceWay == 6">
+					order by a.created_date asc
+				</when>
+				<otherwise>
+					order by a.created_date desc
+				</otherwise>
+			</choose>
+		</if>
+		<if test="sequenceWay == null">
+			order by a.created_date desc
+		</if>
+	</select>
+	<select id="selectByReqCond" parameterType="com.room1000.workorder.dto.request.QryWorkOrderPagerListRequest"
+		resultMap="BaseResultMap">
+		select distinct a.id, a.type, a.ref_id, a.name, a.code, a.created_date, a.created_staff_id, a.created_user_id,
+		a.house_id, a.take_house_order_id, a.rental_lease_order_id,a.user_name, a.user_phone, a.staff_id,
+		a.appointment_date, a.state, a.state_date, a.sub_order_state, a.sub_actual_dealer_id, a.sub_assigned_dealer_id,
+		a.sub_assigned_dealer_role_id, a.sub_comments, truncate(a.paid_money/100, 2) paid_money,
+		truncate(a.payable_money/100, 2) payable_money,date_format(a.created_date, '%Y-%m-%d %T') created_date_str,
+		b.type_name,c.state_name,date_format(a.appointment_date, '%Y-%m-%d %T') appointment_date_str,
+		date_format(a.state_date,'%Y-%m-%d %T') state_date_str,d.name created_staff_name,
+		g.name sub_actual_dealer_name,h.name sub_assigned_dealer_name,
+		i.role_name sub_assigned_dealer_role_name,j.username created_user_name,k.state_name sub_state_name
+		from work_order a
+		left join work_order_type b on a.type=b.type
+		left join work_order_state c on a.state=c.state
+		left join yc_account_tab d on a.created_staff_id=d.id
+		left join work_order_his e on a.id=e.id
+		left join yc_account_tab f on a.created_staff_id = f.id
+		left join yc_account_tab g on a.sub_actual_dealer_id = g.id
+		left join yc_account_tab h on a.sub_assigned_dealer_id = h.id
+		left join yc_role_new_tab i on a.sub_assigned_dealer_role_id=i.role_id
+		left join yc_userinfo_tab j on a.created_user_id=j.id
+		left join sub_order_state k on a.sub_order_state=k.state
+		<where>
+			<if test="type != null">
+				and a.type in (${type})
+			</if>
+			<if test="code != null">
+				and a.code like concat('%', #{code,jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="createdDateStart != null">
+				and a.created_date &gt;= #{createdDateStart, jdbcType=TIMESTAMP}
+			</if>
+			<if test="createdDateEnd != null">
+				and a.created_date &lt;= #{createdDateEnd, jdbcType=TIMESTAMP}
+			</if>
+			<if test="appointmentDateStart != null">
+				and a.appointment_date &gt;= #{appointmentDateStart, jdbcType=TIMESTAMP}
+			</if>
+			<if test="appointmentDateEnd != null">
+				and a.appointment_date &lt;= #{appointmentDateEnd, jdbcType=TIMESTAMP}
+			</if>
+			<if test="createdStaffId != null">
+				and a.created_staff_id = #{createdStaffId, jdbcType=INTEGER}
+			</if>
+			<if test="createdUserId != null">
+				and a.created_user_id = #{createdUserId, jdbcType=INTEGER}
+			</if>
+			<if test="userName != null">
+				and a.user_name like concat('%', #{userName, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="userPhone != null">
+				and a.user_phone like concat('%', #{userPhone, jdbcType=VARCHAR}, '%')
+			</if>
+			<if test="state != null">
+				and a.state = #{state, jdbcType=VARCHAR}
+			</if>
+<!-- 			<choose>
+				<when test="state != null">
+					and a.state = #{state, jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					and a.state != 'C' and a.state != 'D'
+				</otherwise>
+			</choose> -->
+			<if test="stateList != null">
+				and a.state in
+				<foreach collection="stateList" item="stateItem" open="(" separator="," close=")">
+					#{stateItem}
+				</foreach>
+			</if>
+			<if test="excludeStateList != null">
+				and a.state not in
+				<foreach collection="excludeStateList" item="excludeStateItem" open="(" separator="," close=")">
+					#{excludeStateItem}
+				</foreach>
+			</if>
+			<if test="excludeTypeList != null">
+				and a.type not in
+				<foreach collection="excludeTypeList" item="excludeTypeItem" open="(" separator="," close=")">
+					#{excludeTypeItem}
+				</foreach>
+			</if>
+			<if test="subOrderStateList != null">
+				and a.sub_order_state in
+				<foreach collection="subOrderStateList" item="subOrderStateItem" open="(" separator="," close=")">
+					#{subOrderStateItem}
+				</foreach>
+			</if>
+			<if test="subOrderState != null">
+				and a.sub_order_state = #{subOrderState, jdbcType=VARCHAR}
+			</if>
+			<if test='currentDealerFlag != null and currentDealerFlag == "Y"'>
+				<choose>
+					<when test="currentDealerRoleIds != null and currentDealerId != null">
+						and (a.sub_assigned_dealer_id = #{currentDealerId, jdbcType=INTEGER}
+						or a.sub_assigned_dealer_role_id in
+						<foreach collection="currentDealerRoleIds" item="roleId" open="(" separator="," close=")">
+							#{roleId}
+						</foreach>
+						)
+					</when>
+					<when test="currentDealerRoleIds == null and currentDealerId != null">
+						and a.sub_assigned_dealer_id = #{currentDealerId, jdbcType=INTEGER}
+					</when>
+					<when test="currentDealerRoleIds != null and currentDealerId == null">
+						and a.sub_assigned_dealer_role_id in
+						<foreach collection="currentDealerRoleIds" item="roleIds" open="(" separator="," close=")">
+							#{roleIds}
+						</foreach>
+					</when>
+					<otherwise></otherwise>
+				</choose>
+			</if>
+			<if test='currentDealerDealtOrder != null and currentDealerDealtOrder == "Y"'>
+				and e.sub_actual_dealer_id = #{currentDealerId, jdbcType=INTEGER}
+			</if>
+			<if test='currentDealerStartedOrder != null and currentDealerStartedOrder == "Y"'>
+				and a.created_staff_id = #{createdStaffId, jdbcType=INTEGER}
+			</if>
+			<if test="keyword != null">
+				and (
+				a.name like concat('%', #{keyword,jdbcType=VARCHAR}, '%') or
+				<!-- a.code like concat('%', #{keyword,jdbcType=VARCHAR}, '%') or -->
+				a.user_name like concat('%', #{keyword,jdbcType=VARCHAR}, '%') or
+				a.user_phone like concat('%', #{keyword,jdbcType=VARCHAR}, '%')
+				)
+			</if>
+		</where>
+		<if test="sequenceWay != null">
+			<choose>
+				<when test="sequenceWay == 1">
+					order by a.created_date desc
+				</when>
+				<when test="sequenceWay == 2">
+					order by a.created_date asc
+				</when>
+				<when test="sequenceWay == 3">
+					order by a.state_date desc
+				</when>
+				<when test="sequenceWay == 4">
+					order by a.state_date asc
+				</when>
+				<when test="sequenceWay == 5">
+					order by a.created_date desc
+				</when>				
+				<when test="sequenceWay == 6">
+					order by a.created_date asc
+				</when>
+				<otherwise>
+					order by a.created_date desc
+				</otherwise>
+			</choose>
+		</if>
+		<if test="sequenceWay == null">
+			order by a.created_date desc
+		</if>
+	</select>
+	<select id="selectByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from work_order
+		where code = #{code,jdbcType=VARCHAR}
+	</select>
+	<resultMap id="TypeCountResultMap" type="com.room1000.workorder.dto.TypeCountDto">
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="type_name" jdbcType="VARCHAR" property="typeName" />
+		<result column="state" jdbcType="VARCHAR" property="state" />
+		<result column="type_cnt" jdbcType="INTEGER" property="typeCnt" />
+	</resultMap>
+	<select id="selectTypeCount" resultMap="TypeCountResultMap">
+		select a.type, b.type_name, null state, count(1) type_cnt
+		from work_order
+		a
+		left join work_order_type b on a.type = b.type
+		group by a.type
+		union all
+		select a.type, b.type_name, 'C' state,
+		count(1) type_cnt
+		from work_order a
+		left join work_order_type b on a.type = b.type
+		where a.state not in ('C', 'X')
+		group by a.type
+		union all
+		select 'All' type, '全部订单' type_name, null state, count(1) type_cnt
+		from work_order a
+		union all
+		select 'All' type, '全部订单' type_name, 'C' state, count(1) type_cnt
+		from work_order a
+		where a.state not in ('C', 'X')
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		<!-- @mbg.generated -->
+		delete from work_order
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.room1000.workorder.dto.WorkOrderDto" useGeneratedKeys="true" keyProperty="id">
+		<!-- @mbg.generated -->
+		insert into work_order (id, type, ref_id, name,
+		code, created_date, created_staff_id, created_user_id, house_id,
+		take_house_order_id, rental_lease_order_id, user_name,
+		user_phone, staff_id, appointment_date, state, state_date,
+		sub_order_state, sub_actual_dealer_id, sub_assigned_dealer_id, sub_assigned_dealer_role_id,
+		sub_comments, paid_money,
+		payable_money)
+		values (#{id,jdbcType=INTEGER}, #{type,jdbcType=CHAR},
+		#{refId,jdbcType=INTEGER},
+		#{name,jdbcType=VARCHAR},
+		#{code,jdbcType=VARCHAR}, #{createdDate,jdbcType=TIMESTAMP},
+		#{createdStaffId,jdbcType=INTEGER},
+		#{createdUserId,jdbcType=INTEGER}, #{houseId,jdbcType=INTEGER},
+		#{takeHouseOrderId,jdbcType=INTEGER},
+		#{rentalLeaseOrderId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR},
+		#{userPhone,jdbcType=VARCHAR},
+		#{staffId,jdbcType=INTEGER}, #{appointmentDate,jdbcType=TIMESTAMP},
+		#{state,jdbcType=CHAR},
+		#{stateDate,jdbcType=TIMESTAMP}, #{subOrderState,jdbcType=VARCHAR},
+		#{subActualDealerId,jdbcType=INTEGER},
+		#{subAssignedDealerId,jdbcType=INTEGER},
+		#{subAssignedDealerRoleId,jdbcType=INTEGER}, #{subComments,
+		jdbcType=VARCHAR},
+		#{paidMoney,jdbcType=INTEGER},
+		#{payableMoney,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.room1000.workorder.dto.WorkOrderDto" useGeneratedKeys="true"
+		keyProperty="id">
+		<!-- @mbg.generated -->
+		insert into work_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="type != null">
+				type,
+			</if>
+			<if test="refId != null">
+				ref_id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="code != null">
+				code,
+			</if>
+			<if test="createdDate != null">
+				created_date,
+			</if>
+			<if test="createdStaffId != null">
+				created_staff_id,
+			</if>
+			<if test="createdUserId != null">
+				created_user_id,
+			</if>
+			<if test="houseId != null">
+				house_id,
+			</if>
+			<if test="takeHouseOrderId != null">
+				take_house_order_id,
+			</if>
+			<if test="rentalLeaseOrderId != null">
+				rental_lease_order_id,
+			</if>
+			<if test="userName != null">
+				user_name,
+			</if>
+			<if test="userPhone != null">
+				user_phone,
+			</if>
+			<if test="staffId != null">
+				staff_id,
+			</if>
+			<if test="appointmentDate != null">
+				appointment_date,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="stateDate != null">
+				state_date,
+			</if>
+			<if test="subOrderState != null">
+				sub_order_state,
+			</if>
+			<if test="subActualDealerId != null">
+				sub_actual_dealer_id,
+			</if>
+			<if test="subAssignedDealerId != null">
+				sub_assigned_dealer_id,
+			</if>
+			<if test="subAssignedDealerRoleId != null">
+				sub_assigned_dealer_role_id,
+			</if>
+			<if test="subComments != null">
+				sub_comments,
+			</if>
+			<if test="paidMoney != null">
+				paid_money,
+			</if>
+			<if test="payableMoney != null">
+				payable_money,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="type != null">
+				#{type,jdbcType=CHAR},
+			</if>
+			<if test="refId != null">
+				#{refId,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="code != null">
+				#{code,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDate != null">
+				#{createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createdStaffId != null">
+				#{createdStaffId,jdbcType=INTEGER},
+			</if>
+			<if test="createdUserId != null">
+				#{createdUserId,jdbcType=INTEGER},
+			</if>
+			<if test="houseId != null">
+				#{houseId,jdbcType=INTEGER},
+			</if>
+			<if test="takeHouseOrderId != null">
+				#{takeHouseOrderId,jdbcType=INTEGER},
+			</if>
+			<if test="rentalLeaseOrderId != null">
+				#{rentalLeaseOrderId,jdbcType=INTEGER},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userPhone != null">
+				#{userPhone,jdbcType=VARCHAR},
+			</if>
+			<if test="staffId != null">
+				#{staffId,jdbcType=INTEGER},
+			</if>
+			<if test="appointmentDate != null">
+				#{appointmentDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=CHAR},
+			</if>
+			<if test="stateDate != null">
+				#{stateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="subOrderState != null">
+				#{sub_order_state,jdbcType=VARCHAR},
+			</if>
+			<if test="subActualDealerId != null">
+				#{subActualDealerId,jdbcType=INTEGER},
+			</if>
+			<if test="subAssignedDealerId != null">
+				#{sub_assigned_dealer_id,jdbcType=INTEGER},
+			</if>
+			<if test="subAssignedDealerRoleId != null">
+				#{sub_assigned_dealer_role_id,jdbcType=INTEGER},
+			</if>
+			<if test="subComments != null">
+				#{subComments, jdbcType=VARCHAR},
+			</if>
+			<if test="paidMoney != null">
+				#{paidMoney,jdbcType=INTEGER},
+			</if>
+			<if test="payableMoney != null">
+				#{payableMoney,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.room1000.workorder.dto.WorkOrderDto">
+		<!-- @mbg.generated -->
+		update work_order
+		<set>
+			<if test="type != null">
+				type = #{type,jdbcType=CHAR},
+			</if>
+			<if test="refId != null">
+				ref_id = #{refId,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="code != null">
+				code = #{code,jdbcType=VARCHAR},
+			</if>
+			<if test="createdDate != null">
+				created_date = #{createdDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createdStaffId != null">
+				created_staff_id = #{createdStaffId,jdbcType=INTEGER},
+			</if>
+			<if test="createdUserId != null">
+				created_user_id = #{createdUserId,jdbcType=INTEGER},
+			</if>
+			<if test="houseId != null">
+				house_id = #{houseId,jdbcType=INTEGER},
+			</if>
+			<if test="takeHouseOrderId != null">
+				take_house_order_id = #{takeHouseOrderId,jdbcType=INTEGER},
+			</if>
+			<if test="rentalLeaseOrderId != null">
+				rental_lease_order_id = #{rentalLeaseOrderId,jdbcType=INTEGER},
+			</if>
+			<if test="userName != null">
+				user_name = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userPhone != null">
+				user_phone = #{userPhone,jdbcType=VARCHAR},
+			</if>
+			<if test="staffId != null">
+				staff_id = #{staffId,jdbcType=INTEGER},
+			</if>
+			<if test="appointmentDate != null">
+				appointment_date = #{appointmentDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=CHAR},
+			</if>
+			<if test="stateDate != null">
+				state_date = #{stateDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="subOrderState != null">
+				sub_order_state = #{subOrderState,jdbcType=VARCHAR},
+			</if>
+			<if test="subActualDealerId != null">
+				sub_actual_dealer_id = #{subActualDealerId,jdbcType=INTEGER},
+			</if>
+			<if test="subAssignedDealerId != null">
+				sub_assigned_dealer_id = #{subAssignedDealerId,jdbcType=INTEGER},
+			</if>
+			<if test="subAssignedDealerRoleId != null">
+				sub_assigned_dealer_role_id = #{subAssignedDealerRoleId,jdbcType=INTEGER},
+			</if>
+			<if test="subComments != null">
+				sub_comments = #{subComments, jdbcType=VARCHAR},
+			</if>
+			<if test="paidMoney != null">
+				paid_money = #{paidMoney,jdbcType=INTEGER},
+			</if>
+			<if test="payableMoney != null">
+				payable_money = #{payableMoney,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.room1000.workorder.dto.WorkOrderDto">
+		<!-- @mbg.generated -->
+		update work_order
+		set type = #{type,jdbcType=CHAR},
+		ref_id = #{refId,jdbcType=INTEGER},
+		name =
+		#{name,jdbcType=VARCHAR},
+		code = #{code,jdbcType=VARCHAR},
+		created_date = #{createdDate,jdbcType=TIMESTAMP},
+		created_staff_id = #{createdStaffId,jdbcType=INTEGER},
+		created_user_id = #{createdUserId,jdbcType=INTEGER},
+		house_id =
+		#{houseId,jdbcType=INTEGER},
+		take_house_order_id = #{takeHouseOrderId,jdbcType=INTEGER},
+		rental_lease_order_id =
+		#{rentalLeaseOrderId,jdbcType=INTEGER},
+		user_name = #{userName,jdbcType=VARCHAR},
+		user_phone =
+		#{userPhone,jdbcType=VARCHAR},
+		staff_id = #{staffId,jdbcType=INTEGER},
+		appointment_date =
+		#{appointmentDate,jdbcType=TIMESTAMP},
+		state = #{state,jdbcType=CHAR},
+		state_date = #{stateDate,jdbcType=TIMESTAMP},
+		sub_order_state = #{subOrderState,jdbcType=VARCHAR},
+		sub_actual_dealer_id = #{subActualDealerId,jdbcType=INTEGER},
+		sub_assigned_dealer_id = #{subAssignedDealerId,jdbcType=INTEGER},
+		sub_assigned_dealer_role_id =
+		#{subAssignedDealerRoleId,jdbcType=INTEGER},
+		sub_comments = #{subComments, jdbcType=VARCHAR},
+		paid_money =
+		#{paidMoney,jdbcType=INTEGER},
+		payable_money = #{payableMoney,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

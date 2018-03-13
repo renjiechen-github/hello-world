@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>查看其他订单</title>
+</head>
+
+<body>
+<div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+	<section class="panel">
+	<header class="panel-heading custom-tab turquoise-tab">
+		<ul class="nav nav-tabs" role="tablist" id="myTabs">
+			<li role="presentation" class="active"><a href="#PAY_WAITSTATE"
+				aria-controls="PAY_WAITSTATE" role="tab" data-toggle="tab">订单基本信息</a>
+			</li>
+			<li role="presentation" ><a href="#GOTO_WAITSTATE"
+				aria-controls="GOTO_WAITSTATE" role="tab" data-toggle="tab">任务处理信息 </a>
+			</li>
+		</ul>
+       </header>
+       
+       <div id="myTabContent" class="tab-content">
+		<!-- 待支付-->
+		<div class="tab-pane in active" id="PAY_WAITSTATE">
+        <div class="panel-body">
+        <form id="form2" class="form-horizontal adminex-form " role="form">
+			<!-- 基本信息-->
+			<div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label">订单编号：</label>
+				<div class="col-sm-8">
+				<span id="order_code" class="form-control" style="border: 0px"></span>
+				<!-- <input id="rankName" maxlength="40" type="text" onClick="orderadd.Open();"  readonly dataType="Require" class="form-control" msg="请选择预约房源！" /> -->
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label"> 订单名称：</label>
+				<div class="col-sm-8">
+				<span id="oname" class="form-control" style="border: 0px"></span>
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-2  control-label">
+					联系方式：</label>
+				<div class="col-sm-3">
+				<span id="ouserMobile" class="form-control" style="border: 0px"></span>
+				</div>
+				<label class="col-sm-2  control-label"> 
+					用户名称：</label>
+				<div class="col-sm-3">
+				<span id="ouserName" class="form-control" style="border: 0px"></span>
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label">预约时间：</label>
+				<div class="col-sm-8">
+				<span id="oserviceTime" class="form-control" style="border: 0px"></span>
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label">详细说明：</label>
+				<div class="col-sm-8">
+				<span id="odesc" class="form-control" style="border: 0px"></span>
+				</div>
+				<div class="col-sm-2"></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+			<div class="text-center">
+				<button class="btn btn-info" id="backrow" type="button">返回</button>
+				<button class="btn btn-info" id="dispatch" type="button">派单</button>
+			</div>
+		</form>
+        </div>
+        </div>
+        <div class="tab-pane " id="GOTO_WAITSTATE">
+        <div class="panel-body">
+         <div class="adv-table">
+	        	<table id="flowexample" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+			            	<th></th>
+			             	<th></th>
+			                <th>任务类型</th>
+			                <th>任务编号</th>
+			                <th>任务名称</th>
+			                <th>发起任务时间</th>
+			                <th>当前任务状态</th>
+			                <th></th>
+			            </tr>
+			        </thead>
+			    </table>
+	        </div>
+        </div>
+        </div>
+        </div>
+        <div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+	</section>
+</body>
+<script type="text/javascript" src="/html/js/order_flow/order_action/Order_4_view.js"></script>
+</html>

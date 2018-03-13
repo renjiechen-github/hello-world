@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.workorder.dao.WorkOrderTypeDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.workorder.dto.WorkOrderTypeDto">
+    <!--
+    @mbg.generated
+    -->
+    <id column="type" jdbcType="CHAR" property="type" />
+    <result column="type_name" jdbcType="VARCHAR" property="typeName" />
+    <result column="type_short_name" jdbcType="VARCHAR" property="typeShortName" />
+    <result column="type_name_en" jdbcType="VARCHAR" property="typeNameEn" />
+    <result column="comments" jdbcType="VARCHAR" property="comments" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+    @mbg.generated
+    -->
+    type, type_short_name, type_name, comments, type_name_en
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--
+    @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from work_order_type
+    where type = #{type,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from work_order_type
+  </select>
+  <select id="selectWorkOrderType" resultType="map">
+  	select a.item_id,a.item_name,a.item_value 
+  	from yc_dictionary_item a 
+  	where a.group_id='ORDER.TYPE' and a.status=1 order by a.item_order 
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!--
+    @mbg.generated
+    -->
+    delete from work_order_type
+    where type = #{type,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.room1000.workorder.dto.WorkOrderTypeDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into work_order_type (type, type_short_name, type_name, comments
+      )
+    values (#{type,jdbcType=VARCHAR}, #{typeShortName,jdbcType=VARCHAR}, #{typeName,jdbcType=VARCHAR}, #{comments,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.workorder.dto.WorkOrderTypeDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into work_order_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="type != null">
+        type,
+      </if>
+      <if test="typeShortName != null">
+        type_short_name,
+      </if>
+      <if test="typeName != null">
+        type_name,
+      </if>
+      <if test="comments != null">
+        comments,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="type != null">
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="typeShortName != null">
+        #{typeShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="typeName != null">
+        #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="comments != null">
+        #{comments,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.workorder.dto.WorkOrderTypeDto">
+    <!--
+    @mbg.generated
+    -->
+    update work_order_type
+    <set>
+      <if test="typeName != null">
+        type_name = #{typeName,jdbcType=VARCHAR},
+      </if>
+      <if test="typeShortName != null">
+        type_short_name = #{typeShortName,jdbcType=VARCHAR},
+      </if>
+      <if test="comments != null">
+        comments = #{comments,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where type = #{type,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.workorder.dto.WorkOrderTypeDto">
+    <!--
+    @mbg.generated
+    -->
+    update work_order_type
+    set type_name = #{typeName,jdbcType=VARCHAR},
+      type_short_name = #{typeShortName,jdbcType=VARCHAR}
+      comments = #{comments,jdbcType=VARCHAR}
+    where type = #{type,jdbcType=CHAR}
+  </update>
+</mapper>

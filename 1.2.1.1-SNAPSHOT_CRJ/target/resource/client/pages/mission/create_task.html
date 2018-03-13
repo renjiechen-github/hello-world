@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>我发起任务</title>
+    <link rel="stylesheet" type="text/css" href="../../css/normalize.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/mission/create_task.min.css"/>
+</head>
+<body>
+<div id="banner" style="padding-top: 30px">
+	<div class="inpy" >
+		<div class="button-group">
+			<select id="proccessed" name="proccessed">
+			 	 <option value="0">我发起的任务</option>
+			 	  <option value="1">待处理任务</option>
+			 	   <option value="2">已处理任务</option>
+			</select>
+		</div>
+		<div class="inputdiv">
+			<input type="text" id="keyWord" placeholder="任务编码、任务名称">
+		</div>
+		<div class="buttondiv">
+			<button id="search" type="button"  class="button">搜索</button>
+		</div>
+		<div class="rightdiv" id="rightdiv">
+			<div id="" class="myinfo">
+				<img src="../../images/market/7.png" alt="" />
+			</div>
+		</div>
+	</div>
+	<div class="hide" id='hide1'>
+		<div class="hidediv">
+			<div class="divflex">
+			<select id="taskState" name="taskState">
+				 
+			</select>
+			</div>
+		<select id="taskType" name="taskType">
+		</select>
+		</div>		
+	</div>
+</div>
+<div class="body">	
+	<!-- <div class="div">
+		<div class="con">
+			<div class="info"><p>20160928002804T176C4</p></div>
+			<div class="state"><p>服务任务</p></div>
+		</div>
+		<div class="con1">
+			<div class="common">预约维修</div>
+			<div class="common1">2016-09-08|23:05</div>
+			<div class="common">开始任务</div>
+		</div>								
+		<div class="con2">
+			<div class="info1"><a href="#" onclick=""><i class="mark"></i><p>查看详情</p></a></div>			
+		</div>
+		<hr>
+	</div>
+	<div class="div">
+		<div class="con">
+			<div class="info"><p>20160928002804T176C4</p></div>
+			<div class="state"><p>服务任务</p></div>
+		</div>
+		<div class="con1">
+			<div class="common">预约维修</div>
+			<div class="common1">2016-09-08|23:05</div>
+			<div class="common">开始任务</div>
+		</div>								
+		<div class="con2">
+			<div class="info1"><a href="#" onclick=""><i class="mark"></i><p>查看详情</p></a></div>			
+		</div>
+		<hr>
+	</div> -->
+</div>
+<script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>  
+<script type="text/javascript" src="../../js/common.client.js"></script>
+<script type="text/javascript" src="../../js/task/myTask.js"></script>  
+
+</body>
+</html>

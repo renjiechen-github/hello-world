@@ -1,0 +1,878 @@
+{
+	/**
+	 * 系統默認配置信息查詢
+	 */ 
+	systemconfig:{
+		queryparamforinit:'SELECT * FROM yc_systemparameter_tab',
+		token:'SELECT a.`wx_token` FROM yc_wx_server_info a WHERE a.`server_id` = ? and a.state = 1 ',
+		payServer:'SELECT a.* FROM yc_wx_server_info a WHERE a.`appid` = ? and a.state = 1 ',
+		/**
+		 * 同步用户信息 
+		 */  
+		updateWxUser:'UPDATE yc_wx_user_info a SET a.`city` = ? ,a.`country` = ? ,a.`group_id` = ?, a.`headimgurl` = ?,a.`nickname` = ? ,a.`province` = ?,a.`syn_info_time` = now() WHERE a.`wxuser` = ? and a.server_id = ?',
+		querydictionary:'SELECT a.`item_id`,a.`item_name`,a.item_value FROM yc_dictionary_item a WHERE a.`group_id` = ?  and a.`status` = 1 ORDER BY a.`item_order`',
+		querydictionaryAll:'SELECT a.`item_id`,a.`item_name`,a.item_value FROM yc_dictionary_item a WHERE a.`group_id` = ?  ORDER BY a.`item_order`',
+		insertfilelog:'INSERT INTO yc_tmp_file(`id`,`name`,`contentType`,`changename`,`oper_id`,`size`,`path`,`ip`)VALUES(nextval(),?,?,?,?,?,?,?)',
+		loadfile:{
+			main:'SELECT a.id,a.`contentType`,a.`ip`,a.`iscommon`,a.`name`,a.`oper_date`,a.`oper_id`,a.`path`,a.`size`,a.changename FROM yc_tmp_file a WHERE 1=1 ',
+			operid:' and a.`oper_id` = ? ',
+			iscommon:' and a.iscommon = ? '
+		},
+		setCommonImg:'update yc_tmp_file a set a.iscommon = 1 where a.id in (##)',
+		deleteImg:'delete a from yc_tmp_file a where a.id in (##)',
+		droptable:'select CONCAT(\'DROP TABLE IF EXISTS \',?)',
+		checkTmpTableExist:'SELECT COUNT(1) FROM information_schema.TABLES a WHERE a.table_name = \'YC_UNIQUE_ID\' AND table_schema = DATABASE()',
+		createTmpTable:'CREATE TABLE yc_unique_id(id int PRIMARY KEY auto_increment, operdate datetime)',
+		insertTmpTable:'insert into yc_unique_id(operdate) values (now())',
+		visit:'INSERT INTO yc_log_mp_visit (`ip`,`oper_id`,`heads`,`power_id`,`menu_id`,rule_ids,url)VALUES(?,?,?,?,?,?,?)',
+		queryManager:{
+			main:'SELECT a.`id`, a.`name` FROM yc_account_tab a WHERE EXISTS(SELECT 1 FROM yc_account_role_tab b WHERE a.`id` = b.`user_id` AND b.`role_id` in #### AND b.`state` = 1) AND a.`is_delete` = 1 ',
+		},
+	},
+	menu:{
+		/**
+		 * 根据级别获取菜单
+		 */ 
+		queryUserMenu:{
+			main:'SELECT a.isnext,a.menu_id,a.`menu_name`,a.`menu_level`,a.`menu_url`,a.`order_id`,a.`menu_ico`,a.`super_id` FROM yc_menu_new_tab a,yc_account_role_tab c,yc_power_new_tab e,yc_role_menu_tab f,yc_role_new_tab g WHERE a.`menu_id` = e.`menu_id` AND e.`power_id` = f.`power_id` AND f.`role_id` = g.`role_id` AND g.`role_id` = c.`role_id` AND c.`user_id` = ? AND a.`state` = 1 AND c.`state` = 1 AND e.`state` = 1  AND f.`state` = 1 AND g.`state` = 1 GROUP BY a.isnext,a.menu_id,a.`menu_name`,a.`menu_level`,a.`menu_url`,a.`order_id`,a.`menu_ico`,a.`super_id`  ',
+			
+			orderby:' ORDER BY a.`super_id`,a.`order_id` ' 
+		},
+		/**
+		 * 获取链接对于的权限id
+		 */
+		getpower:'SELECT a.power_id FROM yc_power_new_tab a WHERE a.power_url = ? and a.state = 1 ',
+		/**
+		 * 检验是否有权限访问
+		 */
+		checkPower:'SELECT COUNT(1) FROM yc_role_menu_tab a WHERE a.`power_id` = ? AND a.`role_id` IN(##) and a.state = 1',
+		getMenuId:'SELECT a.`menu_id` FROM yc_menu_new_tab a WHERE a.`menu_url` = ?',
+		getPowerMenu:'SELECT a.`power_id`,a.`menu_id` FROM yc_power_new_tab a WHERE a.`power_url` = ? '
+	},
+	user:{
+		checkUser:'SELECT a.id,a.`mobile`,a.`name`,a.`type`,a.passwd, headerImage, g_id,a.state FROM yc_account_tab a WHERE a.`mobile` = ? AND a.`is_delete` = 1',
+		mobileCheckUser:'SELECT a.id,a.`mobile`,a.`name`,a.`type`,a.passwd, headerImage, g_id, state FROM yc_account_tab a WHERE MD5(a.`mobile`) = ? AND a.`is_delete` = 1',
+		getRole:'SELECT GROUP_CONCAT(a.`role_id`) AS \'all\' FROM yc_account_role_tab a WHERE a.`user_id` = ? AND a.`state` =1 GROUP BY a.user_id',
+		getOrgs:'SELECT GROUP_CONCAT(a.`org_id`) AS \'all\' FROM yc_account_org_tab a WHERE a.`user_id` = ? AND a.`state` =1 GROUP BY a.user_id',
+		modifyPass:'UPDATE yc_account_tab a SET a.`passwd` = ? WHERE a.mobile = ?',
+		modifyMobilePass:'UPDATE yc_account_tab a SET a.`passwd` = ? WHERE MD5(a.mobile) = ?',
+		userOrg:'SELECT a.org_id, b.org_name FROM yc_account_org_tab a, yc_organization_tab b WHERE a.org_id = b.org_id AND a.user_id = ? AND a.state = 1 AND b.state = 1',
+		workbench:'SELECT a.url, a.name, openType FROM yc_mobile_workbench_cfg a WHERE a.org_id = ? AND a.state = 1 ORDER BY orderby ',
+		delChannelId:'delete from yc_user_ts_tab where mobile = ? or channel_id = ?',
+		insertChannelId:'INSERT INTO yc_user_ts_tab(mobile, channel_id, client_type, bind_date) VALUES (?, ?, ?, SYSDATE())',
+		bannerCfg:'SELECT a.`item_name` imageUrl, a.`item_value` imageLink, a.`remark`  FROM  yc_dictionary_item a WHERE a.group_id = \'MOBILE.BANNER\' AND a.`item_id` = ? AND a.`status` = 1 ORDER BY a.`item_order` ',
+		modifyHeaderImage:'UPDATE yc_account_tab SET headerImage = ? WHERE mobile = ? ',
+		modifyUserName:'UPDATE yc_account_tab SET name = ? WHERE mobile = ?',
+		getRolesInfo:'SELECT GROUP_CONCAT(a.`role_id`) roleIds, GROUP_CONCAT(b.`name`) roleNames FROM yc_account_role_tab a, yc_role_tab b  WHERE a.`user_id` = ? AND a.`state` =1  AND b.`id` = a.`role_id`',
+		getOrgInfo:' SELECT a.`org_name`, a.`level`, a.`supp_id`, a.`org_id` FROM yc_organization_tab a WHERE a.`org_id` = ? AND a.`state` = 1 ',
+		queryUser:{ 
+			main:'SELECT a.id,a.`mobile`,a.`name`,(SELECT GROUP_CONCAT(e.role_id) FROM yc_account_role_tab e WHERE e.`user_id` = a.id GROUP BY e.user_id) roles,(SELECT GROUP_CONCAT(e.org_id) FROM yc_account_org_tab e WHERE e.`user_id` = a.id GROUP BY e.user_id) orgs FROM yc_account_tab a WHERE 1=1',
+			org:' AND EXISTS(SELECT 1 FROM yc_account_org_tab b WHERE b.`state` = 1 AND b.`user_id` = a.`id` AND b.`org_id` IN (##)) ',
+			role:' AND EXISTS(SELECT 1 FROM yc_account_role_tab c WHERE c.`state` = 1 AND c.`user_id` = a.`id` AND c.`role_id` IN (##)) ',
+			mibile:' and a.mobile like ? ',
+			username:' and a.name like ? ',
+			mhquery:' and (a.mobile like ? or a.name like ?)'
+		}
+	},
+	log:{
+		login:'INSERT INTO yc_log_login(mobile,passwrod,logintime,islogin,heads,ip)VALUES(?,?,NOW(),?,?,?)'
+	},
+	/**
+	 * 房源信息
+	 */
+	basehouse:{
+	  getSpiderList:{
+	    main:'select distinct title,phone_number,contacts,price,house_type,renovation,community,release_time,url,floor,source,acreage,use_type,area,business_center from yc_datamining_tab where 1=1',
+	    areaId:'select area_name from yc_area_tab where id = ?',
+	    area:' and area = ?',
+	    source:' and source = ?',
+	    businesscenter:' and business_center = ?',
+	    useType:' and use_type = ?',
+	    beginPrice:' and price >= ?',
+	    endPrice:' and price <= ?',
+	    orderBy:' order by release_time',
+	  },
+		getHouseList:{
+			selectMainbg:'select a.*,CONCAT(n,\'/\',m) nm from (',
+			main:' SELECT a.`id`, a.`house_code`, d.`desc_text`, d.`email`, purpose, a.`createtime` , d.`certificateno`, a.`house_type` ,  a.`house_name` ,a.`spec2` , a.`spec` , a.`decorate` , a.`area` , a.`floor` , a.`value_date` , a.`user_id`, a.`contract_id`, a.`descInfo` , a.`address` , a.`group_id` , a.`account_id`, a.`house_status` ,  a.`appendix` , a.`coordinate` , a.`delete_state`, cast(a.`lease_period` as char) lease_period, a.`cost_a`,  a.`payment`, a.`free_rent`, a.`update_time`, a.`is_cubicle`, c.`areaid`,\'\' monery, c.`group_name`,c.`g_id`, d.`username` , d.`mobile`, f.`name`, a.`publish` ,  a.`is_top`, CONCAT(fn_getdictitemname(\'GROUP.KITCHEN\',SUBSTRING_INDEX(a.`spec2`,\'|\',1)),\'\',fn_getdictitemname(\'GROUP.BALCONY\',SUBSTRING_INDEX(SUBSTRING_INDEX(a.`spec2`,\'|\',2),\'|\',-1)),\'\',fn_getdictitemname(\'GROUP.LIFT\',SUBSTRING_INDEX(a.`spec2`,\'|\',-1))) specName2, CONCAT(fn_getdictitemname(\'GROUP.SPEC\',SUBSTRING_INDEX(a.`spec`,\'|\',1)),\'\',fn_getdictitemname(\'GROUP.TING\',SUBSTRING_INDEX(SUBSTRING_INDEX(a.`spec`,\'|\',2),\'|\',-1)),\'\',fn_getdictitemname(\'GROUP.WEI\',SUBSTRING_INDEX(a.`spec`,\'|\',-1))) specName,fn_getdictitemname(\'BASEHOUSE.PUBLISH\',a.publish) publishname,fn_getdictitemname (\'BASEHOUSE.STATUS\', a.`house_status`)  houseStatus, fn_getarearname(c.`areaid`) areaName, fn_getdictitemname (\'DECORATE.TYPE\', a.`decorate`) decorateType, (CASE WHEN house_status = 10 THEN 0 WHEN  house_status > 5 THEN COUNT(g.`house_id`) - 1  WHEN house_status < 6 THEN SUBSTRING_INDEX(a.spec,\'|\',1) END) m, SUM(CASE WHEN rank_status = 5 AND house_status = 9 THEN SUBSTRING_INDEX(rank_spec,\'|\',1) ELSE 0 END) n,fn_getarearname(c.`trading`) sqname FROM (((`yc_house_tab` a LEFT JOIN `yc_group_tab` c ON ((a.`group_id` = c.`id`))) LEFT JOIN `yc_userinfo_tab` d ON ((a.`user_id` = d.`id`))) LEFT JOIN `yc_account_tab` f ON ((a.`account_id` = f.`id`)) LEFT JOIN yc_houserank_tab g ON g.`house_id` = a.`id`) where a.`delete_state`=1',
+			keyword:' and (house_name like ? or house_code like UPPER(?) or a.address like ? or username like ? or a.id in (SELECT b.house_id FROM yc_agreement_tab b WHERE b.`type` = 1 AND b.`sbcode` LIKE ?))',
+			status:' and house_status = ?',
+			newStatus:' and house_status #### ',
+			areaid:' and areaid = ?',
+			accountid:' and account_id = ?',
+			houseId:' and a.id = ?',
+			g_id:' and c.g_id = ?',
+			publish:' and publish = ?',
+			trading:' and c.trading = ?',
+			createtime:' and a.createtime>=? and a.createtime<=?',
+			groupBy:' GROUP BY a.id ',
+			selectMainend:') a where 1 = 1 ',
+			kzhouse:' and m > n ',
+			orderBy:' ORDER BY  a.`update_time` DESC ',
+			getTrading:'SELECT a.id, a.`area_name` FROM yc_area_tab a WHERE a.`area_type` = 4 AND a.`area_name` LIKE \'%商圈\' ',
+			onstructionMonery:'SELECT ROUND((? + ? + money + ?)/?,2) monery  FROM yc_onstruction_tab a WHERE a.`houseid` = ?  AND a.`is_work` = 1  ',
+			agreementMonery:'SELECT a.`cost_a`,TIMESTAMPDIFF(YEAR,a.`begin_time`,NOW()) currentyYear,(case when TIMESTAMPDIFF(YEAR,a.`begin_time`,a.end_time) < 5 then 15 else 30 end)  agreeYear, a.id FROM yc_agreement_tab a WHERE a.`type` = 1 AND a.`house_id` = ?',
+			addSql:'select #### sumcnt',
+			workHouse:'select a.*,CONCAT(n,\'/\',m) nm from (SELECT c.trading, c.`areaid`,c.g_id,a.address, (CASE when a.`house_status` = 10 then 0 WHEN a.`house_status` = 9 THEN  (CASE WHEN exists(SELECT 1 FROM yc_houserank_tab g WHERE g.rank_type = 0 AND g.house_id = a.`id` AND g.`rank_status` = 5) THEN (SELECT COUNT(1) FROM yc_houserank_tab f WHERE f.`house_id` = a.`id`) - 1 ELSE (SELECT COUNT(1) FROM yc_houserank_tab f WHERE f.`rank_status` = 5 AND f.`house_id` = a.`id`) END) ELSE 0 END)  n,  (CASE when a.`house_status` = 10 then 0 WHEN a.`house_status` > 5 THEN ((SELECT COUNT(1) FROM yc_houserank_tab f WHERE f.`house_id` = a.`id`) - 1) ELSE SUBSTRING_INDEX(a.`spec`, \'|\', 1) END) m, a.`id`, a.`house_code`, a.`house_name`,a.area, c.`group_name`, d.`username`, d.`mobile`, f.`name`, h.`cost_a`, CONCAT(fn_getdictitemname(\'GROUP.SPEC\',SUBSTRING_INDEX(a.`spec`,\'|\',1)),\'\',fn_getdictitemname(\'GROUP.TING\',SUBSTRING_INDEX(SUBSTRING_INDEX(a.`spec`,\'|\',2),\'|\',-1)),\'\',fn_getdictitemname(\'GROUP.WEI\',SUBSTRING_INDEX(a.`spec`,\'|\',-1))) specName,fn_getdictitemname(\'BASEHOUSE.PUBLISH\',a.publish) publishname,a.publish,fn_getdictitemname (\'BASEHOUSE.STATUS\', a.`house_status`)  houseStatus, fn_getarearname(c.`areaid`) areaName, fn_getdictitemname (\'DECORATE.TYPE\', a.`decorate`) decorateType, a.`createtime`,a.`update_time`, (SELECT e.area_name FROM yc_area_tab e WHERE e.id = c.`trading`) sqname,g.`title`,g.`fee`,g.`rank_area`,fn_getdictitemname(\'RANKHOUSE.STATUS\',rank_status) rank_status, g.`rank_code`, fn_getdictitemname(\'RANKHOUSE.TYPE\',g.`rank_type`) rankType,house_status, g.`rank_status` rankStatus FROM (((`yc_house_tab` a LEFT JOIN `yc_group_tab` c ON ((a.`group_id` = c.`id`))) LEFT JOIN `yc_userinfo_tab` d ON ((a.`user_id` = d.`id`))) LEFT JOIN `yc_account_tab` f ON ((a.`account_id` = f.`id`))), yc_houserank_tab g, yc_agreement_tab h  where a.`delete_state`=1 AND h.`type` = 1 AND h.`house_id` = a.id AND h.`isdelete` = 1 AND g.`isdelete` = 1 and a.id = g.`house_id` and a.`house_status` > 5) a where 1 = 1',
+			notworkHouse:'select * from (SELECT a.`update_time`,a.`createtime`, a.`id`,a.area, c.trading, c.areaid, a.address, c.g_id, SUBSTRING_INDEX(a.`spec`,\'|\',1) roomcnt, a.`house_code`, a.`house_name`, c.`group_name`, d.`username`, d.`mobile`, f.`name`,  CONCAT(fn_getdictitemname(\'GROUP.SPEC\',SUBSTRING_INDEX(a.`spec`,\'|\',1)),\'\',fn_getdictitemname(\'GROUP.TING\',SUBSTRING_INDEX(SUBSTRING_INDEX(a.`spec`,\'|\',2),\'|\',-1)),\'\',fn_getdictitemname(\'GROUP.WEI\',SUBSTRING_INDEX(a.`spec`,\'|\',-1))) specName,fn_getdictitemname(\'BASEHOUSE.PUBLISH\',a.publish) publishname,fn_getdictitemname (\'BASEHOUSE.STATUS\', a.`house_status`)  houseStatus,a.publish,house_status, fn_getarearname(c.`areaid`) areaName, fn_getdictitemname (\'DECORATE.TYPE\', a.`decorate`) decorateType, (SELECT e.area_name FROM yc_area_tab e WHERE e.id = c.`trading`) sqname,h.`cost_a`,\'\' `title`,\'\' `fee`,\'\' `rank_area`,\'\' rank_status, \'\' `rank_code`, \'\' rankType FROM (((`yc_house_tab` a LEFT JOIN `yc_group_tab` c ON ((a.`group_id` = c.`id`))) LEFT JOIN `yc_userinfo_tab` d ON ((a.`user_id` = d.`id`))) LEFT JOIN `yc_account_tab` f ON ((a.`account_id` = f.`id`))), yc_agreement_tab h where a.`delete_state`=1 and a.`house_status` < 6 AND h.`type` = 1 AND h.`house_id` = a.id AND h.`isdelete` = 1) a where 1 = 1 ',
+			exportkzhouse:' and (m > n and a.`rankStatus` not in (5,6) ) ',
+			exportg_id:' and g_id = ?',
+			exprottrading:' and trading = ?',
+			projectInfo:'SELECT CONCAT(fn_getdictitemname(\'GROUP.SPEC\',SUBSTRING_INDEX(a.`spec`,\'|\',1)),\'\',fn_getdictitemname(\'GROUP.TING\',SUBSTRING_INDEX(SUBSTRING_INDEX(a.`spec`,\'|\',2),\'|\',-1))) spce, round(a.`money`,2) money, round(?,2) `furnituremoney`, round(?,2) `appliancesmoney`, round(?,2) `othermoney`,fn_getdictitemname(\'PROJECT.TYPE\',a.`status`) STATUS , DATE_FORMAT(a.`constructiontime`,\'%Y-%m-%d %T\') constructiontime, DATE_FORMAT(a.`completetime`,\'%Y-%m-%d %T\') completetime, ROUND((money+?+?+?),2) total, IFNULL(DATE_FORMAT(a.`createtime`,\'%Y-%m-%d %T\'),\'  \') createtime FROM yc_onstruction_tab  a WHERE a.`is_work`=1 AND a.`is_delete` = 1 AND a.`agreementid` = ?',
+			projectCost:'SELECT a.`appliance_cost`, a.`furniture_cost`, a.`other_cost` FROM purchase_items_tab a WHERE a.`agree_id` = ? AND a.`status` = 1',
+			projectListInfo:'SELECT a.`name`,c.`supname`, a.`brand`, a.`spec`, d.`code` ,b.`price` ,d.`onstruid`, e.`fatherid` FROM  purchaser_material_tab a, purchaser_material2supplier_tab b, purchaser_supplier_tab c, yc_materialrelation_tab d ,purchaser_mcate_tab e  WHERE a.`id` = b.`mid` AND b.`sid` = c.`id` AND d.materialid = a.id  AND a.type=e.`id` and d.msrelation_id=b.id   AND d.`onstruid` = ? and fatherid #### '
+		}, 
+		getkzHouseList:{
+			main:'SELECT group_name,a.id,fn_getdictitemname(\'RANKHOUSE.TYPE\',rank_type) rankType,specName,b.`rank_area`,a.createtime, b.`title`,b.`fee`,fn_getarearname(trading) sqname,fn_getdictitemname(\'BASEHOUSE.PUBLISH\',a.publish) publishname,fn_getdictitemname (\'BASEHOUSE.STATUS\', a.`house_status`)  houseStatus,fn_getarearname(`areaid`) areaname, user_name, b.`rank_area`,a.house_name,a.house_code FROM (SELECT fn_getowername(user_id) user_name, ( CASE WHEN a.`house_status` = 9 THEN (CASE WHEN EXISTS (SELECT 1 FROM yc_houserank_tab g WHERE g.rank_type = 0 AND g.house_id = a.`id` AND g.`rank_status` = 5) THEN (SELECT  COUNT(1)  FROM yc_houserank_tab f  WHERE f.`house_id` = a.`id`) - 1  ELSE  (SELECT  COUNT(1)  FROM yc_houserank_tab f  WHERE f.`rank_status` = 5  AND f.`house_id` = a.`id`)  END )   ELSE 0   END ) n, publish,house_status,( CASE WHEN a.`house_status` > 5  THEN ((SELECT COUNT(1)  FROM yc_houserank_tab f WHERE f.`house_id` = a.`id`) - 1) ELSE SUBSTRING_INDEX(a.`spec`, \'|\', 1) END) m, CONCAT(fn_getdictitemname (\'GROUP.SPEC\', SUBSTRING_INDEX(a.`spec`, \'|\', 1) ),fn_getdictitemname (\'GROUP.TING\', SUBSTRING_INDEX(SUBSTRING_INDEX(a.`spec`, \'|\', 2), \'|\',- 1)),fn_getdictitemname (\'GROUP.WEI\',SUBSTRING_INDEX(a.`spec`, \'|\', - 1) )) specName,a.id,c.g_id,a.`house_name`,a.`house_code`,c.`group_name`,a.`user_id`,c.`areaid`,c.`trading`,a.`address`,a.`createtime` FROM yc_house_tab a LEFT JOIN yc_group_tab c ON a.`group_id` = c.`id` where house_status > 4 and a.`delete_state` = 1) a, yc_houserank_tab b WHERE n < m AND a.id = b.house_id AND b.`rank_status` = 3 and b.`isdelete` = 1 ',
+			trading:' and trading = ? ',
+			createtime:' and createtime>=? and createtime<=? ',
+			areaid:' and areaid = ? ',
+			g_id:' and g_id = ? ',
+			publish:' and publish = ?',
+			status:' and house_status = ?',
+			keyword:' and (house_name like ? or house_code like UPPER(?)  or user_name like ?)',
+			orderBy:' ORDER BY areaid, house_code  DESC '
+		},
+		getRankHosue:{
+			main:'select a.name as account,rank_area,r.old_state,r.id,rank_desc,house_id,istop,title,fn_getdictitemname(\'RANKHOUSE.TYPE\',rank_type) rank_type ,fee, r.rank_status as status ,fn_getdictitemname(\'RANKHOUSE.STATUS\',rank_status) rank_status,rank_spec, CASE WHEN LENGTH(r.images )=0 THEN \'\' ELSE CONCAT(\'###\',\'/\', replace(left(r.images,length(r.images)-1) ,\'|\',CONCAT(\'|\',\'###\',\'/\',\'\'))) END  path,rank_code,b.spec,b.house_name,b.address,b.floor,g.group_name from yc_houserank_tab r,yc_house_tab b,yc_group_tab as g,yc_account_tab as a,yc_area_tab as ar  where isdelete = 1 and r.operid=a.id and   g.id=b.group_id and g.areaid=ar.id and r.house_id=b.id ',
+			houseId:' and r.house_id = ?',
+			houseName:' and ( b.house_name like ? or r.title like ? or r.rank_code like ? )',
+			id:' and r.id = ?',
+			areaid:' and ar.id= ?',
+			status:' and r.rank_status = ?',
+			type:' and r.rank_type = ?',
+			orderby:' ORDER BY r.istop desc, r.rank_status ASC,r.createtime DESC '
+		},
+		rankHosue:{
+			update:' update yc_houserank_tab set operid = ?,fee = ?,images = ?,rank_area = ?,rank_status=?,rank_desc=?,allocation_id_a=? where id=?',
+			checkRankHouseStatus:'SELECT COUNT(1) FROM yc_houserank_tab a WHERE a.id = ? AND a.`rank_status` = ? ',
+			updateRankHouseStatus:'update yc_houserank_tab set #### where id = ?',
+		    getrankstatus:'SELECT COUNT(1) FROM yc_houserank_tab a WHERE a.house_id = ? AND a.`rank_status` = ?',
+		    lockRank:'update yc_houserank_tab set house_id=? where house_id = ?',
+			checkRankAgreementStatus:'SELECT COUNT(1) FROM yc_agreement_tab a WHERE a.id = ? AND a.`STATUS` = ? and isdelete = 1 ',
+			checkRankValidAgreement:'select count(1) from yc_agreement_tab a where a.`type` = 2 and a.`house_id` = ? and a.`id` <> ? and a.`isdelete` = 1 and a.`status` = 2 ',
+			updateRankAgreementStatus:'update yc_agreement_tab set #### where id = ?',
+			getAddress:'SELECT h.* FROM yc_agreement_tab a,yc_houserank_tab r ,yc_house_tab h WHERE h.id=r.`house_id` AND a.`house_id`=r.id AND a.`type`=2 AND a.id=?',
+			insertRankAgreement:'INSERT INTO yc_agreement_tab(NAME,TYPE,user_id,user_mobile,begin_time,end_time,father_id,house_id,desc_text,STATUS,cost,create_time,isdelete,agents,pay_type,sbcode,cost_a,pay_time,operid,areaid) values (?,?,?,?,?,ADDDATE(?,INTERVAL ? MONTH),?,?,?,0,? * ?,now(),1,?,?,?,?,?,?,?)',
+			getHouseAgreementId:'SELECT a.`id`, areaid FROM yc_agreement_tab a WHERE a.`house_id` = ? AND a.`isdelete` = 1 and type = 1',
+			getRankCode:' SELECT a.`rank_code` FROM yc_houserank_tab a WHERE a.id = ? ',
+			updateRankStatus:'update yc_houserank_tab set rank_status=? , operid=? where house_id = ? and rank_status < 4',
+			updateRankistop:'update yc_houserank_tab set istop=? , operid=? where house_id = ?',
+			updateStatus:'update yc_houserank_tab set rank_status=?,operid=? where id = ?',
+			updateRankAgreement:'UPDATE yc_agreement_tab SET NAME = ?, begin_time = ?, end_time = ADDDATE(?,INTERVAL ? MONTH), file_path = ?, desc_text = ?, cost_a = ?, agents = ?, pay_type = ?, sbcode = ?, cost = ? * ?, pay_time = ? WHERE id = ?',
+			main:'SELECT SUBSTRING_INDEX(b.rank_spec,\'|\',1) rankspec, DATE_FORMAT(a.checkouttime,\'%Y-%m-%d\') checkouttime,(case when a.status = 2 then fn_checkTaskDo(a.id) else 1 end) is_tj,b.id house_rank_id, a.sbcode,fn_getarearname(a.areaid) areaName, a.`desc_text`, TIMESTAMPDIFF(MONTH, CONCAT(SUBSTRING(a.begin_time,1,7),\'-01\'), CONCAT(SUBSTRING(a.end_time,1,7),\'-01\')) rentMonth,a.code agree_code, fn_getagentname(a.`agents`) agentName, certificateno, c.`username` username,CONCAT(c.`username`,\'(\',a.`user_mobile`,\')\') userInfo,fn_getdictitemname(\'GROUP.RANK.AGREEMENT\',a.`status`) rankstatus, a.id, a.code, a.name, a.type, a.user_id, case when b.rank_type = 1 then 1 else substring_index(b.`rank_spec`,\'|\',1)  end roomcnt, a.`user_mobile`, a.`begin_time`, a.`end_time`, a.`father_id`, b.`house_id`, a.`file_path`, a.`status`, a.`cost`, a.`cost_a`, DATE_FORMAT(a.`create_time`,\'%Y-%m-%d %T\') create_time, a.`isdelete`, a.`agents`, a.`bankcard`, a.`cardowen`, a.`cardbank`, a.`pay_type`, a.`is_cubicle`, a.`keys_count`, a.`old_matched`, a.`areaid`,b.title,fn_getdictitemname(\'RANKHOUSE.TYPE\',b.`rank_type`) rankType, b.`rank_area`  FROM yc_agreement_tab a  LEFT JOIN yc_userinfo_tab c on c.id = a.user_id, yc_houserank_tab b  WHERE  b.`id` = a.`house_id` and a.isdelete = 1 and a.type = 2',
+			main2:'SELECT b.id house_rank_id, a.sbcode,fn_getarearname(a.areaid) areaName, a.`desc_text`, TIMESTAMPDIFF(MONTH, CONCAT(SUBSTRING(a.begin_time,1,7),\'-01\'), CONCAT(SUBSTRING(a.end_time,1,7),\'-01\')) rentMonth,a.code agree_code, fn_getagentname(a.`agents`) agentName, certificateno, c.`username` username,CONCAT(c.`username`,\'(\',a.`user_mobile`,\')\') userInfo,fn_getdictitemname(\'GROUP.RANK.AGREEMENT\',a.`status`) rankstatus, a.id, a.code, a.name, a.type, a.user_id, a.`user_mobile`, a.`begin_time`, a.`end_time`, a.`father_id`, b.`house_id`, a.`file_path`, a.`status`, a.`cost`, a.`cost_a`, DATE_FORMAT(a.`create_time`,\'%Y-%m-%d %T\') create_time, a.`isdelete`, a.`agents`, a.`bankcard`, a.`cardowen`, a.`cardbank`, a.`pay_type`, a.`is_cubicle`, a.`keys_count`, a.`old_matched`, a.`areaid`,b.title,fn_getdictitemname(\'RANKHOUSE.TYPE\',b.`rank_type`) rankType, b.`rank_area`  FROM yc_agreement_tab a  LEFT JOIN yc_userinfo_tab c on c.id = a.user_id, yc_houserank_tab b  WHERE b.`id` = a.`house_id` and a.isdelete = 1 and a.type = 2',
+			rankAgreementStatu:' and status = ?',
+			agreeId:' and a.id=? ',
+			keyWord:' and (code like UPPER(?) or name like ? or user_mobile like ? or c.`username` like ? or a.sbcode like ?)',
+			angentId: ' and agents = ?',
+			rankId:' and a.id = ?',
+			trading:' AND a.`areaid` IN (SELECT f.`areaid` FROM yc_group_tab f WHERE f.`trading` = ?) ',
+			endtime:' and a.end_time >= ? and a.end_time <= ?',
+			createtime:' and DATE_FORMAT(a.create_time,\'%Y-%m-%d\') >= ? and DATE_FORMAT(a.create_time,\'%Y-%m-%d\') <= ?',
+			isdq:' and TO_DAYS(SYSDATE()) - TO_DAYS(a.`end_time`)  >= 0',
+			cz:' AND EXISTS(SELECT 1 FROM financial_receivable_tab c WHERE c.`secondary` = a.`id` AND DATE_SUB(c.start_time,INTERVAL 15 DAY) <= NOW() AND c.status = 0  AND c.isdelete = 1 AND c.`category` = 1 AND NOT EXISTS(SELECT 1 FROM yc_task_financial_receivable d WHERE d.is_over = 0 AND d.`payable_tab_id` = c.`id` ))',
+			houseId:' and a.house_id = ?',
+			isself:' AND EXISTS(SELECT 1 FROM yc_group_tab d, yc_house_tab h WHERE h.`group_id` = d.id and b.house_id= h.id AND d.`g_id` = ?)',
+			arearId:' and areaid = ? ',
+			orderby:' order by id desc',
+			seeRentHouse:'SELECT fn_getdictitemname(\'RANKHOUSE.TYPE\',rank_type) rankType,a.rank_type, a.title, a.rank_code,fn_getdictitemname(\'RANKHOUSE.STATUS\',rank_status) rankStatus, rank_status, a.id, a.fee, a.rank_area, CASE WHEN LENGTH(a.images )=0 THEN \'\' ELSE CONCAT(\'###\',\'/\', replace(left(a.images,length(a.images)-1) ,\'|\',CONCAT(\'|\',\'###\',\'/\',\'\'))) END  path FROM yc_houserank_tab a WHERE a.house_id = ? AND a.isdelete = 1',
+			seeRentHouse_id:' and id = ?',
+			queryRank:'select a.name as account,rank_area,r.old_state,r.id,rank_desc,house_id,istop,title,fn_getdictitemname(\'RANKHOUSE.TYPE\',rank_type) rank_type ,fee, r.rank_status as status ,fn_getdictitemname(\'RANKHOUSE.STATUS\',rank_status) rank_status,rank_spec, CASE WHEN LENGTH(r.images )=0 THEN \'\' ELSE CONCAT(\'###\',\'/\', replace(left(r.images,length(r.images)-1) ,\'|\',CONCAT(\'|\',\'###\',\'/\',\'\'))) END  path,rank_code,b.spec,b.house_name,b.address,b.floor,g.group_name from yc_houserank_tab r,yc_house_tab b,yc_group_tab as g,yc_account_tab as a,yc_area_tab as ar  where isdelete = 1 and r.operid=a.id and   g.id=b.group_id and g.areaid=ar.id and r.house_id=b.id and r.id=?',
+			getHouseId:' select a.`house_id` , b.`house_id` houseRankId from yc_agreement_tab a , yc_agreement_tab b where a.`id` = b.`father_id` and b.id = ?',
+			getHouseIdByAgreementId:'select a.`house_id`,a.user_mobile,a.username_bk,a.broker, a.operid from yc_agreement_tab a where a.id = ? ',
+			autoDelRankAgreement:'select a.`house_id` house_rank_id, a.`id`, b.`house_id` houseId, a.`operid` operId, a.`status` from yc_agreement_tab a, yc_agreement_tab b where a.`father_id` = b.`id` and a.pay_type <> 15 and  to_days(now()) - to_days(a.`create_time`) >= 1 and a.`type` = 2 and a.`status` = 12 and a.`isdelete` = 1 ',
+			updateHousePrice:'update yc_houserank_tab set fee = ? where rank_code = ? '
+		},
+		houseInfo:{
+			insertHouseInfo:'INSERT INTO yc_house_tab(createtime, house_type, house_name, spec, spec2, decorate, area, floor, value_date, user_id, contract_id, descinfo, address, group_id, account_id, house_status, appendix, coordinate, delete_state, lease_period, cost_a, payment, free_rent, is_cubicle, publish, operid, update_time, purpose)   VALUES(NOW(),?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?,1,?,?,?,?,?,0,?,NOW(),?)',
+			updateHouseCode:'update yc_house_tab set house_code = CONCAT(DATE_FORMAT(NOW(),\'%y\'),\'FP\',?,\'0\',?), appendix = ? where id = ?',
+			updateHouser:'UPDATE yc_house_tab SET house_type = ?, house_name = ?, spec = ?, spec2 = ?, decorate = ?, area = ?, floor = ?, value_date = ?, user_id = ?, descinfo = ?, address = ?, group_id = ?, house_status = ?, appendix = ?, coordinate = ?, update_time = now(), lease_period = ?, cost_a = ?, payment = ?, free_rent = ?, is_cubicle = ?, purpose = ?  WHERE id = ?',
+            checkOwnerExist:'SELECT id, username, certificateno, email FROM yc_userinfo_tab a WHERE  is_delete = 1 AND a.`mobile` = ? LIMIT 0, 1 ',
+			getUserNameById:'SELECT id, username, certificateno, email,mobile FROM yc_userinfo_tab a WHERE  is_delete = 1 AND a.id=?',
+			newCheckOwnerExist:'SELECT id, username, certificateno, email, desc_text FROM yc_userinfo_tab a WHERE  is_delete = 1 AND a.`mobile` = ? ',
+			updateUserName:'update yc_userinfo_tab set #### where id = ? ',
+			insertOwner:'INSERT INTO yc_userinfo_tab(username, mobile, registertime, is_delete, type, certificateno) VALUES(?, ?, NOW(), 1, ?, ?)',
+			checkHouserNameExist:'SELECT COUNT(1) FROM yc_house_tab a WHERE a.`house_name` = ? AND a.`delete_state` = 1 and ####',
+			updateHouserInfo:'UPDATE yc_house_tab SET #### WHERE id = ?',
+			checkHouseState:'SELECT COUNT(1) FROM yc_house_tab a WHERE a.`house_status` = ? AND a.`id` = ? ',
+			checkState:'SELECT house_status FROM yc_house_tab  WHERE id = ? ',
+			checkPulish:'SELECT publish FROM yc_house_tab  WHERE id = ? ',
+			checkHouseQY:'SELECT COUNT(1) FROM yc_agreement_tab a WHERE a.house_id = ? AND a.`isdelete` = 1 and type = 1',
+			getMangerList:'SELECT a.`id`, a.`name` FROM yc_account_tab a WHERE EXISTS(SELECT 1 FROM yc_account_role_tab b WHERE a.`id` = b.`user_id` AND b.`role_id` = 22 AND b.`state` = 1) AND a.`is_delete` = 1  ',
+			houseAgreementInfo:'SELECT a.`name`, fn_getdictitemname(\'AGREEMENT.PAYTYPE\',a.`pay_type`) payType, CONCAT(fn_getowername(a.`user_id`),\'(\',a.`user_mobile`,\')\') user_info, CONCAT(a.`begin_time`,\'~\',a.`end_time`,\' (\',TIMESTAMPDIFF(MONTH, a.begin_time, a.end_time),\'月)\') cz_time,  CASE WHEN LENGTH(a.`propertyPath`) = 0 THEN \'\' else CONCAT(?, REPLACE(a.`propertyPath`,\'|\',?))  END propertyPath, CASE WHEN  LENGTH(a.`agentPath`) = 0 then \'\' ELSE  CONCAT(?, REPLACE(a.`agentPath`,\'|\',?)) END agentPath, CASE WHEN LENGTH(a.`file_path`) = 0 THEN \'\' ELSE CONCAT(?, REPLACE(a.`file_path`,\'|\',?)) END file_path, a.`cost_a`, fn_getagentname(a.`agents`) agents, a.`code`, fn_getdictitemname(\'GROUP.AGREEMENT\',STATUS) status, free_period, id  FROM yc_agreement_tab a WHERE a.`house_id` = ? AND a.`isdelete` = 1 AND a.`type` = 1',
+			rankAgreementInfo:'SELECT a.`name`, b.title,fn_getdictitemname(\'GROUP.RANK.AGREEMENT\',a.status) rankStatus, CONCAT(fn_getowername(a.`user_id`),\'(\',a.`user_mobile`,\')\') user_info, CONCAT(a.`begin_time`,\'~\',a.`end_time`,\' (\',TIMESTAMPDIFF(MONTH, a.begin_time, a.end_time),\'月)\') cz_time, CASE WHEN LENGTH(a.`file_path`) = 0 THEN \'\' ELSE CONCAT(?, REPLACE(a.`file_path`,\'|\',?)) END file_path, a.`cost_a`, fn_getagentname(a.`agents`) agents, a.`code` code, free_period, fn_getdictitemname(\'GROUP.PAYTYPE\',pay_type) `pay_type`, fn_getdictitemname(\'RANKHOUSE.TYPE\',rank_type) rank_type,ifnull(a.free_period,0) free_period  FROM yc_agreement_tab a, yc_houserank_tab b  WHERE  b.`id` = a.`house_id` AND a.isdelete = 1 AND a.type = 2 AND b.house_id = ?',
+		    getpublish:'select publish from yc_house_tab where id=?'
+		},
+		agreement:{
+			newRankAgreement:'SELECT notaryid,SUBSTRING_INDEX(b.rank_spec,\'|\',1) rankspec,DATE_FORMAT(a.`checkouttime`,\'%Y-%m-%d %T\') checkouttime, fn_getarearname(a.areaid) areaname, a.code agree_code, c.certificateno, fn_getagentname(a.`agents`) agentsname, concat(c.`username`,\'(\',a.`user_mobile`,\')\') userInfo, a.user_mobile, c.`username`, a.`electricity_meter`,a.`electriccard`,a.`electricity_meter_h`,a.`electricity_meter_l`,a.`gascard`,a.`gas_meter`,a.`watercard`,a.`water_meter`, fn_getdictitemname(\'GROUP.RANK.AGREEMENT\',a.`status`) agreementStatus, cost_a, a.id, a.name, b.`house_id`, a.`status`, a.`cost`, concat(a.`begin_time`,\'~\',a.`end_time`) time,a.`begin_time`,a.`end_time`, DATE_FORMAT(a.`create_time`,\'%Y-%m-%d %T\') createTime, b.title,fn_getdictitemname(\'RANKHOUSE.TYPE\',b.`rank_type`) rankType, b.`rank_area`, b.id house_rank_id, b.house_id, b.title  FROM yc_agreement_tab a  LEFT JOIN yc_userinfo_tab c on c.id = a.user_id and c.`is_delete` = 1 , yc_houserank_tab b WHERE  b.`id` = a.`house_id` and a.isdelete = 1 and a.type = 2 ',
+			newAgreementList:'select notaryid,DATE_FORMAT(a.`checkouttime`,\'%Y-%m-%d %T\') checkouttime, a.id, a.`code` agree_code, \'\' is_tj, a.`name`, concat(c.`username`,\'(\',c.`mobile`,\')\') userInfo, c.certificateno,  concat(a.`begin_time`,\'~\',a.`end_time`) time, fn_getdictitemname(\'GROUP.AGREEMENT\',a.status) agreementStatus,  a.user_mobile, c.`username`,  a.`cost`, fn_getarearname(a.`areaid`) areaname, fn_getagentname(a.`agents`) agentsname, date_format(a.`create_time`,\'%Y-%m-%d %T\') createTime,  a.status, cost_a, a.`electricity_meter`,a.`electriccard`,a.`electricity_meter_h`,a.`electricity_meter_l`,a.`gascard`,a.`gas_meter`,a.`watercard`,a.`water_meter`, \'\' rankType, \'\' rank_area,a.`begin_time`,a.`end_time`, a.house_id from yc_agreement_tab a left join yc_userinfo_tab c on a.`user_id` = c.`id` and c.`is_delete` = 1  where a.`isdelete` = 1 and a.type = 1',
+			agreementList:'SELECT fn_getdictitemname(\'AGREEMENT.PAYTYPE\',a.`pay_type`) payType,free_period, a.id, a.code, a.name,a.sbcode, a.type, a.user_id, a.`user_mobile`, a.`begin_time`, a.`end_time`,CONCAT(a.begin_time,\'~\',a.end_time) agreement_time, CONCAT(c.username,\'(\',a.`user_mobile`,\')\') userInfo, c.certificateno ,a.`father_id`, a.`house_id`, a.`file_path`, a.`status`, a.`cost`, a.`cost_a`, DATE_FORMAT(a.`create_time`,\'%Y-%m-%d %T\') create_time, a.`isdelete`, a.`agents`, a.`bankcard`, a.`cardowen`, a.`cardbank`, a.`pay_type`, a.`is_cubicle`, a.`keys_count`, a.`old_matched`, a.`areaid`, a.code house_code, c.`username` user_name, fn_getdictitemname(\'GROUP.AGREEMENT\',a.`status`) agreement_statue,fn_getagentname(a.agents) agentName, fn_getarearname(areaid) xq_name,(case when exists(SELECT 1 from yc_onstruction_tab b where b.houseid = a.house_id and b.is_work = 1 and (b.status = -1 or b.status > 2) and a.type = 1 and a.isdelete = 1) then 0 else 1 end) is_work, a.`watercard`,a.`water_meter`,a.`gascard`,a.`gas_meter`,a.`electriccard`,a.`electricity_meter`,a.`electricity_meter_h`,a.`electricity_meter_l` FROM yc_agreement_tab a LEFT JOIN yc_userinfo_tab c ON a.`user_id` = c.`id`  WHERE isdelete = 1 and a.type = 1',
+			condition_time:' and DATE_FORMAT(create_time,\'%Y-%m-%d\') >= ? and DATE_FORMAT(create_time,\'%Y-%m-%d\') <= ?',
+			condition_status:' and status = ? ',
+			condition_account:' and agents = ? ',
+			condition_arear:' and areaid = ? ',
+			condition_type:' and a.type = ? ',
+			trading:' and a.areaid in (select areaid from yc_group_tab b where b.trading = ?) ',
+			condition_g_id:' AND EXISTS(SELECT 1 FROM yc_group_tab f, yc_house_tab e WHERE e.id = a.house_id and f.id = e.group_id AND f.`g_id` = ?) ',                  
+			condition_g2_id:' AND EXISTS(SELECT 1 FROM yc_group_tab f, yc_house_tab e WHERE e.id = b.house_id and f.id = e.group_id AND f.`g_id` = ?) ',                  
+			condition_keyWord:' and (name like ? or c.username like ? or user_mobile like ? or code like upper(?) or sbcode like ?) ',
+			orderBy:' ORDER BY id desc ',
+			agreementInfo:'SELECT a.id, a.code, a.name, a.type, a.user_id, a.user_mobile, a.`new_old_matched`, a.begin_time, a.end_time, a.house_id, a.file_path, a.desc_text, a.status, a.cost, a.isdelete, a.agents, a.bankcard, a.bankid, a.cardbank, a.cardowen, a.watercard, a.electriccard, a.gascard, a.pay_type, a.sbcode, a.cost_a, a.pay_time, a.free_period, a.water_meter, a.gas_meter, a.electricity_meter_l, a.electricity_meter_h, a.electricity_meter, a.is_cubicle, a.keys_count, a.old_matched, a.areaid, a.operid, a.father_id, fn_getowername(b.`user_id`) `username`,b.`house_name`,cast(CAST(TIMESTAMPDIFF(MONTH, begin_time, end_time)/12 AS DECIMAL(9,1)) as char) rentMonth,(case when length(file_path) > 0 then CONCAT(?,REPLACE(a.file_path,\'|\',?)) else \'\' end) pic_path,(case when length(propertyPath) > 0 then CONCAT(?,REPLACE(a.propertyPath,\'|\',?)) else \'\' end) propertyPath,(case when length(agentPath) > 0 then CONCAT(?,REPLACE(a.agentPath,\'|\',?)) else \'\' end) agentPath, c.`certificateno` ,b.address FROM yc_agreement_tab a LEFT JOIN yc_userinfo_tab c ON c.id = a.`user_id`, yc_house_tab b WHERE a.`house_id` = b.id AND a.`id` = ?',
+			updateAgreement:'update yc_agreement_tab set #### where id = ?',
+			insertAgreement:'INSERT INTO yc_agreement_tab(name,type,user_id,user_mobile,begin_time,end_time,house_id,file_path,desc_text,STATUS,cost,create_time,isdelete,agents,bankcard,cardbank,cardowen,watercard,electriccard,gascard,pay_type,sbcode,cost_a,pay_time,free_period,water_meter,gas_meter,electricity_meter_h,electricity_meter_l,electricity_meter,is_cubicle,keys_count,old_matched,areaid,operid,bankid) values (?,\'1\',?,?,?,ADDDATE(?,INTERVAL ? * 12 MONTH),?,?,?,0,?,now(),1,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+			checkAgreementInfo:'SELECT COUNT(1) FROM yc_agreement_tab a WHERE a.id = ? AND a.`status` = ? #### ',
+			udpateAgreementInfo:'UPDATE yc_agreement_tab SET NAME = ?, begin_time = ?, end_time = ADDDATE(?,INTERVAL ? * 12 MONTH), file_path = ?, desc_text = ?, cost = ?, agents = ?, bankcard = ?, cardbank = ?, cardowen = ?, watercard = ?, electriccard = ?, gascard = ?, pay_type = ?, sbcode = ?, cost_a = ?, pay_time = ?, free_period = ?, water_meter = ?, gas_meter = ?, electricity_meter_h = ?, electricity_meter_l = ?, electricity_meter = ?, is_cubicle = ?, keys_count = ?, old_matched = ?, bankid = ?, propertyPath = ?, agentPath = ? WHERE id = ? ',
+			bank_list:'select fn_getarearname(area_id) areaname, code, name, id from financial_banks_tab where 1 = 1',
+			bank_name:' and name like ?',
+			bank_arear:' and area_id = ? ',
+			father_id:' and father_id = ? ',
+			getHousName:'SELECT b.title FROM yc_agreement_tab a,yc_houserank_tab b WHERE a.`house_id` = b.`id` AND a.`type` = 2 AND a.id = ?',
+			getSBcode:'SELECT CONCAT(a.`name`,\'-\',a.`id`) FROM yc_agreement_tab a,yc_house_tab b WHERE a.`house_id` = b.`id` AND a.id = ?',
+			getCzSBcode:'SELECT CONCAT(a.name,\'-\',a.`id`) FROM yc_agreement_tab a,yc_houserank_tab b WHERE a.`house_id` = b.`id` AND a.id = ? ',
+			getAgr:'SELECT a.id,CONCAT(a.name,\'_\',a.sbcode) name FROM yc_agreement_tab a,yc_userinfo_tab b WHERE a.type=? and a.user_id = b.id AND (a.sbcode LIKE ? OR a.name LIKE ? OR a.code LIKE ? OR b.username LIKE ? ) LIMIT 0,20 ',  
+			getAgreementId:'select a.`id` from yc_agreement_tab a where a.`isdelete` = 1 and a.`type` = 1 and a.`house_id` = ?'
+		}  
+	},
+	commonPay:{
+	    getRecommend:'SELECT * FROM yc_recommend_info a WHERE a.state=1 AND a.mobile=? ORDER BY open_time ASC LIMIT 0,1',
+	    updateInfo:'UPDATE yc_recommend_info SET state=2 WHERE id=?',
+	    updateRelation:'UPDATE yc_recommend_relation SET state=2 WHERE recommend_id=?',
+	    countPay:'SELECT count(1) FROM financial_payable_tab a WHERE a.`secondary`=? AND a.`secondary_type`=2 AND a.`isdelete`=1 AND a.`status`=0',
+	    countReceivable:'SELECT count(1) FROM financial_receivable_tab a WHERE a.`secondary`=? AND a.`secondary_type`=2 AND a.`isdelete`=1 AND a.`status`=0'
+	},
+	houseInterfaces:{
+	    getAgreeCount:'SELECT COUNT(1) FROM yc_houserank_tab r ,yc_agreement_tab a WHERE a.house_id=r.id AND r.house_id =? AND a.status <> 3  AND a.isdelete=1',
+	    getAgree:'select * from yc_agreement_tab where id=?'
+	},
+	/**
+	 * 财务中心
+	 */
+	financial:{
+		houseAgreementInfo:' SELECT a.id agreement_id, 1 TYPE, 1 target_type, 1 category,a.pay_type, a.cost_a cost, a.pay_time plat_time, a.name settlements_name, DATE_ADD(a.begin_time,INTERVAL (a.free_period + 1) DAY) constructiontime, a.house_id, b.spec, TIMESTAMPDIFF(MONTH, CONCAT(SUBSTRING(a.begin_time,1,7),\'-01\'), CONCAT(SUBSTRING(a.end_time,1,7),\'-01\')) months, bankcard target_bank, a.cardowen target_user,ifnull(a.free_period,0) free_period, freeRankType FROM yc_agreement_tab  a, yc_house_tab b WHERE a.house_id = b.id AND a.id = ? ',
+		rankAgreementInfo:'SELECT a.house_id, CONCAT(a.cost,\'|\') cost,a.cost_a, b.`username`, b.`mobile`, a.begin_time, a.end_time, TIMESTAMPDIFF(MONTH, CONCAT(SUBSTRING(a.begin_time,1,7),\'-01\'), CONCAT(SUBSTRING(a.end_time,1,7),\'-01\')) months, a.pay_time plat_time, a.id agreement_id, pay_type , fn_getdictitemname(\'GROUP.PAYTYPE\',pay_type) payType, 1 category, house_id house_rank_id, father_id  FROM yc_agreement_tab a  LEFT JOIN yc_userinfo_tab b ON b.`id` = a.`user_id` AND LENGTH(a.`user_mobile`) > 0 WHERE a.id = ?',
+		/**
+		 * 待收入汇总 实际收入汇总
+		 */
+		dsr:{
+			main:'select count(1) cnt ,ifnull(sum(a.cost),0)cost from financial_receivable_tab a where a.status = ?',
+			dsrdate:' and a.plat_time <= now()',
+			date:' and DATE_FORMAT(a.plat_time,\'%Y-%m-%d\') = ? '
+		}, 
+		/**
+		 * 待支出汇总 实际收入汇总
+		 */
+		dzc:{
+			main:'select count(1) cnt ,ifnull(sum(a.cost),0)cost from financial_payable_tab a where a.status = ?', 
+			dzcdate:' and a.plat_time <= now()',
+			date:' and DATE_FORMAT(a.plat_time,\'%Y-%m-%d\') = ? '
+		},
+		/**
+		 * 支出
+		 */
+		payable:{  
+			main:'select (SELECT e2.g_name \
+				      FROM yc_house_tab c2,yc_group_tab b2,t_grid e2 \
+				      WHERE e2.g_id = b2.g_id \
+				        AND e.house_id = c2.id \ 			      
+				        AND c2.group_id = b2.id  \			      
+				        ) g_name,a.*,fn_getdictitemname(\'FINANCIAL.TARGET_TYPE\',a.TARGET_TYPE) TARGET_TYPE_name,(SELECT aa.code FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_code,\
+					(case when a.isdelete = 1 then \'有效\' else \'无效\' end) isdeletename,\
+					(SELECT aa.name FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_name,\
+					(CASE WHEN DATE_SUB(a.start_time,INTERVAL 15 DAY) <= NOW() and a.isdelete = 1 THEN IFNULL((SELECT 0 FROM yc_task_financial_payable e WHERE e.`payable_tab_id` = a.`id` AND e.`is_over` = 0 LIMIT 0,1),1)  ELSE 0 END) issh,\
+					b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,\
+					(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,\
+					(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,\
+					c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,\
+					DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime from financial_payable_tab a,financial_category_tab b,yc_account_tab c,\
+					financial_settlements_tab e1 where a.correlation = e1.correlation_id and a.category = b.id AND b.`status` = 1 and a.operator = c.`id`',
+			mainIsEmp:'select (SELECT e2.g_name \
+				      FROM yc_house_tab c2,yc_group_tab b2,t_grid e2 \
+				      WHERE e2.g_id = b2.g_id \
+				        AND e.house_id = c2.id \ 			      
+				        AND c2.group_id = b2.id  \			      
+				        ) g_name,a.*,fn_getdictitemname(\'FINANCIAL.TARGET_TYPE\',a.TARGET_TYPE) TARGET_TYPE_name,f.`code`,g.`username` yzname,g.`mobile`,f.sbcode,f.`bankcard`,f.`cardbank`,f.`cardowen`,(CASE WHEN DATE_SUB(a.start_time,INTERVAL 15 DAY) <= NOW() and a.isdelete = 1 THEN IFNULL((SELECT 0 FROM yc_task_financial_payable e WHERE e.`payable_tab_id` = a.`id` AND e.`is_over` = 0 LIMIT 0,1),1)  ELSE 0 END) issh,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime,f.cost_a from financial_payable_tab a,financial_category_tab b,yc_account_tab c,yc_agreement_tab f,yc_userinfo_tab g,financial_settlements_tab e1 where a.correlation = e1.correlation_id and f.user_id = g.id and f.id = e1.ager_id and a.category = b.id AND b.`status` = 1 and a.operator = c.`id`',
+			mainpay:'select (SELECT e2.g_name \
+				      FROM yc_house_tab c2,yc_group_tab b2,t_grid e2 \
+				      WHERE e2.g_id = b2.g_id \
+				        AND e.house_id = c2.id \ 			      
+				        AND c2.group_id = b2.id  \			      
+				        ) g_name,a.*,fn_getdictitemname(\'FINANCIAL.TARGET_TYPE\',a.TARGET_TYPE) TARGET_TYPE_name,(SELECT aa.code FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_code,(SELECT aa.name FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_name,(case when a.isdelete = 1 then \'有效\' else \'无效\' end) isdeletename,(CASE WHEN DATE_SUB(a.start_time,INTERVAL 15 DAY) <= NOW() and a.isdelete = 1 THEN IFNULL((SELECT 0 FROM yc_task_financial_payable e WHERE e.`payable_tab_id` = a.`id` AND e.`is_over` = 0 LIMIT 0,1),1)  ELSE 0 END) issh,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime,e.code,f.`username`,f.`mobile`,\
+					(SELECT d2.name FROM yc_house_tab c2,yc_group_tab b2,yc_account_tab d2 \
+			    WHERE e.house_id = c2.id \
+			      AND c2.group_id = b2.id \
+			      AND b2.g_id = d2.g_id \
+      			  AND d2.is_delete =1) gjname \
+      			  ,(SELECT t.area_name FROM yc_area_tab t WHERE t.id = e.`areaid`) area_name,e.cost_a from financial_payable_tab a,financial_category_tab b,yc_account_tab c,yc_agreement_tab e,yc_userinfo_tab f,yc_account_tab g,financial_settlements_tab e1 where a.correlation = e1.correlation_id and e1.ager_id = e.id and e.user_id = f.id and a.category = b.id AND b.`status` = 1 AND e.`agents` = g.`id` and a.operator = c.`id`',
+			rename:' and (a.name like ? or f.username like ? or f.mobile like ? or e.name like ? or e1.code like ? or e1.name like ?) ',
+			orderby:'',
+			category_type:' and a.category = ?',
+			secondary_type:' and a.secondary_type = ?',
+			name:' and (a.name like ?  or e1.code like ? or e1.name like ?)',
+			plattime_state:' and DATE_FORMAT(a.`plat_time`,\'%Y-%m-%d %k:%i\') >= ?',
+			plattime_end:' and DATE_FORMAT(a.`plat_time`,\'%Y-%m-%d %k:%i\') <= ?',
+			paytime_state:' and DATE_FORMAT(a.`pay_time`,\'%Y-%m-%d %k:%i\') >= ?',
+			paytime_end:' and DATE_FORMAT(a.`pay_time`,\'%Y-%m-%d %k:%i\') <= ?',
+			status:' and a.status = ? ',
+			isfqtrue:' and DATE_SUB(a.start_time,INTERVAL 15 DAY) <= NOW() and a.status = 0  and a.isdelete = 1 and not exists(select 1 from yc_task_financial_payable b where b.payable_tab_id = a.id AND b.`is_over` = 0) ', 
+			isfqfalse:' and DATE_SUB(a.start_time,INTERVAL 15 DAY) > NOW()  and a.status = 0 ',
+			deletePay:'update financial_payable_tab a set a.isdelete = 0 where a.secondary = ? and a.secondary_type = ?',
+			rep:{
+				day:{
+					main:'SELECT DATE_FORMAT(a.pay_time,\'%Y-%m-%d\') DATE ,SUM(a.cost) cost FROM financial_payable_tab a WHERE a.`status` = 1 ',
+					day:' and DATE_FORMAT(a.pay_time,\'%Y-%m-%d\') >= ?',
+					group:'  GROUP BY DATE_FORMAT(a.pay_time,\'%Y-%m-%d\')'
+				},
+				month:{
+					main:'SELECT DATE_FORMAT(a.pay_time,\'%Y-%m\') DATE ,SUM(a.cost) cost FROM financial_payable_tab a WHERE a.`status` = 1  GROUP BY DATE_FORMAT(a.pay_time,\'%Y-%m\')',
+					day:' and DATE_FORMAT(a.pay_time,\'%Y-%m-%d\') >= ?',
+					group:'  GROUP BY DATE_FORMAT(a.pay_time,\'%Y-%m-%d\')' 
+				} 
+			},
+			checkIsover:'select count(1) from yc_task_financial_payable a where a.payable_tab_id = (select a.id from financial_payable_tab a where a.secondary = ? and a.secondary_type = 2 and a.isdelete =1)  and a.is_over =0',
+			changeState:'update financial_payable_tab a set a.status = 1 where a.id = ?',
+			insert:'INSERT INTO financial_payable_tab(`name`,`correlation`,`secondary_type`,`secondary`,`category`,`create_time`,`cost`,`plat_time`,`update_time`,`target_bank`,`target_user`,`target_type`,`operator`,`remarks`,`status`,`BankSlip`,start_time,end_time)VALUES(?,?,?,?,?,NOW(),?,?,NOW(),?,?,?,?,?,0,?,DATE_FORMAT(?,\'%Y-%m-%d\'),DATE_FORMAT(?,\'%Y-%m-%d\'))',
+			taskinsert:'INSERT INTO financial_payable_tab(`name`,`correlation`,`secondary_type`,`secondary`,`category`,`create_time`,`cost`,`plat_time`,`update_time`,`target_bank`,`target_user`,`target_type`,`operator`,`remarks`,`status`,`BankSlip`,start_time,end_time)VALUES(?,?,?,?,?,NOW(),?,?,NOW(),?,?,?,?,?,2,?,DATE_FORMAT(?,\'%Y-%m-%d\'),DATE_FORMAT(?,\'%Y-%m-%d\'))',
+			queryCategory:'select category,secondary,status,secondary_type, cost from financial_payable_tab where id=? ',
+			
+			repeal:'update financial_payable_tab a set a.status = 0 where a.secondary = ? and a.secondary_type = ?',
+			
+			getcategory:'SELECT a.`correlation` FROM financial_payable_tab a WHERE a.`secondary` = ? AND secondary_type = ? LIMIT 0,1',
+			sendPayTask:'INSERT INTO yc_task_financial_payable(`task_id`,`payable_tab_id`,`create_oper`) SELECT ?,?,? FROM DUAL WHERE NOT EXISTS(SELECT 1 FROM yc_task_financial_payable b WHERE b.`payable_tab_id` = ? AND b.is_over = 0)',
+		 	insertNew:'INSERT INTO financial_payable_tab(`name`,`correlation`,`secondary_type`,`secondary`,`category`,`create_time`,`cost`,`plat_time`,`update_time`,`target_bank`,`target_user`,`target_type`,`operator`,`remarks`,`status`,`BankSlip`,start_time,end_time,settle_num)VALUES(?,?,?,?,?,NOW(),?,DATE_FORMAT(?,\'%Y-%m-%d\'),NOW(),?,?,?,?,?,0,?,DATE_FORMAT(?,\'%Y-%m-%d\'),DATE_FORMAT(?,\'%Y-%m-%d\'),?)',
+		    deletePayOrder:'UPDATE financial_payable_tab a SET a.isdelete = 0  WHERE a.`correlation` = ? ',
+		},
+		/** 
+		 * 支出任务
+		 */
+		taskpayable:{ 
+			main:'select a.*,f.`bankcard`,f.`cardbank`,f.`cardowen`,e.is_hd,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime from financial_payable_tab a,financial_category_tab b,yc_account_tab c,yc_task_financial_payable e,yc_agreement_tab f where f.id = a.`secondary` and a.category = b.id AND b.`status` = 1 and e.task_id = ? and e.payable_tab_id = a.id and a.operator = c.`id`',
+			ordermain:'select a.*,f.`bankcard`,f.`cardbank`,f.`cardowen`,e.is_hd,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime from financial_payable_tab a,financial_category_tab b,yc_account_tab c,yc_task_financial_payable e,yc_agreement_tab f,order_tab g where a.category = b.id AND b.`status` = 1 and e.task_id = ? and g.correspondent = f.id  AND a.secondary = g.id  and e.payable_tab_id = a.id and a.operator = c.`id`',
+			checkinfo:'select f.secondary_type from yc_task_financial_payable t,financial_payable_tab f where task_id=?  and payable_tab_id=f.id',
+			task:' AND EXISTS(SELECT 1 FROM yc_task_financial_payable e WHERE e.`payable_tab_id` = a.`id` AND e.`task_id` = ?)',
+			updateCode:'UPDATE yc_task_financial_payable a SET a.`is_hd` = 1 WHERE a.`task_id` = ? AND a.`payable_tab_id` IN(##)',
+			updateState:'update yc_task_financial_payable a set a.is_over = 1 where a.task_id = ?',
+			updatePayState:'UPDATE financial_payable_tab a SET a.pay_time = now(),a.`status` = 1 WHERE EXISTS(SELECT 1 FROM yc_task_financial_payable b WHERE b.`payable_tab_id` = a.id AND b.`task_id` = ? AND b.`is_hd` = 1)',
+			deleteFlow:'delete from yc_task_financial_payable where task_id = ?',
+			updateProCost:'UPDATE financial_settlements_tab a SET a.capital_payable = (SELECT SUM(e.cost) FROM financial_payable_tab e WHERE e.`correlation` = a.`correlation_id` and e.status <> 0) WHERE EXISTS(SELECT 1 FROM financial_payable_tab b WHERE b.correlation = a.correlation_id AND b.id=?)'
+		},
+		/**
+		 * 收入
+		 */ 
+		receivable:{
+			main:'select a.*,fn_getdictitemname(\'FINANCIAL.TARGET_TYPE\',a.TARGET_TYPE) TARGET_TYPE_name,(case when a.isdelete = 1 then \'有效\' else \'无效\' end) isdeletename,(SELECT aa.name FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_name,(SELECT aa.code FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_code,(CASE WHEN DATE_SUB(a.start_time,INTERVAL 15 DAY) <= NOW() and a.isdelete = 1 THEN IFNULL((SELECT 0 FROM yc_task_financial_receivable e WHERE e.`payable_tab_id` = a.`id` AND e.`is_over` = 0 LIMIT 0,1),1)  ELSE 0 END) issh,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime from financial_receivable_tab a,financial_category_tab b,yc_account_tab c,financial_settlements_tab e1 where a.correlation = e1.correlation_id and a.category = b.id AND b.`status` = 1 and a.operator = c.`id`',
+			mainIsEmp:'select (SELECT e2.g_name \
+				      FROM yc_houserank_tab a2,yc_house_tab c2,yc_group_tab b2,t_grid e2 \
+				      WHERE a2.id = e.house_id 			       \
+				        AND e2.g_id = b2.g_id \
+				        AND a2.house_id = c2.id \ 			      
+				        AND c2.group_id = b2.id  \			      
+				        ) g_name,a.*,fn_getdictitemname(\'FINANCIAL.TARGET_TYPE\',a.TARGET_TYPE) TARGET_TYPE_name,f.`code`,g.`username` yzname,g.`mobile`,f.sbcode,f.`bankcard`,f.`cardbank`,f.`cardowen`,(CASE WHEN DATE_SUB(a.start_time,INTERVAL 15 DAY) <= NOW() and a.isdelete = 1 THEN IFNULL((SELECT 0 FROM yc_task_financial_receivable e WHERE e.`payable_tab_id` = a.`id` AND e.`is_over` = 0 LIMIT 0,1),1)  ELSE 0 END) issh,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime from financial_receivable_tab a,financial_category_tab b,yc_account_tab c,yc_agreement_tab f,yc_userinfo_tab g,financial_settlements_tab e1,yc_account_tab g where a.correlation = e1.correlation_id and f.user_id = g.id and f.id = e1.ager_id and a.category = b.id AND b.`status` = 1 and a.operator = c.`id` AND f.`agents` = g.`id`',
+			mainre:'select (SELECT e2.g_name \
+				      FROM yc_houserank_tab a2,yc_house_tab c2,yc_group_tab b2,t_grid e2 \
+				      WHERE a2.id = e.house_id 			       \
+				        AND e2.g_id = b2.g_id \
+				        AND a2.house_id = c2.id \ 			      
+				        AND c2.group_id = b2.id  \			      
+				        ) g_name,a.*,fn_getdictitemname(\'FINANCIAL.TARGET_TYPE\',a.TARGET_TYPE) TARGET_TYPE_name,(SELECT aa.code FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_code,(SELECT aa.name FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_name,(CASE WHEN DATE_SUB(a.start_time,INTERVAL 15 DAY) <= NOW() and a.isdelete = 1 THEN IFNULL((SELECT 0 FROM yc_task_financial_receivable e WHERE e.`payable_tab_id` = a.`id` AND e.`is_over` = 0 LIMIT 0,1),1)  ELSE 0 END) issh,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime from financial_receivable_tab a,financial_category_tab b,yc_account_tab c,yc_agreement_tab e,yc_userinfo_tab f,financial_settlements_tab e1,yc_account_tab g where a.correlation = e1.correlation_id and e1.ager_id = e.id and e.user_id = f.id and a.category = b.id AND b.`status` = 1 and a.operator = c.`id`  AND e.`agents` = g.`id`',
+			mainRes:'select \
+					(SELECT e2.g_name \
+				      FROM yc_houserank_tab a2,yc_house_tab c2,yc_group_tab b2,t_grid e2 \
+				      WHERE a2.id = e.house_id 			       \
+				        AND e2.g_id = b2.g_id \
+				        AND a2.house_id = c2.id \ 			      
+				        AND c2.group_id = b2.id  \			      
+				        ) g_name, \
+					a.*,fn_getdictitemname(\'FINANCIAL.TARGET_TYPE\',a.TARGET_TYPE) TARGET_TYPE_name,(SELECT aa.code FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_code,(SELECT aa.name FROM financial_settlements_tab aa WHERE aa.correlation_id = a.correlation) settlements_name,(case when a.isdelete = 1 then \'有效\' else \'无效\' end) isdeletename,(CASE WHEN DATE_SUB(a.start_time,INTERVAL 15 DAY) <= NOW() and a.isdelete = 1 THEN IFNULL((SELECT 0 FROM yc_task_financial_receivable e WHERE e.`payable_tab_id` = a.`id` AND e.`is_over` = 0 LIMIT 0,1),1)  ELSE 0 END) issh,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime,e.code,f.`username`,f.`mobile`,\
+			(SELECT d2.name FROM yc_houserank_tab a2,yc_house_tab c2,yc_group_tab b2,yc_account_tab d2 \
+			    WHERE a2.id = e.house_id \
+			      AND a2.house_id = c2.id \
+			      AND c2.group_id = b2.id \
+			      AND b2.g_id = d2.g_id \
+      			  AND d2.is_delete =1) gjname,\
+			(SELECT t.area_name FROM yc_area_tab t WHERE t.id = e.`areaid`) area_name from financial_receivable_tab a,financial_category_tab b,yc_account_tab c,yc_agreement_tab e,yc_userinfo_tab f,yc_account_tab g,financial_settlements_tab e1 where a.correlation = e1.correlation_id and e1.ager_id = e.id and e.user_id = f.id and a.category = b.id AND b.`status` = 1 AND e.`agents` = g.`id` and a.operator = c.`id`',
+			rename:' and (a.name like ? or f.username like ? or f.mobile like ? or e.name like ? or e1.code like ? or e1.name like ?) ',
+			orderby:'', 
+			category_type:' and a.category = ?',
+			secondary_type:' and a.secondary_type = ?',
+			name:' and (a.name like ?  or e1.code like ? or e1.name like ?)',
+			plattime_state:' and DATE_FORMAT(a.`plat_time`,\'%Y-%m-%d %k:%i\') >= ?',
+			plattime_end:' and DATE_FORMAT(a.`plat_time`,\'%Y-%m-%d %k:%i\') <= ?',
+			paytime_state:' and DATE_FORMAT(a.`pay_time`,\'%Y-%m-%d %k:%i\') >= ?',
+			paytime_end:' and DATE_FORMAT(a.`pay_time`,\'%Y-%m-%d %k:%i\') <= ?',
+			status:' and a.status = ? ',
+			isfqtrue:' and DATE_SUB(a.start_time,INTERVAL 15 DAY) <= NOW() and a.status = 0 and a.isdelete = 1 and not exists(select 1 from yc_task_financial_receivable b where b.payable_tab_id = a.id AND b.`is_over` = 0) ', 
+			isfqfalse:' and DATE_SUB(a.start_time,INTERVAL 15 DAY) > NOW()  and a.status = 0 ', 
+			deletePay:'update financial_receivable_tab a set a.isdelete = 0 where a.secondary = ?  and a.secondary_type = ?',
+			deleteReceivableOrder:'UPDATE financial_receivable_tab a SET a.isdelete = 0  WHERE a.`correlation` = ? ',
+			rep:{ 
+				day:{ 
+					main:'SELECT DATE_FORMAT(a.pay_time,\'%Y-%m-%d\') DATE ,SUM(a.cost) cost FROM financial_receivable_tab a WHERE a.`status` = 1 ',
+					day:' and DATE_FORMAT(a.pay_time,\'%Y-%m-%d\') >= ?',
+					group:'  GROUP BY DATE_FORMAT(a.pay_time,\'%Y-%m-%d\')'
+				}, 
+				month:{
+					main:'SELECT DATE_FORMAT(a.pay_time,\'%Y-%m\') DATE ,SUM(a.cost) cost FROM financial_receivable_tab a WHERE a.`status` = 1  GROUP BY DATE_FORMAT(a.pay_time,\'%Y-%m\')',
+					day:' and DATE_FORMAT(a.pay_time,\'%Y-%m-%d\') >= ?',
+					group:'  GROUP BY DATE_FORMAT(a.pay_time,\'%Y-%m-%d\')'
+				}
+			},
+			checkIsover:'select count(1) from yc_task_financial_receivable a where a.payable_tab_id = (select a.id from financial_receivable_tab a where a.secondary = ? and a.secondary_type = 2 and a.isdelete = 1)  and a.is_over =0',
+			queryCategory:'select category,secondary,status,secondary_type, cost from financial_receivable_tab where id=? ',
+			changeState:'update financial_receivable_tab a set a.status = 1 where a.id = ?',
+			insert:'INSERT INTO financial_receivable_tab(`name`,`correlation`,`secondary_type`,`secondary`,`category`,`create_time`,`cost`,`plat_time`,`update_time`,`target_bank`,`target_user`,`target_type`,`operator`,`remarks`,`status`,`BankSlip`,start_time,end_time)VALUES(?,?,?,?,?,NOW(),?,?,NOW(),?,?,?,?,?,0,?,DATE_FORMAT(?,\'%Y-%m-%d\'),DATE_FORMAT(?,\'%Y-%m-%d\'))',
+			taskinsert:'INSERT INTO financial_receivable_tab(`name`,`correlation`,`secondary_type`,`secondary`,`category`,`create_time`,`cost`,`plat_time`,`update_time`,`target_bank`,`target_user`,`target_type`,`operator`,`remarks`,`status`,`BankSlip`,start_time,end_time)VALUES(?,?,?,?,?,NOW(),?,?,NOW(),?,?,?,?,?,2,?,DATE_FORMAT(?,\'%Y-%m-%d\'),DATE_FORMAT(?,\'%Y-%m-%d\'))',
+			getcategory:'SELECT a.`correlation` FROM financial_receivable_tab a WHERE a.`secondary` = ? AND secondary_type = ? LIMIT 0,1',
+			repeal:'update financial_receivable_tab a set a.status = 0 where a.secondary = ? and a.secondary_type = ?',
+			sendPayTask:'INSERT INTO yc_task_financial_receivable(`task_id`,`payable_tab_id`,`create_oper`) SELECT ?,?,? FROM DUAL WHERE NOT EXISTS(SELECT 1 FROM yc_task_financial_receivable b WHERE b.`payable_tab_id` = ? AND b.is_over = 0)',
+			getCorrelation:'SELECT a.correlation_id id,a.name FROM financial_settlements_tab a WHERE a.name LIKE ? AND a.type = ?',
+			insertNew:'INSERT INTO financial_receivable_tab(`name`,`correlation`,`secondary_type`,`secondary`,`category`,`create_time`,`cost`,`plat_time`,`update_time`,`target_bank`,`target_user`,`target_type`,`operator`,`remarks`,`status`,`BankSlip`,start_time,end_time,settle_num)VALUES(?,?,?,?,?,NOW(),?,DATE_FORMAT(?,\'%Y-%m-%d\'),NOW(),?,?,?,?,?,0,?,DATE_FORMAT(?,\'%Y-%m-%d\'),DATE_FORMAT(?,\'%Y-%m-%d\'),?)',
+		},
+		/** 
+		 * 支出任务
+		 */
+		taskreceivable:{ 
+			main:'select a.*,f.`bankcard`,f.`cardbank`,f.`cardowen`,e.is_hd,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime from financial_receivable_tab a,financial_category_tab b,yc_account_tab c,yc_task_financial_receivable e,yc_agreement_tab f where f.id = a.`secondary` and a.category = b.id AND b.`status` = 1 and e.task_id = ? and e.payable_tab_id = a.id and a.operator = c.`id`',
+			ordermain:' select a.*,f.`bankcard`,f.`cardbank`,f.`cardowen`,e.is_hd,b.name category_name,fn_getdictitemname(\'FINANCIAL.SECONDARY_TYPE\',a.secondary_type) secondary_type_name,(case when a.target_type = 1 then \'银卡转帐\' when a.target_type = 3 then \'网络平台\' else \'其它\' end) target_type_name,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name,c.`name` oper_name,DATE_FORMAT(a.pay_time,\'%Y-%m-%d %H:%i:%s\')paytime,DATE_FORMAT(a.plat_time,\'%Y-%m-%d %H:%i:%s\')plattime,DATE_FORMAT(a.create_time,\'%Y-%m-%d %H:%i:%s\')createtime from financial_receivable_tab a,financial_category_tab b,yc_account_tab c,yc_task_financial_receivable e,yc_agreement_tab f,order_tab g  where a.category = b.id  AND b.`status` = 1  and e.task_id = ?  AND g.correspondent = f.id  AND a.secondary = g.id  and e.payable_tab_id = a.id and a.operator = c.id',
+			task:' AND EXISTS(SELECT 1 FROM yc_task_financial_receivable e WHERE e.`payable_tab_id` = a.`id` AND e.`task_id` = ?)',
+			checkinfo:'select f.secondary_type from yc_task_financial_receivable t,financial_receivable_tab f where task_id=?  and payable_tab_id=f.id',
+			updateCode:'UPDATE yc_task_financial_receivable a SET a.`is_hd` = 1 WHERE a.`task_id` = ? AND a.`payable_tab_id` IN(##)',
+			updateState:'update yc_task_financial_receivable a set a.is_over = 1 where a.task_id = ?',
+			updatePayState:'UPDATE financial_receivable_tab a SET a.pay_time = now(),a.`status` = 1 WHERE EXISTS(SELECT 1 FROM yc_task_financial_receivable b WHERE b.`payable_tab_id` = a.id AND b.`task_id` = ? AND b.`is_hd` = 1)',
+			deleteFlow:'delete from yc_task_financial_receivable where task_id = ?',
+			updateProCost:'UPDATE financial_settlements_tab a SET a.capital_receivable = (SELECT SUM(e.cost) FROM financial_receivable_tab e WHERE e.`correlation` = a.`correlation_id` AND e.`status` <> 0) WHERE EXISTS(SELECT 1 FROM financial_receivable_tab b WHERE b.correlation = a.correlation_id AND b.id=?)'
+		},
+		/**
+		 * 项目类型
+		 */
+		project:{
+			query:{
+				main:'SELECT a.*,fn_getdictitemname(\'SETTLEMENTS.TYPE\',a.type) type_name,(case when a.status = \'1\' then \'有效\' else \'无效\' end) status_name,IFNULL((SELECT SUM(b.cost) FROM financial_payable_tab b WHERE b.correlation = a.correlation_id ),0) jh_pay_je,IFNULL((SELECT SUM(b.cost) FROM financial_receivable_tab b WHERE b.correlation = a.correlation_id ),0) jh_rec_je,IFNULL((SELECT SUM(e.cost) FROM financial_settlements_tab b,financial_receivable_tab e WHERE b.correlation_id = e.correlation AND b.super_id = a.correlation_id),0) jh_rec_je_,IFNULL((SELECT SUM(e.cost) FROM financial_settlements_tab b,financial_payable_tab e WHERE b.correlation_id = e.correlation AND b.super_id = a.correlation_id),0) jh_pay_je_ FROM financial_settlements_tab a WHERE 1=1 ',
+				newMain:'create table #table# /*ENGINE=HEAP*/ SELECT a.*,fn_getdictitemname(\'SETTLEMENTS.TYPE\',a.type) type_name,(case when a.status = \'1\' then \'有效\' else \'无效\' end) status_name,IFNULL((SELECT SUM(b.cost) FROM financial_payable_tab b WHERE b.correlation = a.correlation_id ),0) jh_pay_je,IFNULL((SELECT SUM(b.cost) FROM financial_receivable_tab b WHERE b.correlation = a.correlation_id ),0) jh_rec_je,IFNULL((SELECT SUM(e.cost) FROM financial_settlements_tab b,financial_receivable_tab e WHERE b.correlation_id = e.correlation AND b.super_id = a.correlation_id),0) jh_rec_je_,IFNULL((SELECT SUM(e.cost) FROM financial_settlements_tab b,financial_payable_tab e WHERE b.correlation_id = e.correlation AND b.super_id = a.correlation_id),0) jh_pay_je_ FROM financial_settlements_tab a,yc_agreement_tab c WHERE a.ager_id = c.id ',
+				itemMain:' SELECT a.*,fn_getdictitemname(\'SETTLEMENTS.TYPE\',a.type) type_name,(case when a.status = \'1\' then \'有效\' else \'无效\' end) status_name,IFNULL((SELECT SUM(b.cost) FROM financial_payable_tab b WHERE b.correlation = a.correlation_id ),0) jh_pay_je,IFNULL((SELECT SUM(b.cost) FROM financial_receivable_tab b WHERE b.correlation = a.correlation_id ),0) jh_rec_je,IFNULL((SELECT SUM(e.cost) FROM financial_settlements_tab b,financial_receivable_tab e WHERE b.correlation_id = e.correlation AND b.super_id = a.correlation_id),0) jh_rec_je_,IFNULL((SELECT SUM(e.cost) FROM financial_settlements_tab b,financial_payable_tab e WHERE b.correlation_id = e.correlation AND b.super_id = a.correlation_id),0) jh_pay_je_ FROM financial_settlements_tab a,yc_agreement_tab c WHERE a.ager_id = c.id ',
+				supMain:' select a.* from (select a.* ,fn_getdictitemname(\'SETTLEMENTS.TYPE\',a.type) type_name,(case when a.status = \'1\' then \'有效\' else \'无效\' end) status_name,IFNULL((SELECT SUM(b.cost) FROM financial_payable_tab b WHERE b.correlation = a.correlation_id ),0) jh_pay_je,IFNULL((SELECT SUM(b.cost) FROM financial_receivable_tab b WHERE b.correlation = a.correlation_id ),0) jh_rec_je,IFNULL((SELECT SUM(e.cost) FROM financial_settlements_tab b,financial_receivable_tab e WHERE b.correlation_id = e.correlation AND b.super_id = a.correlation_id),0) jh_rec_je_,IFNULL((SELECT SUM(e.cost) FROM financial_settlements_tab b,financial_payable_tab e WHERE b.correlation_id = e.correlation AND b.super_id = a.correlation_id),0) jh_pay_je_  from financial_settlements_tab a,#table1# b WHERE a.correlation_id = (CASE WHEN b.super_id = 0 THEN b.correlation_id ELSE b.super_id END) ) a group by a.correlation_id,a.type,a.name,a.capital_receivable,a.capital_payable,a.action_time,a.remarks,a.status,a.pay_time,a.code,a.super_id,a.ager_id,a.type_name,a.status_name,a.jh_pay_je,a.jh_rec_je,a.jh_rec_je_,a.jh_pay_je_ ',
+				orderby:' order by a.status desc',
+				type:' and a.type = ? ',
+				name:' and (a.name like ? or c.id like ? or c.code like ? or c.name like ? or a.code like ? or c.user_mobile like ?) ', 
+				names:' and a.name = ?',
+				state:' and a.status = ? ',
+				time_start:' and a.`action_time` >= ?',
+				time_end:' and a.`action_time` <= ?',
+				xmcode:' and a.code like ? ',
+				supper_id:' and a.super_id = ? '
+			},   
+			updatecode:'UPDATE financial_settlements_tab a SET a.`code` = CONCAT(\'F\',DATE_FORMAT(a.`action_time`,\'%Y%m%d\'),\'D\',a.`correlation_id`) WHERE a.`code` IS NULL',
+			getPay:'SELECT a.id,a.`name`,DATE_FORMAT(a.`pay_time`,\'%Y-%m-%d %T\') pay_time,DATE_FORMAT(a.`plat_time`,\'%Y-%m-%d %T\')`plat_time`,a.`cost`,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name   FROM financial_payable_tab a WHERE a.`correlation` = ?',
+			getRes:'SELECT a.id,a.`name`,DATE_FORMAT(a.`pay_time`,\'%Y-%m-%d %T\') pay_time,DATE_FORMAT(a.`plat_time`,\'%Y-%m-%d %T\')`plat_time`,a.`cost`,(case when a.status = 0 then \'未发生\' when a.status = 1 then \'已支付\' when a.status = 2 then \'已核算\' when a.status = 3 then \'提交金蝶处理\' else \'未知\' end) status_name   FROM financial_receivable_tab a WHERE a.`correlation` = ?',
+			insert:'INSERT INTO financial_settlements_tab(`type`,`name`,`capital_receivable`,`capital_payable`,`action_time`,`remarks`,`status`,super_id,ager_id)VALUES(?,?,?,?,NOW(),?,1,?,?)',
+			update:'UPDATE financial_settlements_tab a SET a.`action_time` = NOW(),a.`capital_payable` = ?,a.`capital_receivable` = ?,a.`name` = ?,a.`remarks` = ?,a.`type` = ? WHERE a.`correlation_id` = ?',
+			delete:'UPDATE financial_settlements_tab a set a.status = 0 where a.correlation_id = ? ',
+			getMap:'SELECT a.*,fn_getdictitemname(\'SETTLEMENTS.TYPE\',a.type) type_name,(case when a.status = \'1\' then \'有效\' else \'无效\' end) status_name FROM financial_settlements_tab a WHERE a.`status` = 1 and a.correlation_id = ?',
+			getQdList:'SELECT b.`name`,a.* FROM financial_years_payable_tab a,financial_payable_tab b WHERE a.`bill_id` = b.`id` AND b.`correlation` = ? ORDER BY b.`name`,a.`years`',
+			getQdResList:'SELECT b.`name`,a.* FROM financial_years_receivable_tab a,financial_receivable_tab b WHERE a.`bill_id` = b.`id` AND b.`correlation` = ? ORDER BY b.`name`,a.`years`',
+			getPayQdList1:'SELECT b.`name`,a.* FROM financial_years_payable_tab a,financial_payable_tab b WHERE a.`bill_id` = b.`id` AND b.`id` = ? ORDER BY b.`name`,a.`years`',
+			getResQdList1:'SELECT b.`name`,a.* FROM financial_years_receivable_tab a,financial_receivable_tab b WHERE a.`bill_id` = b.`id` AND b.`id` = ? ORDER BY b.`name`,a.`years`'
+		},
+		/**
+		 * 财务类目
+		 */
+		type:{
+			query:{
+				main:'SELECT a.*,DATE_FORMAT(a.oper_date,\'%Y-%m-%d %k:%i\')operdate FROM financial_category_tab a WHERE a.`status` = 1',
+				orderby:' order by a.oper_date desc ',
+				name:' and a.name like ?'
+			},
+			insert:'insert into financial_category_tab(id,name,desc_txt,oper_id,oper_date)values(?,?,?,?,now())',
+			update:'update financial_category_tab a set a.id=?,a.name=?,a.desc_txt=?,a.oper_id =?,a.oper_date=now() where a.id = ?',
+			delete:'update financial_category_tab a set a.status =0 where a.id = ?',
+			getMap:'SELECT * FROM financial_category_tab a WHERE a.`status` = 1 and a.id = ?'
+		}
+	},
+	/**
+	 * 合约相关查询
+	 */
+	agreement:{
+		getAgreementId:'SELECT b.`id` FROM  yc_agreement_tab b WHERE b.`house_id` = ? AND b.`type` = ?'
+	},
+	/**
+	*工程管理
+	*
+	*/
+	onstruction: {
+		info:{
+			insert:'insert into yc_onstruction_tab (houseid,spec,constructiontime,completetime,agreementid, type,money,furnituremoney,appliancesmoney,othermoney,total, time,status,is_delete,is_work,createtime) values (?,?,?,now(),? ,0,0,0,0,0,0,now(),-1,1,1,now())',
+		    deleteUp:'update yc_onstruction_tab set is_delete=0 where houseid=?',
+			connectOK :'update yc_onstruction_tab set status=? where houseid=? and is_work=1',
+			connectNO :'update yc_onstruction_tab set status=? ,sendstate=5 where houseid=? and is_work=1',
+			checkstatus:'select count(1) from yc_onstruction_tab where houseid=? and is_work=1 and (status=-1 or status>2) and is_delete=1'
+		},
+		
+	},
+	/**
+	 * 小区管理
+	 */
+	group:{
+	         /**
+	           *小区查询
+	           */
+	      query:{
+				main:'select g.*,FORMAT(area1,2) area,basecount,CASE WHEN LENGTH(g.images )=0 THEN \'\' ELSE CONCAT(\'###\', replace(left(g.images,length(g.images)-1),\'|\',CONCAT(\'|\',\'###\',\'\'))) END  path,fn_getdictitemname(\'GROUP.TYPE\',g.group_type) type_name,fn_getdictitemname(\'GROUP.STATUS\',g.status) status_name  from group_view g  left join basecount_view as h on g.id=h.group_id  where g.delete_state = 1 and is_work=1', 
+				orderby:' order by g.createtime DESC ',
+				groupname:' and (g.group_name like ? or g.address like ? or g.developer like ? or g.property like ? or g.traffic like ?)', 
+				type:' and group_type = ?',
+				areaid:' and areaid = ?',
+				status:' and status = ?',
+				id:' and g.id=? '
+			    },
+			    /**
+			    *小区新增
+			    */
+		 insert:'insert into yc_group_tab (areaid,trading, createtime, group_type,group_name, group_desc, traffic, developer, property, build_date,area, plot_ratio, house_count, green_rate, park_count,coordinate, delete_state, address,operator,updatetime,status,is_work,old_id) values(?,?,now(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now(),?,1,?)',
+		 update:'update yc_group_tab set trading=?, group_type = ?, group_name= ?, group_desc = ?, traffic = ?, developer = ?, property = ?,build_date = ?, area = ?, plot_ratio =?, house_count = ?, green_rate= ?, park_count = ?, images = ?, coordinate = ?, address = ?,operator=?,updatetime=now() where id=?',
+	     delete:'update yc_group_tab set delete_state = 0 where id=?',
+		 deleteT:'delete from yc_group_tab where id=?',
+   updatestatus:'update yc_group_tab set status = ?,is_work=? where id=?',
+	    imageup:'update yc_group_tab set images=? where id=?',
+     insertroom:'insert yc_grouproom_tab (group_id,bedroom,count,cost,spec1,specarea) values(?,?,?,?,?,?)',
+	 deleteroom:'delete from yc_grouproom_tab where group_id=?',
+	 queryhouse:'select count(1) from yc_house_tab where group_id=? ',
+	  idupdate:'update yc_group_tab set id = ? where id=?',
+	  roomidupdate:'update yc_grouproom_tab set group_id = ? where group_id=?',
+		/**
+		 * 小区房源报表
+		 * 
+		 */
+		queryHouseFlow:'select * from (select count(1) countall ,cast(sum(SUBSTRING_INDEX(o.spec,\'|\',1)) AS CHAR(12)) as specall from yc_group_tab g,yc_house_tab h,yc_agreement_tab a,yc_onstruction_tab o where h.group_id=g.id and a.house_id=h.id and a.type=1 and g.id=? and a.status=2 and a.id=o.agreementid and o.is_work=1 and o.is_delete= 1 and h.delete_state=1)c,(select count(1) onstall,cast(sum(SUBSTRING_INDEX(o.spec,\'|\',1)) AS CHAR(12))  as onspec from yc_group_tab g,yc_house_tab h,yc_agreement_tab a,yc_onstruction_tab o where h.group_id=g.id and a.house_id=h.id and a.type=1 and g.id=? and a.status=2 and a.id=o.agreementid  and o.is_work=1 and o.is_delete= 1 and o.status in(-1,0,1) and h.delete_state=1) v1,(select count(1) as r1 from yc_houserank_tab r,yc_house_tab h where r.house_id=h.id and h.group_id=? and r.rank_type=1 and h.house_status in (5,6,7,8,9) and r.rank_status<4 and h.delete_state=1) c1,(select count(1) as r2 from yc_houserank_tab r,yc_house_tab h where r.house_id=h.id and h.group_id=? and r.rank_type=0 and h.house_status in (5,6,7,8,9) and r.rank_status<4 and h.delete_state=1) c5,(select count(1)as r3 from yc_houserank_tab r,yc_house_tab h where r.house_id=h.id and h.group_id=? and r.rank_type=0 and h.house_status in (5,6,7,8,9) and r.rank_status in (4,5) and h.delete_state=1) c2,(select count(1)as r4 from yc_houserank_tab r,yc_house_tab h where r.house_id=h.id and h.group_id=? and r.rank_type=1 and h.house_status in (5,6,7,8,9) and r.rank_status in (4,5) and h.delete_state=1) c3 ',
+	/**	queryHouseFlow:'select * from (select count(1) asr0 ,cast(sum(LEFT(o.spec,1)) AS CHAR(12)) as r1 from yc_group_tab g,yc_house_tab h,yc_agreement_tab a,yc_onstruction_tab o where h.group_id=g.id and a.house_id=h.id and a.type=1 and g.id=? and a.status=2 and a.id=o.agreementid and o.is_work=1 ) f,(select count(1) r2,cast(sum(LEFT(o.spec,1)) AS CHAR(12)) as r3 from yc_group_tab g,yc_house_tab h,yc_agreement_tab a,yc_onstruction_tab o where h.group_id=g.id and a.house_id=h.id and a.type=1 and g.id=? and a.status=2 and a.id=o.agreementid and o.is_work=1 and o.status in(-1,0,1))f1,(select sum(if(rank_type = 0, 1,0)) as r4,cast(sum(if(rank_type = 0,	LEFT(rank_spec, 1), 0)) AS CHAR(12)) as r5,sum(if(rank_type = 1, 1,0)) as r8,count(*) as r9 from HouseRank_View where rank_status <5 and group_id=?) f3,(select sum(if(rank_type = 0, 1,0)) as r6,cast(sum(if(rank_type = 0,	LEFT(rank_spec, 1), 0)) AS CHAR(12)) as r7,sum(if(rank_type = 1, 1,0)) as r8,count(*) as r9 from HouseRank_View where rank_status = 5 and group_id=?) f4',
+		queryHouseFlow:' select * from (select count(*) asr0,cast(sum(LEFT(spec,1)) AS CHAR(12)) as r1 from agreement_all_view where type=1 and status= 2 and is_work=1 and group_id=?) as f,(select count(*) as r2,cast(sum(LEFT(spec, 1)) AS CHAR(12)) as r3 from agreement_all_view where is_work=1 and ostatus in (-1,0,1) and group_id=? )  as s,(select count(*) as r4 from HouseRank_View where rank_status in (0,1,2,3,4) and rank_type=1 and group_id=? ) as r,(select sum(if(rank_type = 0, 1,0)) as r6,cast(sum(if(rank_type = 0,	LEFT(rank_spec, 1), 0)) AS CHAR(12)) as r7,sum(if(rank_type = 1, 1,0)) as r8,count(*) as r9 from HouseRank_View where rank_status = 5 and group_id=? ) as rs',
+		 * room修改图片地址
+		 * 
+		 */
+		roomimage:'update yc_grouproom_tab set images=? where id=?'
+	},
+	grid:{
+		groupQuery:{
+				main:'SELECT g.`id`,t.`g_id`,g.`group_name`,fn_getarearname(g.`areaid`) areaname,g.`address`,fn_getdictitemname(\'GROUP.TYPE\',g.`group_type`) type_name,t.`name`,t.`g_name` FROM yc_group_tab g LEFT JOIN (SELECT t.`g_id`,t.`areaid`,t.`g_name`,a.`name` FROM  t_grid t LEFT JOIN yc_account_tab a ON t.`g_id`=a.`g_id`) t ON g.`g_id`=t.`g_id` where  g.delete_state = 1 and g.is_work=1 ', 
+				main2:'SELECT t.*,ar.area_name,a.`name`,a.id acid FROM t_grid t LEFT JOIN yc_account_tab a ON t.`g_id`=a.`g_id`,yc_area_tab ar WHERE   ar.id=t.areaid  ',
+				g_id:' and g.g_id=?',
+				orderby:' order by g.createtime DESC ',
+				groupname:' and (g.group_name like ? or g.address like ? or t.name like ? )', 
+				type:' and g.group_type = ?',
+				areaid:' and g.areaid = ?',
+				status:' and g.status = ?',
+				id:' and g.id=? ',
+				keyWord:' and ( t.g_name like ? or a.name like ? )'
+			    },
+		 groupUpdate:'UPDATE yc_group_tab SET g_id=? WHERE id=? ',
+		 groupUpdategid:'UPDATE yc_group_tab SET g_id=? WHERE g_id=? ',
+		 create:'INSERT INTO t_grid(g_name,o_id,areaid) VALUES(?,?,?)',
+		 updateAccount:' update yc_account_tab set g_id=? where id=? ',
+		 updateAccountgid:' update yc_account_tab set g_id=? where g_id=? ',
+		 checkName:'select count(1) from t_grid where g_name=? ',
+		 deleteGrid:'delete from t_grid where g_id=?',
+		 getMangerList:' SELECT a.`id`, a.`name` FROM yc_account_tab a WHERE EXISTS(SELECT 1 FROM yc_account_role_tab b WHERE a.`id` = b.`user_id` AND b.`role_id` in #### AND b.`state` = 1) AND a.`is_delete` = 1  and  (a.`g_id` IS NULL OR a.`g_id`=0)  AND a.`state`=1',
+		 
+	},
+	
+	/**
+	 * 区域
+	 */
+	area :{
+      query:{
+		main:'select * from yc_area_tab where 1=1',
+		fatherid:' and fatherid = ?',
+		type:' and area_type = ?'
+	  }
+	},
+	/**
+	 * 材料
+	 */
+	mcate :{
+      query:{
+		main:'select * from purchaser_mcate_tab where 1=1',
+		fatherid:' and fatherid = ?',
+		mcatename:' and name like ? ',
+	  }
+	},
+	/**
+	 * 房源对应关系
+	 */
+	grouproom :{
+      query:{
+		main:'select *,FORMAT(cost,2) cost,FORMAT(specarea,2) specarea,  CASE WHEN LENGTH(images)=0 THEN \'\' ELSE CONCAT(\'###\', replace(left(images,length(images)-1),\'|\',CONCAT(\'|\',\'###\',\'\'))) END urlpath from yc_grouproom_tab where ',
+		group_id:' group_id = ?',
+		bedroom:' and bedroom=?',
+		spec1:' and spec1=?'
+	  }
+	},
+	task:{
+		/**
+		 * 获取任务配置
+		 */
+		getTaskCfg:'SELECT * FROM yc_task_cfg_tab a WHERE a.`id` = ?',
+		insertTask:'INSERT INTO yc_task_info_tab(task_cfg_id,NAME,create_oper,predict_complete_duration,early_duration,remark,file_id,sup_task_step_id,resource_id)VALUES(?,?,?,?,?,?,?,?,?)',
+		/**
+		 * 获取任务来源id
+		 */
+		getResource:'select resource_id from yc_task_info_tab a where task_id=?',
+		getTaskCode:'select task_code from yc_task_info_tab a where task_id=?',
+		getStep:'select * from yc_task_step_cfg_tab a where a.task_cfg_id = ? and a.step_id in (##)',
+		getType:'SELECT a.`type_id`,a.`type_name` FROM yc_task_type a WHERE a.`super_id` = ? AND a.`state` = 1',
+		insertStep:'INSERT INTO yc_task_step_info_tab(`task_id`,`step_name`,`sup_step_id`,`cfg_step_id`,`create_time`,`now_org_id`,`now_role_id`,`now_oper`)VALUES(?,?,?,?,now(),?,?,?)',
+		getStepMap:'SELECT * FROM yc_task_step_info_tab a WHERE a.`step_id` = ?',  
+		getCfgTask:'SELECT * FROM yc_task_cfg_tab a WHERE a.id = ?  AND a.`state` = 1',
+		getOverStep:'SELECT * FROM yc_task_step_cfg_tab a WHERE a.`next_step_id` = 0 and a.`task_cfg_id` = ?',
+		updateTaskCode:'update yc_task_info_tab a set a.task_code = ? where a.task_id = ?',
+		deleteFlow:'delete from yc_task_info_tab where task_id = ?',
+		deleteFlowStep:'delete from yc_task_step_info_tab where task_id = ?',  
+		insertFile:'insert into yc_task_file(file_id,file_name,file_path,oper_date,file_type) values(?,?,?,now(),?) ',
+		deleteFile:'delete from  yc_task_file where  file_id=?',
+		getPath:'select CONCAT(fn_systemparameter_value(\'FTP_HTTP\'),fn_systemparameter_value(\'FTP_TASK_HTTP_PATH\')) from dual',
+	
+		getFinancial:{
+		main:' select a.*,CASE WHEN a.remarks IS NULL THEN \'\' ELSE a.remarks END remark ,DATE_FORMAT(a.end_time,\'%Y-%m-%d\') as endtime ,DATE_FORMAT(a.start_time,\'%Y-%m-%d\')  as starttime ,b.name as typename,a.category, fn_getdictitemname(\'FINANCIALPAY.STATUS\',a.status) statusname from financial_receivable_tab a,financial_category_tab b WHERE a.category=b.id and a.status<>0 ',
+		agreeRankId:' and a.secondary = ? ',
+		secondarytype:' and  a.secondary_type = ?',
+		},
+		getPay:{
+		main:' select a.*,CASE WHEN a.remarks IS NULL THEN \'\' ELSE a.remarks END remark ,DATE_FORMAT(a.end_time,\'%Y-%m-%d\') as endtime ,DATE_FORMAT(a.start_time,\'%Y-%m-%d\')  as starttime ,b.name as typename,a.category, fn_getdictitemname(\'FINANCIALPAY.STATUS\',a.status) statusname from financial_payable_tab a,financial_category_tab b WHERE a.category=b.id and a.status<>0 ',
+		agreeRankId:' and a.secondary = ? ',
+		secondarytype:' and  a.secondary_type = ?',
+		},
+		getMapForOrder:'select a.task_id,a.step_id,a.step_name from yc_task_info_tab a , yc_task_step_info_tab b  where a.step_id =b.step_id  and a.resource_id =?  ',
+		getHouseForOrder:'select a.father_id,a.id,a.house_id,o.order_type from order_tab o ,yc_agreement_tab a where o.correspondent =a.id and o.id=?',
+		getHouseForString:'select house_id  from yc_agreement_tab a where a.id=?',
+		
+		/**
+		 * 我发起的任务
+		 */
+		myStartTask:{ 
+			main:'SELECT a.task_cfg_id,a.state,a.task_id,b.typenames,a.task_code,a.name,DATE_FORMAT(a.create_time,\'%Y-%m-%d %k:%i\')createtime,fn_getdictitemname(\'FLOW.INFO.STATUS\',a.state) statename,fn_getTaskStepState(a.`task_id`) step_name,fn_getTaskStepName(a.`task_id`) step_id  FROM yc_task_info_tab a,yc_task_type b,yc_task_cfg_tab c WHERE a.task_cfg_id = c.id and c.type = b.type_id  ',
+			taskname:' and a.name like ? ',
+			taskcode:' and a.task_code like ? ',
+			myfq:' and a.create_oper = ? ',
+			taskState:' and a.state = ? ', 
+			keyWord:' and (a.name like ? or  a.task_code like ?)', 
+			tasktypeids:' and (b.typeids = ?  OR CONCAT(\'-\',b.`typeids`,\'-\') LIKE ?)',
+			orderId:' and a.resource_id=? ',
+			state_time:' and DATE_FORMAT(a.create_time,\'%Y-%m-%d %k:%i\') >= ?',
+			end_time:' and DATE_FORMAT(a.create_time,\'%Y-%m-%d %k:%i\') <= ?',
+			sup_task_step_id:' and (a.sup_task_step_id is null or a.sup_task_step_id = \'\')',
+			orderby:' order by a.create_time desc ',
+			mycl:'AND EXISTS(SELECT 1 FROM yc_task_step_info_tab e WHERE  e.`step_id` = f.`step_id` and e.`task_id` = a.`task_id` AND ( e.`now_role_id` IS NULL OR e.`now_role_id` = \'\'  #RULE#) AND (e.`now_org_id` IS NULL OR e.`now_org_id` = \'\' #ORG#) AND (e.`now_oper` IS NULL OR e.`now_oper` = \'\'  OR FIND_IN_SET(?,e.`now_oper`) > 0))' 
+		},
+		/**
+		 * 待处理任务
+		 */
+		disposetTask:{ 
+			main:'SELECT c.html_path,c.dispose_class,a.task_cfg_id,f.step_id,a.task_id,b.typenames,a.task_code,a.name,DATE_FORMAT(a.create_time,\'%Y-%m-%d %k:%i\')createtime,fn_getdictitemname(\'FLOW.INFO.STATUS\',a.state) statename,fn_getdictitemname(\'FLOW.STEP.STATUS\',f.state) step_state_name,f.`step_name`FROM yc_task_info_tab a,yc_task_type b,yc_task_cfg_tab c,yc_task_step_info_tab f WHERE a.task_cfg_id = c.id  AND a.`task_id` = f.`task_id` AND c.type = b.type_id and f.state IN (0,1,4,5,6)  ', 
+			taskname:' and a.name like ? ',
+			taskcode:' and a.task_code like ? ', 
+			infostatus:' and a.state = ? ', 
+			keyWord:' and (a.name like ? or  a.task_code like ?)',
+			myfq:' and a.create_oper = ? ',  
+			taskState:' and a.state = ? ', 
+			tasktypeids:' and (b.typeids = ?  OR CONCAT(\'-\',b.`typeids`,\'-\') LIKE ?)',
+			state_time:' and DATE_FORMAT(a.create_time,\'%Y-%m-%d %k:%i\') >= ?',
+			end_time:' and DATE_FORMAT(a.create_time,\'%Y-%m-%d %k:%i\') <= ?',
+			sup_task_step_id:' and (a.sup_task_step_id is null or a.sup_task_step_id = \'\')',
+			mycl:'AND EXISTS(SELECT 1 FROM yc_task_step_info_tab e WHERE  e.`step_id` = f.`step_id` and e.`task_id` = a.`task_id` AND ( e.`now_role_id` IS NULL OR e.`now_role_id` = \'\' #RULE#) AND (e.`now_org_id` IS NULL OR e.`now_org_id` = \'\' #ORG#) AND (e.`now_oper` IS NULL OR e.`now_oper` = \'\' OR FIND_IN_SET(?,e.`now_oper`) > 0))',
+			changeState:'update yc_task_step_info_tab a set a.state = 1 where a.step_id = ? and a.state = 0',
+			updateStep:'UPDATE yc_task_step_info_tab a SET a.`file_id` = ?,a.`is_overtime` = ?,a.`next_step_id` = ?,a.`oper_date` = NOW(),a.`oper_id` = ?,a.`remark` = ?,a.`state` = ? WHERE a.`step_id` = ?',
+			updateTask:'UPDATE yc_task_info_tab a SET a.`already_duration` = ?,a.state = ?,a.isTimeout =?,a.step_id = ?,a.`step_name` = ?,a.end_time = #endtime# WHERE a.`task_id` = ?',
+			updateStepfile:'UPDATE yc_task_step_info_tab a set a.file_id = ? where step_id=?',
+			orderby:' order by a.create_time desc ',
+			getnowoper:'SELECT now_oper FROM yc_task_step_info_tab WHERE step_id IN( SELECT MAX(step_id) FROM yc_task_step_info_tab s WHERE s.task_id=? AND s.`cfg_step_id`=3)'
+		}, 
+		/**
+		 * 获取下一步处理信息 
+		 */
+		getNowNextStepList:{
+			main:'SELECT b.`next_step_id` FROM yc_task_step_info_tab a,yc_task_step_cfg_tab b WHERE a.`cfg_step_id` = b.`step_id` AND a.`step_id` = ?',
+			list:'SELECT a.`step_id`,a.`step_name` FROM yc_task_step_cfg_tab a WHERE a.`step_id` IN (##) and a.task_cfg_id= ?'
+		},
+		/**
+		 * 详细信息
+		 */
+		showDetail:{
+			main:'SELECT c.html_path,c.dispose_class,a.task_cfg_id,a.task_id, b.typenames, a.task_code, a.name, DATE_FORMAT(a.create_time, \'%Y-%m-%d %k:%i\') createtime, fn_getdictitemname (\'FLOW.INFO.STATUS\', a.state) statename, fn_getOperName(a.`create_oper`) oper_name, a.`early_duration`, DATE_FORMAT(a.`end_time`,\'%Y-%m-%d %H:%m:%s\') end_time, a.`isTimeout`, a.`predict_complete_duration`, a.`remark`,fn_getTaskFile(a.file_id) file FROM yc_task_info_tab a, yc_task_type b, yc_task_cfg_tab c WHERE a.task_cfg_id = c.id  AND c.type = b.type_id  AND (a.sup_task_step_id is null or a.sup_task_step_id = \'\')',
+			taskid:'  AND a.`task_id` = ? ',
+			showStepList:{ 
+				main:'SELECT group_concat(d.name) account,a.cfg_step_id,b.`html_path`,a.`step_name`,a.`step_id`,fn_getOperName(a.`oper_id`) oper_name,DATE_FORMAT(a.`oper_date`,\'%Y-%m-%d %T\') operdate,a.`wait_task_id`,fn_getdictitemname(\'FLOW.STEP.STATUS\',a.`state`) statename,a.`is_overtime`,a.`remark`,a.`file_id`,DATE_FORMAT(a.`create_time`,\'%Y-%m-%d %T\') createtime,fn_getTaskFile(a.file_id) file FROM yc_task_step_info_tab a,yc_task_step_cfg_tab b,yc_task_info_tab c, yc_account_tab d WHERE a.cfg_step_id = b.`step_id` AND a.task_id = c.task_id AND c.task_cfg_id = b.task_cfg_id and a.task_id = ? and  INSTR(CONCAT(\',\',case when LENGTH(a.now_oper)=0 then -1 else  a.now_oper end,\',\'),CONCAT(\',\',d.id,\',\')) > 0  GROUP BY step_id  ',
+				orderby:' order by a.step_id  '  
+			},  
+			showBzDetail:{ 
+				main:'SELECT a.cfg_step_id,a.task_id,b.task_cfg_id,b.`html_path`,b.dispose_class,a.`step_name`,a.`step_id`,fn_getOperName(a.`oper_id`) oper_name,DATE_FORMAT(a.`oper_date`,\'%Y-%m-%d %T\') operdate,a.`wait_task_id`,fn_getdictitemname(\'FLOW.STEP.STATUS\',a.`state`) statename,a.`is_overtime`,a.`remark`,a.`file_id`,DATE_FORMAT(a.`create_time`,\'%Y-%m-%d %T\') createtime FROM yc_task_step_info_tab a,yc_task_step_cfg_tab b,yc_task_info_tab c WHERE a.cfg_step_id = b.`step_id` AND a.`task_id` = c.`task_id` AND b.`task_cfg_id` = c.`task_cfg_id` and a.step_id = ?'
+			} 
+		},
+		/**
+		 * 已处理任务 
+		 */
+		yetTaskList:{
+			main:'SELECT a.task_cfg_id,a.task_id,b.typenames,a.task_code,a.name,DATE_FORMAT(a.create_time,\'%Y-%m-%d %k:%i\')createtime,fn_getdictitemname(\'FLOW.INFO.STATUS\',a.state) statename,fn_getTaskStepState(a.`task_id`) step_name,fn_getTaskStepName(a.`task_id`) step_id  FROM yc_task_info_tab a,yc_task_type b,yc_task_cfg_tab c WHERE a.task_cfg_id = c.id and c.type = b.type_id  ',
+			taskname:' and a.name like ? ', 
+			taskcode:' and a.task_code like ? ',
+			keyWord:' and (a.name like ? or a.task_code like ?)',
+			taskState:' and a.state = ? ',
+			myfq:' and a.create_oper = ? ',   
+			tasktypeids:' and (b.typeids = ?  OR CONCAT(\'-\',b.`typeids`,\'-\') LIKE ?)',
+			state_time:' and DATE_FORMAT(a.create_time,\'%Y-%m-%d %k:%i\') >= ?',
+			end_time:' and DATE_FORMAT(a.create_time,\'%Y-%m-%d %k:%i\') <= ?',
+			sup_task_step_id:' and (a.sup_task_step_id is null or a.sup_task_step_id = \'\')',
+			orderby:' order by a.create_time desc ',
+			mycl:' AND a.`task_id` in (SELECT e.`task_id` FROM yc_task_step_info_tab e WHERE e.`oper_id` = ?)'  
+		}
+	},
+	userInfo:{
+		main:' select a.id, a.username,a.mobile,a.certificateno,a.email,a.qq,a.wechat, fn_getdictitemname (\'USER.SEX\', a.sex) sexname, a.sex,date_format(a.birthday,\'%Y-%m-%d\') as birthday , date_format(a.registertime,\'%Y-%m-%d\') as registertime, date_format(a.lastlogintime,\'%Y-%m-%d\') as lastlogintime, a.ipadress from yc_userinfo_tab a WHERE a.is_delete=1 ',
+		username:' and (a.username like ? or a.mobile LIKE ? ) ',
+		delete:' UPDATE yc_userinfo_tab set is_delete=? WHERE id=? ',
+		insert:' insert into yc_userinfo_tab (username,sex,mobile, certificateno, qq,email, wechat,  birthday, registertime, is_delete) values(?,?,?,?,?,?,?,?,NOW(),1) ' ,
+		update:' update yc_userinfo_tab set username=?,sex = ?,mobile = ?, certificateno= ?, qq = ?, email = ?, wechat = ?, birthday = ?  where id=? ',
+        /**
+         * 订单验证用户是否存在
+         */
+		checkUser:' select count(1) from yc_userinfo_tab where mobile=? ',
+		/**
+		 * 订单查询用户ID
+		 */
+		getId:'select id from yc_userinfo_tab where mobile=? '
+	},
+	orderService:{
+		query:{
+		   main:'SELECT  t.wait_oper, t.step_name,a.name as account,o.id,o.order_code,o.order_name,o.order_type,o.order_status,o.childtype,o.user_name,o.user_mobile,o.order_cost,o.service_time,o.order_desc,o.correspondent,fn_getdictitemname(\'ORDER.STATUS\',o.order_status) statusname,fn_getdictitemname(\'ORDER.TYPE\',o.order_type) typename,CASE WHEN LENGTH(o.file_path)=0 THEN \'\' ELSE CONCAT(\'###\', replace(o.file_path ,\',\',CONCAT(\',\',\'###\',\'\'))) END  picurls,DATE_FORMAT(o.create_time, \'%Y-%m-%d\') AS create_time,DATE_FORMAT(o.action_time,\'%Y-%m-%d %T\') as actiontime,(select name from yc_account_tab where id= reverse(substr(reverse(o.task_id),1,INSTR(reverse(o.task_id),\'|\') -1))) as nowoper FROM  order_tab o INNER JOIN yc_account_tab a  ON o.owner = a.id #name#  LEFT JOIN (SELECT	s.`step_name`,	act.NAME wait_oper,	t.resource_id	FROM yc_task_info_tab t	LEFT JOIN yc_task_step_info_tab s ON t.`task_id` = s.`task_id` #step_name#	LEFT JOIN yc_account_tab act ON s.now_oper = act.id	WHERE s.state IN (0, 1, 4, 5, 6) ) t ON t.resource_id = o.id WHERE 1 = 1 ',
+		   order_name:' and (o.order_name like ? or o.user_name like ? or o.user_mobile like ? or o.order_code like ? or t.step_name like ?) ',
+		   task:' and o.task_id = ? ',
+		   order_type:' and o.order_type = ?',
+		   id:' and o.id=?',
+		   childtype:' and o.childtype = ?',
+		   status:' and o.order_status in(?)',
+		   orderBy:' ORDER BY  o.order_status Asc, o.create_time desc ',
+		}, 
+		counthouse:'SELECT COUNT(1) FROM yc_agreement_tab a WHERE a.`house_id`= ? AND a.type=2 AND a.`status`IN (2,12,11) AND a.`id` <> ?  AND a.`isdelete`=1',
+		querysh:{
+		   mainstart:'select DATE_FORMAT(sp.oper_date,\'%Y-%m-%d %T\') as oper_date, sp.remark as stepremark,st.*,a.`name` from yc_task_step_info_tab sp LEFT JOIN yc_account_tab a  on a.id=sp.oper_id,(select MAX(s.step_id) as step_id , t.remark, o.id,o.order_code,o.order_name,o.order_type,o.order_status,o.childtype,o.user_name,o.user_mobile,o.order_cost,o.service_time,o.order_desc,o.correspondent,fn_getdictitemname(\'ORDER.STATUS\',o.order_status) statusname,fn_getdictitemname(\'ORDER.TYPE\',o.order_type) typename,DATE_FORMAT(o.create_time, \'%Y-%m-%d\') AS create_time,DATE_FORMAT(o.action_time,\'%Y-%m-%d %T\') as actiontime,(select name from yc_account_tab where id= reverse(substr(reverse(o.task_id),1,INSTR(reverse(o.task_id),\'|\') - 1))) as nowoper   from yc_task_step_info_tab s,(SELECT * FROM yc_task_info_tab t, (SELECT MAX(t.`task_id`) ttask_id FROM yc_task_info_tab t,  order_tab o WHERE t.`resource_id`=o.id GROUP BY o.id)ts WHERE ts.ttask_id=t.`task_id`) t,order_tab o where t.task_id=s.task_id and o.id=t.resource_id and s.cfg_step_id=3 ',
+		   mainend:' GROUP BY t.task_id) st where sp.step_id=st.step_id',
+		   order_name:' and (o.order_name like ? or o.user_name like ? or o.user_mobile like ? or o.order_code like ? or t.step_name like ?) ',
+		   task:' and o.task_id = ? ',
+		   order_type:' and o.order_type = ?',
+		   id:' and o.id=?',
+		   childtype:' and o.childtype = ?',
+		   status:' and o.order_status in(?)',
+		   orderBy:' ORDER BY  sp.oper_date Asc',
+		},
+		 queryagree:'select a.*,u.username,u.id as uid from yc_agreement_tab a,yc_userinfo_tab u where a.id= ? and a.type=2 and a.user_id=u.id',
+		 checkIsDo:'select count(1) from order_tab o where o.correspondent= ? and o.order_type=? and order_status <> -1',
+		 checkIsDo2:'select count(1) from order_tab o ,yc_task_info_tab t where o.id=t.resource_id  and o.correspondent= ? and o.order_type=?',
+		 insertPush:'INSERT INTO yc_push_task(title,content,channel_id,client_type,client_title,url,operator_date) SELECT ?, ?, channel_id, client_type, ?, ?, NOW()  FROM yc_user_ts_tab a WHERE a.mobile = ?',  
+		 getorder:'select order_code,order_name,user_name,user_mobile,order_cost,service_time,fn_getdictitemname(\'ORDER.TYPE\',order_type) typename,correspondent  from order_tab where id=? ',
+		 getOrderByCode:'select correspondent,order_code,order_type,order_name,user_name,user_mobile,order_cost,service_time,fn_getdictitemname(\'ORDER.TYPE\',order_type) typename  from order_tab where order_code=? ',
+		 getHouse:'select r.house_id,r.id  as rank_id from yc_houserank_tab r,yc_agreement_tab a where  a.house_id=r.id and a.type=2 and a.id=?',
+		 checktask:'select count(1) from yc_task_info_tab where resource_id=? and task_cfg_id in(3,4,5,6,7,9,10) and state<>4 ',
+		 getReport:' select * from (select count(*) as r_value,order_status as r_key from order_tab group by r_key) as r ',
+		 typeReport:' select * from (select order_type,count(1) as count,count(case when order_status <> -1 then 1 end) as count0 from order_tab GROUP BY order_type) a,(select (select count(*) from order_tab) as c1,(select count(*) from order_tab where order_status not in(-1))as rb from order_tab  GROUP BY c1,rb) as b  ',
+		 updateinfo:'update order_tab set order_status=?, order_name = ?,order_cost=?, service_time=?,order_desc=?,childtype=?,action_time=now(),task_id=? where 1=1 and id=?',
+		 getoper:'select task_id from order_tab where id=? ',
+		 updateUrl:'update order_tab set file_path=? where id=?',
+		 queryAgreeId:'select correspondent from order_tab where id=?',
+		 queryocost:'select order_cost from order_tab where id=?',
+		 queryocostbyorder:'select order_cost from order_tab where id=?',
+		 updateCode:'update order_tab set order_code=? where id=?',
+		 updatetaskid:'update order_tab set task_id=? where id=?',
+		 updateinfos:'update order_tab set ### where id=?',
+		 getstatus:'select order_status from order_tab where id=? ',
+		 orderSave:'insert into order_tab(order_type,order_name,order_status,create_time,user_id,user_name,user_mobile,order_cost,order_desc,service_time,owner,childtype,action_time,correspondent,task_id) values (?,?,?,now(),?,?,?,?,?,?,?,?,now(),?,?)',
+	    task:{
+		     updateinfo:'update order_tab set ### where task_id=?',
+			 getAgreement:'select * from yc_agreement_tab where id=?',
+			 getAllCost:'SELECT sum(cost) FROM financial_receivable_tab a WHERE a.secondary = ? and a.category=1 and a.`status`>0',
+	     }
+	},
+	sys:{
+	    selectmenu:'SELECT * FROM yc_menu_new_tab  WHERE  state=1',
+	    selectpowerurl:'SELECT power_id,power_name,power_url FROM yc_power_new_tab WHERE power_url=? and state=1',
+	    selectsuper:'SELECT a.* FROM yc_menu_new_tab a WHERE a.menu_id=? ',
+	    selectspower:'SELECT * FROM yc_power_new_tab WHERE menu_id=? ',
+	    updatepower:'UPDATE yc_power_new_tab set power_name=?,power_url=? WHERE power_id=? ',
+	    updatesuperid:' UPDATE yc_menu_new_tab set isnext= 1 WHERE menu_id=? ',
+	    selectpower:'SELECT * FROM yc_power_new_tab WHERE menu_id= ? ',
+	    deletepower:' UPDATE yc_power_new_tab set state=0 WHERE power_id=? ',
+	    insert:' insert into yc_menu_new_tab (menu_name,menu_url,super_id,isnext,state,menu_level,order_id) values(?,?,?,?,1,?,?) ' ,
+	    getSupperLevel:'SELECT a.`menu_level`+1 FROM yc_menu_new_tab a WHERE a.`menu_id` = ?',
+	    insertpower:' insert into yc_power_new_tab (power_name,power_url,state,menu_id) values(?,?,1,?) ',
+	    select:' SELECT a.menu_id \'id\',a.menu_name \'text\',case a.isnext when 0 then \'false\' else \'true\' end \'children\' ,\'root\' as \'type\' FROM yc_menu_new_tab a  WHERE a.super_id=0 and state=1',
+	    selectchildren:' SELECT a.menu_id \'id\',a.menu_name \'text\',case a.isnext when 0 then \'false\' else \'true\' end \'children\' ,\'root\' as \'type\' FROM yc_menu_new_tab a  WHERE  a.super_id=? and state=1',
+	    update:' UPDATE yc_menu_new_tab set state=0  WHERE menu_id=? OR super_id=?',
+	    updatemenu:' UPDATE yc_menu_new_tab set menu_name=?,menu_url=?,super_id=?,isnext=?,order_id=?  WHERE menu_id=? ',
+	    updatechildren:' UPDATE yc_menu_new_tab set state=0  WHERE menu_id=? ',
+	    updatepowers:' UPDATE yc_power_new_tab set state=0 WHERE menu_id=? ',
+	    updateNextPower:'UPDATE yc_power_new_tab a SET a.`state` = 0 WHERE EXISTS(SELECT 1 FROM yc_menu_new_tab b WHERE b.`menu_id` = a.`menu_id` AND (b.`menu_id` = ? OR b.`super_id` = ? ))',
+	    getNextCnt:'SELECT COUNT(1) FROM yc_menu_new_tab a WHERE a.`super_id` = ? AND a.`state` = 1',
+	    updateSupperNext:'UPDATE yc_menu_new_tab b SET b.`isnext` = ?  WHERE b.`menu_id` = ?'
+	},
+	account:{
+		main:' SELECT  t.is_delete,t.id, t.mobile,t.\`name\` AS aname,t.desc_text,DATE_FORMAT(t.create_time, \'%Y-%m-%d\') AS create_time,t.equipment,DATE_FORMAT(t.lastlogintime, \'%Y-%m-%d\') AS lastlogintime,(SELECT GROUP_CONCAT(b.org_id) FROM yc_account_org_tab b WHERE b.user_id = t.id GROUP BY b.user_id) org_id,(SELECT GROUP_CONCAT(aot.role_id) FROM yc_account_role_tab aot WHERE aot.user_id = t.id GROUP BY aot.user_id) role_id,t.ipadress,fn_getdictitemname (\'ACCOUNT.STATE\', t.state) statename,t.state,(SELECT GROUP_CONCAT(c.org_name) FROM yc_account_org_tab b,yc_organization_tab c WHERE b.user_id = t.id AND c.org_id = b.org_id GROUP BY b.user_id) org_name,(SELECT GROUP_CONCAT(c.role_name) FROM yc_account_role_tab aot,yc_role_new_tab c WHERE aot.user_id = t.id AND c.role_id = aot.role_id GROUP BY aot.user_id) role_name FROM yc_account_tab t WHERE t.is_delete = 1 ',
+		username:' and (t.name like ? or t.mobile LIKE ? ) ',
+		selectOrg:' SELECT * from yc_organization_tab WHERE state=1 ',
+		queryMoblie:'SELECT * FROM yc_account_tab WHERE mobile=?',
+		getMobile:' select mobile from yc_account_tab where id=?',
+		selectRole:' SELECT * FROM yc_role_new_tab WHERE state=1 ',
+		state:' UPDATE yc_account_tab set state=?  WHERE id= ? ',
+		insert:'insert into yc_account_tab (name,mobile, type,roleid,desc_text,create_time, passwd,is_delete, state,relation) values(?,?,0,?,?,now(),?,1,1,0)',
+		startpassword:' update yc_account_tab set  passwd = ?  where id=? ',
+		deleteUser:'update yc_account_tab a set a.is_delete = ? where a.id = ?',
+		deleteRole:'DELETE FROM yc_account_role_tab WHERE user_id = ?',
+		deleteOrg:'DELETE FROM yc_account_org_tab WHERE user_id = ? ',
+		insertRole:'INSERT INTO yc_account_role_tab(user_id,role_id,state)VALUES(?,?,1)',
+		insertOrg:'INSERT INTO yc_account_org_tab(user_id,org_id,state)VALUES(?,?,1)',
+		updateRole:'update  yc_account_role_tab set role_id=? where user_id=? ',
+		updateOrg:'update  yc_account_org_tab set org_id=? where user_id=? ',
+		update:' update yc_account_tab set name=?,mobile = ?, desc_text= ?  where id=? '
+		},
+		power:{ 
+		    selectPower:'SELECT * FROM yc_power_new_tab WHERE menu_id=? ',
+		    insertPower:'insert into yc_role_menu_tab (role_id,menu_id,power_id, state) values(?,?,?,1)',
+		    delete:'DELETE FROM yc_role_menu_tab where menu_id=? and power_id=?',
+		    selectPowers:'SELECT rmt.role_id,rmt.power_id FROM yc_role_menu_tab rmt WHERE rmt.power_id= ? ',
+		    updatestates:'UPDATE yc_power_new_tab set state=1 WHERE power_id=? ',
+		},
+			role:{ 
+		    main:'SELECT * FROM yc_role_new_tab WHERE state=1 ',
+		    selectmenu:'SELECT a.menu_id \'id\',a.menu_name \'text\',\'true\'as \'children\',\'root\' as \'type\',CONCAT(\'{"selected":\',(case when (select count(1) from yc_role_menu_tab b where b.role_id =? and b.menu_id= a.menu_id ) >0 then \'"true"\' else \'"false"\' end),\' }\') state  FROM yc_menu_new_tab a  WHERE  state=1',
+		    selectpower:'SELECT a.power_id \'id\',a.power_name as \'text\',\'false\'as \'children\',\'root\' as \'type\',CONCAT(\'{"selected":\',(case when (select count(1) from yc_role_menu_tab b where b.role_id =? and b.power_id = a.power_id ) >0 then \'"true"\' else \'"false"\' end),\' }\') state FROM yc_power_new_tab a  WHERE  state=1 and a.menu_id=? and a.power_name is NOT NULL and a.power_name<>\'\' ',
+		    findpower:'SELECT a.*  FROM yc_role_menu_tab a WHERE a.role_id=? ',
+		    delete:'DELETE FROM yc_role_menu_tab where role_id=?',
+		    selectmenuid:'SELECT distinct a.menu_id FROM yc_power_new_tab a  WHERE a.power_id in (?)',
+		    selectsuperid:'SELECT distinct super_id FROM yc_menu_new_tab WHERE menu_id in (?)',
+		    insertrole:'INSERT INTO yc_role_new_tab(role_name,state,role_decs) VALUES(?,1,?)'
+		},
+		certificateLeaveService:{
+			main:'select *,fn_getdictitemname (\'CERTIFICATELEAVE.TYPE\', type) typename from yc_certificateleave_tab where 1=1 ',
+			orderId:'and order_id=? ',
+			step_type:'and step_type=? ',
+			taskId:'and task_id=? ',
+			id:' and id=?',
+			info :{
+				insert:' insert into yc_certificateleave_tab (name,type,cost,costdesc,createtime,starttime,endtime,degree,order_id,step_type,task_id) values(?,?,?,?,now(),?,?,?,?,?,?)',
+			    delete:'delete from yc_certificateleave_tab where id=?',
+				update:' update yc_certificateleave_tab set createtime=now(), #### where id=?', 
+			},
+		},
+		pressRental:
+		{
+			queryFinancial:'SELECT a.cost,DATE_FORMAT(DATE_SUB(a.start_time,INTERVAL 15 DAY),\"%Y-%m-%d\") start_time,a.`name`,a.id ,b.agents,b.user_id,b.user_mobile,u.username FROM financial_receivable_tab a,yc_agreement_tab b,yc_userinfo_tab u WHERE  b.user_id=u.id and   a.secondary=b.id and  a.status  = 0 and  DATE_FORMAT(DATE_SUB(a.start_time,INTERVAL 15 DAY),\"%Y-%m-%d\")=DATE_FORMAT(NOW(),\"%Y-%m-%d\") AND a.isdelete = 1 AND a.secondary_type = 1 AND category = 1 ',
+			queryAccount:'select * from yc_account_tab where id= ?',
+            getFinancial:' select f.id,f.secondary from order_tab o,financial_receivable_tab f where o.correspondent=f.id AND f.secondary_type = 1 AND f.category = 1 and o.id=? '			
+		},
+		checkhouse:
+		{
+			query:{
+				main:'select favourable,housedesc,alipay,bank,bankname,startwaterdegree,startgasdegree,startelectricdegree,endwaterdegree,endgasdegree,endelectricdegree,keyrecieve,doorcard,otherdesc,fn_getdictitemname (\'LEASEORDER.REASONS\', reasons) reasonsname,reasons,task_id,CASE WHEN LENGTH(housepic)=0 THEN \'\' ELSE CONCAT(\'###\', replace(left(housepic,length(housepic)-1),\',\',CONCAT(\',\',\'###\',\'\'))) END  housepic,CASE WHEN LENGTH(degreepic)=0 THEN \'\' ELSE CONCAT(\'###\', replace(left(degreepic,length(degreepic)-1),\',\',CONCAT(\',\',\'###\',\'\'))) END  degreepic,id from yc_checkhouse_tab where 1=1',
+			    task_id:' and  task_id=?'
+			},
+			insert:'INSERT into yc_checkhouse_tab (favourable,housedesc,housepic,alipay,bank,bankname,startwaterdegree,startgasdegree,startelectricdegree,endwaterdegree,endgasdegree,endelectricdegree,degreepic,keyrecieve,doorcard,otherdesc,reasons,task_id)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+		    updatepic:'update yc_checkhouse_tab set housepic=?, degreepic=? where id=?',
+			deleteI:'delete from yc_checkhouse_tab where task_id=?',
+		}
+		
+}

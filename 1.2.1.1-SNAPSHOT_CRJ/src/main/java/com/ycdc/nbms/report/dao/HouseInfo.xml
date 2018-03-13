@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.nbms.report.dao.HouseInfoDao">
+
+	<select id="queryHouseInfo" parameterType="object" resultType="hashmap">
+		select   
+		a.title,
+		a.phone_number,
+		a.contacts,
+		a.price,
+		a.house_type,
+		a.renovation,
+		a.community,
+		a.release_time,
+		a.url,
+		a.floor,
+		a.source,
+		a.acreage,
+		a.use_type,
+		a.area,
+		a.business_center 
+		from yc_datamining_tab a
+		<where>
+			<if test="map.area != null and map.area != ''">
+				and a.area=#{map.area}
+			</if>
+			<if test="map.source != null and map.source != ''">
+				and a.source=#{map.source}
+			</if>
+			<if test="map.businessCenter != null and map.businessCenter != ''">
+				and a.business_center=#{map.businessCenter}			
+			</if>
+			<if test="map.useType != null and map.useType != ''">
+				and a.use_type=#{map.useType}
+			</if>
+			<if test="map.cityId != null and map.cityId != ''">
+				and a.city_id=#{map.cityId}
+			</if>
+			<choose>
+				<when test="map.beginPrice != null and map.beginPrice != '' and map.endPrice != null and map.endPrice != ''">
+					<![CDATA[and a.price>=#{map.beginPrice} and a.price<=#{map.endPrice}]]>
+				</when>
+				<when test="map.beginPrice != null and map.beginPrice != ''">
+					<![CDATA[and a.price>=#{map.beginPrice}]]>
+				</when>
+				<when test="map.endPrice != null and map.endPrice != ''">
+					<![CDATA[and a.price<=#{map.endPrice}]]>
+				</when>
+			</choose>
+		</where>
+		group by a.title,
+		a.phone_number,
+		a.contacts,
+		a.price,
+		a.house_type,
+		a.renovation,
+		a.community,
+		a.release_time,
+		a.url,
+		a.floor,
+		a.source,
+		a.acreage,
+		a.use_type,
+		a.area,
+		a.business_center 
+	</select>
+	
+	<select id="getAreaById" resultType="string">
+		select a.area_name 
+		from yc_area_tab a
+		where a.id=#{areaId}
+	</select>	
+	
+</mapper>

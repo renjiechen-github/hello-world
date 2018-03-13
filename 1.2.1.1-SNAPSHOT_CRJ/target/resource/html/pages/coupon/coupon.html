@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>财务收入</title>
+  <style type="text/css">
+  	.bzh{
+  		background-color: #e68d8d !important;
+  	}
+  	.bzh td{
+  		background-color: #e68d8d !important;
+  		color: #fff;
+  	}
+  	.panel-body .form-group{
+  		margin-top: 5px;
+  	}
+  </style>
+</head>
+
+<body>
+       <section class="panel">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+	                    <div class="form-group">
+	                        <label class="" for="exampleInputEmail2">码型:</label>
+	                        <select class="form-control" id="code_type" name="code_type" >
+                                <option value="" >请选择...</option>
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="" for="exampleInputEmail2">卡券类型:</label>
+	                        <select class="form-control" id="card_type" name="card_type" >
+                                <option value="">请选择...</option>
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="" for="exampleInputEmail2">审核状态:</label>
+	                        <select class="form-control" id="wx_state" name="wx_state" >
+                                <option value="">请选择...</option>
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="" for="exampleInputEmail2">有效状态:</label>
+	                        <select class="form-control" id="status" name="status" >
+                                <option value="1">有效</option>
+                                <option value="0">无效</option>
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="" for="exampleInputEmail2">查询条件</label>
+	                        <input type="text" class="form-control" size="35" id="name" name="name" placeholder="根据卡券编号、标题、条件商品模糊查询">
+	                    </div>
+	                    <div class="form-group ">
+	                    	<div class="tools" >
+								<a href="javascript:;" class="fa fa-search yc_seach" table="couponTable" > 查询</a>
+								<a href="javascript:coupon.addCoupon();" id="addCoupon" class="fa fa-plus "> 新增</a>
+	                    	</div>
+			            </div>
+	                </form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="couponTable" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>	
+			            	<th></th>
+			             	<th></th>
+			             	<th>微信端卡券编号</th>
+			                <th>券面码型</th>
+			                <th>卡券类型</th>
+			                <th>卡券名</th>
+			                <th>卡券总库存的数量</th>
+			                <th>卡券现有库存的数量</th>
+			                <th>是否可分享</th>
+			                <th>是否可转赠</th>
+			                <th>是否新租客使用</th>
+			                <th>作用类型</th>
+			                <th>是否可共享</th>
+			                <th>已领取次数</th>
+			                <th>已使用次数</th>
+			                <th>状态</th>
+			                <th>审核状态</th>
+			                <th>使用日期</th>
+			                <th></th>
+			            </tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+   	</section>
+   	<script type="text/javascript" src="/html/js/coupon/coupon.js" ></script>
+</body>
+</html>

@@ -1,0 +1,968 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ycdc.appserver.bus.dao.house.HouseMapper">
+	<select id="getHouseList" resultType="com.ycdc.appserver.model.house.House"
+		parameterType="com.ycdc.appserver.model.house.HouseCondition">
+  	<![CDATA[
+  	  SELECT  * 
+  	  FROM (SELECT distinct a.`id`, a.`house_code` houseCode, a.`createtime` , a.`house_type` houseType, a.`update_time`,
+  	  		case when agree.end_time is null then 0 else 
+					timestampdiff(day,date_format(now(),'%Y-%m-%d'),date_format(agree.end_time,'%Y-%m-%d'))
+					end as "mayLeaseDay", date_format(agree.end_time,'%Y-%m-%d') as "houseExpireDate",
+		  	  a.`house_name` houseName, a.`area` , a.`floor`,  a.`address` , a.`house_status` , d.`username` , 
+		  	  d.`mobile`, f.`name`, a.`is_top` ,  case when length(appendix) > 4 then CONCAT(#{newfilepath},REPLACE(a.appendix,'|',#{filepath})) else '' end `appendix`,
+		  	  CONCAT(fn_getdictitemname('GROUP.SPEC',SUBSTRING_INDEX(a.`spec`,'|',1)),'',fn_getdictitemname('GROUP.TING',SUBSTRING_INDEX(SUBSTRING_INDEX(a.`spec`,'|',2),'|',-1)),'',fn_getdictitemname('GROUP.WEI',SUBSTRING_INDEX(ons.`spec`,'|',-1))) specName, ons.spec,
+		  	  fn_getdictitemname('BASEHOUSE.PUBLISH',a.publish) publishname,a.`payment`, a.`free_rent`, lease_period, a.cost_a,
+		  	  fn_getdictitemname ('BASEHOUSE.STATUS', a.`house_status`)  houseStatus, 
+		  	  fn_getarearname(c.`areaid`) areaName, a.spec2, d.email, c.areaid, purpose,
+		  	  fn_getdictitemname ('DECORATE.TYPE', a.`decorate`) decorate, d.id userId,
+		  	  (CASE WHEN a.house_status = 10 THEN 0 WHEN  a.house_status > 5 THEN COUNT(g.`house_id`) - 1  WHEN a.house_status < 6 THEN SUBSTRING_INDEX(a.spec,'|',1) END) m, 
+		  	  sum(CASE WHEN g.rank_status = 5 AND a.house_status = 9 THEN SUBSTRING_INDEX(g.rank_spec,'|',1) ELSE 0 END) n,
+		  	  fn_getarearname(c.`trading`) sqname, a.user_id, d.`certificateno`, d.`desc_text` userAddress,
+		  	  ]]> 
+		  	  (case when exists(select 1 from cf_team_member_area tma where tma.`user_id` = f.`id` and tma.area_id = c.id and f.`is_delete` = 1
+		  	  <if test="userId != null and userId != ''">
+		  	  	and f.id in (${userId})
+		  	  </if>
+		  	  ) then 1 else 0 end) is_self 
+  	  		<![CDATA[
+  	  		FROM   `yc_house_tab` a left join yc_onstruction_tab ons on a.id=ons.houseid LEFT JOIN  `yc_group_tab` c ON a.`group_id` = c.`id` LEFT JOIN `yc_userinfo_tab` d ON a.`user_id` = d.`id` LEFT JOIN `yc_account_tab` f ON a.`account_id` = f.`id` LEFT JOIN yc_houserank_tab g ON g.`house_id` = a.`id` left join yc_agreement_tab agree on g.house_id=agree.house_id  where agree.`type`=1 and a.`delete_state` = 1 and ons.is_delete=1 and ons.is_work=1
+  	  ]]>
+
+		<if test="keyWord != null and keyWord != ''">
+			and (house_name like CONCAT('%',#{keyWord},'%') or house_code like
+			UPPER(CONCAT('%',#{keyWord},'%'))
+			or a.address like CONCAT('%',#{keyWord},'%') or username like
+			CONCAT('%',#{keyWord},'%')
+			or a.id in (SELECT b.house_id FROM yc_agreement_tab b WHERE b.`type` =
+			1 AND b.`sbcode` LIKE CONCAT('%',#{keyWord},'%')))
+		</if>
+		<if test="status != null and status != ''">
+			and house_status in (${status})
+		</if>
+		<if test="signStatus != null and signStatus != ''">
+			and house_status = #{signStatus}
+		</if>
+		<if test="areaid != null and areaid != ''">
+			and areaid = #{areaid}
+		</if>
+		<if test="publish != null and publish != ''">
+			and publish = #{publish}
+		</if>
+		<if test="is_self != null and is_self != '' and is_self == '1'.toString() ">
+			and exists(select 1 
+						from yc_account_tab h1,cf_team_member_area tma1 
+						where tma1.`user_id` = h1.`id` and tma1.area_id = c.id and h1.`is_delete` = 1 and h1.id in (${userId}))
+		</if>
+		<if test="teamIds != null and teamIds != ''">
+			and exists(select 1 
+						from cf_team ct,cf_team_rel_area tra1 
+						where tra1.area_id = c.id and ct.is_delete = 0 and tra1.team_id = ct.id and ct.id in (${teamIds}))
+		</if>
+		<if test="trading != null and trading != ''">
+			and c.trading = ${trading}
+		</if>
+		<if test="is_kz != null and is_kz != '' and is_kz == 1 ">
+  	    <![CDATA[ 
+  	  	and a.id in ( select hr3.house_id from yc_houserank_tab hr3 where hr3.rank_type = 1 and hr3.id not in (select ag.house_id from yc_agreement_tab ag, yc_houserank_tab hr2 where ag.type = 2 and hr2.id = ag.house_id and ag.status = 2 and hr2.rank_type = 1 and ag.isdelete = 1 and ag.begin_time < now() and ag.end_time >= now() and( ag.checkouttime is null or ag.checkouttime >= now())) and hr3.house_id not in ( select hr2.house_id from yc_agreement_tab ag, yc_houserank_tab hr2 where ag.type = 2 and hr2.id = ag.house_id and ag.status = 2 and hr2.rank_type = 0 and ag.isdelete = 1 and ag.begin_time < now() and ag.end_time >= now() and(ag.checkouttime is null or ag.checkouttime >= now())))
+					]]>
+  	  	</if>
+		group by a.id) al
+		<!--<where>
+			<if test="is_kz != null and is_kz != '' and is_kz == 1 ">
+				and m > n
+			</if>
+		</where>-->
+		ORDER BY al.update_time DESC 
+		limit ${startPage} , ${pageSize}
+	</select>
+	<!-- 待验收房源数量 -->
+	<select id="loadApprovalHouseCnt" resultType="java.lang.Integer">
+		select count(distinct a.id) from `yc_house_tab` a left join `yc_group_tab` c on
+		a.`group_id` = c.`id` and c.is_work = 1 
+			<if test="teamIds != null and teamIds != ''">
+				left join cf_team_rel_area tra on tra.area_id = a.`group_id`
+			</if>
+			<if test="user_id != null and user_id != ''">
+				left join cf_team_member_area tma on tma.`area_id` = a.`group_id`
+			</if>
+		where a.`delete_state` = 1
+		and a.`house_status` = 6
+			<if test="teamIds != null and teamIds != ''">
+				and tra.team_id in (${teamIds})
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and tma.user_id = #{user_id}
+			</if>
+	</select>
+	<select id="loadRankHouseCnt" resultType="java.lang.Integer">
+  	 <![CDATA[ 
+  	  select count(distinct a.id) 
+  	    from yc_houserank_tab a, yc_house_tab b 
+  	    left join yc_group_tab c on c.`id` = b.`group_id` and c.`delete_state` =1 
+  	    left join cf_team_member_area tma on tma.`area_id` = b.`group_id`
+   	   where a.`house_id` = b.`id`
+   	     and a.`rank_status` = 3
+   	     and b.`house_status` > 5 
+   	     and b.`delete_state` = 1 
+   	     and a.rank_type = 1
+   	     and b.`publish` = 2 
+   	     and a.`isdelete` = 1
+   	     and tma.`user_id` = #{user_id}
+   	 ]]>
+	</select>
+	<select id="loadAlreadyRankHouseCnt" resultType="java.lang.Integer">
+  	 <![CDATA[ 
+  	  select count(distinct b.id) 
+  	    from yc_houserank_tab a, yc_house_tab b 
+  	    left join yc_group_tab c on c.`id` = b.`group_id` and c.`is_work` = 1 and c.`delete_state` =1 
+  	    left join cf_team_member_area tma on tma.`area_id` = b.`group_id`
+   	   where a.`house_id` = b.`id`
+   	     and a.`rank_status` in (5,6)
+   	     and a.rank_type = 1
+   	     and tma.`user_id` = #{user_id}
+   	 ]]>
+	</select>
+	<select id="readySignRankHouse" resultType="java.lang.Integer">
+    <![CDATA[ 
+     select ifnull(sum(left(total.rank_spec,1)),0) 
+     from (select distinct ag.id, h.rank_spec
+            from yc_agreement_tab ag 
+            left join yc_houserank_tab h on ag.house_id = h.id 
+            left join yc_house_tab ht on h.house_id = ht.id
+            left join yc_group_tab g on g.id = ht.group_id
+     ]]>
+			<if test="teamIds != null and teamIds != ''">
+				left join cf_team_rel_area tra on tra.area_id = ht.`group_id`
+			</if>
+			<if test="user_id != null and user_id != ''">
+				left join cf_team_member_area tma on tma.`area_id` = ht.`group_id`
+			</if>
+		<![CDATA[ 
+            where h.isdelete = 1 and ag.type = 2 
+            and ag.isdelete=1 and ag.begin_time < now() 
+            and ag.end_time >= now()
+            and (ag.checkouttime is null or ag.checkouttime >= now()) 
+     	]]>
+			<if test="teamIds != null and teamIds != ''">
+				and tra.team_id in (${teamIds})
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and tma.user_id = #{user_id}
+			</if>) total
+	</select>
+
+	<select id="loadPayCnt" resultType="map">
+		SELECT distinct g.secondary,h.id as category_id
+		    from yc_group_tab b,   yc_house_tab c,  yc_houserank_tab e, yc_agreement_tab f,
+				     financial_receivable_tab g,  financial_category_tab h,  financial_settlements_tab i
+			<if test="teamIds != null and teamIds != ''">
+				, cf_team_rel_area tra, cf_team_rel tr
+				where tr.team_id = tra.team_id
+				and c.group_id = tra.area_id
+				and tra.team_id in (${teamIds})
+			</if>
+			<if test="user_id != null and user_id != ''">
+				, cf_team_member_area tma
+				where tma.`area_id` = c.`group_id`
+			</if>
+	  	<![CDATA[  
+			 and c.group_id = b.id
+			 and c.id = e.house_id
+			 and e.id = f.house_id
+			 and i.correlation_id = g.correlation
+			 and i.ager_id = f.id
+			 and f.status <> 3
+			 and g.status = 0
+			 and (f.checkouttime is null or (f.checkouttime is not null and date_format(f.checkouttime,'%Y-%m-%d') > date_format('2017-11-16','%Y-%m-%d')))
+			 and h.`id` = g.`category`
+			 and date_format(g.start_time,'%Y-%m-%d') < date_format(date_add(now(), interval 16 day),'%Y-%m-%d')
+			 and f.`isdelete` = 1
+			 and g.`isdelete` = 1
+			 and g.`cost`>0
+	]]>
+			<if test="teamIds != null and teamIds != ''">
+				and tra.team_id in (${teamIds}) and tra.area_id = c.group_id
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and tma.user_id = #{user_id}
+			</if>
+	</select>
+	
+	<select id="getCategoryTypeList" resultType="map">
+		select 
+		a.id as typeId,
+		a.name as typeName
+		from financial_category_tab a order by a.id
+	</select>
+	<select id="getPrepayment" resultType="int">
+		select count(1) 
+		from financial_receivable_tab a 
+		where a.category=4 and a.secondary=#{secondary}
+	</select>
+	<select id="loadPayCntTotal" resultType="int">
+		select count(distinct a.secondary)
+		from financial_receivable_tab a 
+		where a.category=4 and a.secondary in (${secondaryStr})
+	</select>
+	<select id="loadPayCntList" resultType="map">
+		select * from ( 
+		  	  select distinct g.secondary,h.id as category_id, g.`cost`,  date_format(g.`start_time`, '%Y-%m-%d') start_time, (to_days(g.start_time) - to_days(date_add(now(), interval -1 day))) paymentDays,f.`user_mobile`,  f.`name`, c.`address`,  fn_getowername(f.`user_id`) user_name,  h.`name` categoryname
+				from yc_house_tab c, yc_group_tab b, yc_houserank_tab e, yc_agreement_tab f,
+				     financial_receivable_tab g,  financial_category_tab h,  financial_settlements_tab i
+			<if test="teamIds != null and teamIds != ''">
+				,yc_account_tab a, cf_team_rel_area tra,  cf_team_rel tr
+				
+			</if>
+			<if test="user_id != null and user_id != ''">
+				,yc_account_tab a, cf_team_member_area tma
+			</if>
+				where 
+			<if test="teamIds != null and teamIds != ''">
+				tr.user_id = a.id
+				and tr.team_id = tra.team_id
+				and c.group_id = tra.area_id
+				and tra.team_id in (${teamIds})
+				and c.group_id = b.id
+				 and
+			</if>
+			<if test="user_id != null and user_id != ''">
+				a.id = tma.user_id
+			    and tma.`area_id` = c.`group_id`
+				and tma.user_id = #{user_id}
+				and c.group_id = b.id
+				 and
+			</if>
+	 	 	<![CDATA[ 
+	 	 		 b.id = c.group_id
+				 and c.id = e.house_id
+				 and e.id = f.house_id 
+				 and i.correlation_id = g.correlation
+				 and i.ager_id = f.id
+				 and f.status <> 3
+				 and g.status = 0
+				 and (f.checkouttime is null or (f.checkouttime is not null and date_format(f.checkouttime,'%Y-%m-%d') > date_format('2017-11-16','%Y-%m-%d')))
+				 and f.`isdelete` = 1
+				 and h.`id` = g.`category`
+				 and g.`isdelete` = 1
+				 and g.`cost` > 0
+				 and date_format(g.start_time,'%Y-%m-%d') < date_format(date_add(now(), interval 16 day),'%Y-%m-%d')
+		 ]]>
+		
+		<if test="typeId != null and typeId != '' ">
+			and h.id = #{typeId}
+		</if>
+		<if test="areaid != null and areaid != '' ">
+			and b.areaid = #{areaid}
+		</if>
+		<if test="keyWord != null and keyWord != '' ">
+			and (f.name like CONCAT('%',#{keyWord},'%') or c.address like
+			CONCAT('%',#{keyWord},'%') or f.user_mobile like
+			CONCAT('%',#{keyWord},'%'))
+		</if>
+		<if test="trading != null and trading != ''">
+			and b.`areaid` IN (SELECT f.`areaid` FROM yc_group_tab f WHERE
+			f.`trading` = ${trading})
+		</if>
+		order by g.start_time ) a
+		limit ${startPage} , ${pageSize}
+
+	</select>
+	<select id="loadRankExpireCnt" resultType="java.lang.Integer">
+	 	<![CDATA[    
+ 			  select count(distinct a.id) from yc_agreement_tab a
+			   where a.`isdelete` = 1 
+			     and a.`status` = 2 
+			     and a.`type` = 2 
+			     and date_add(now(), interval ${time_configure}-1 day) > a.`end_time` 
+			     and date_format(now(),'%Y-%m-%d') <= date_format(a.`end_time`,'%Y-%m-%d')
+			     and exists(select 1 from yc_house_tab b left join yc_group_tab c on c.id = b.`group_id`  
+		]]>
+		<if test="teamIds != null and teamIds != ''">
+			left join cf_team_rel_area tra on tra.area_id = b.`group_id`
+		</if>
+		<if test="user_id != null and user_id != ''">
+			left join cf_team_member_area tma on tma.`area_id` = b.`group_id`
+		</if>
+		, yc_agreement_tab d
+		where b.`delete_state` = 1 
+		and d.`type` = 1 
+		and a.`father_id` = d.`id` 
+		and d.`house_id` = b.`id`
+			<if test="teamIds != null and teamIds != ''">
+				and tra.team_id in (${teamIds})
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and tma.user_id = #{user_id}
+			</if>
+		)
+	</select>
+	<select id="payMentRate" resultType="string">
+  	 	<![CDATA[  
+		  	SELECT
+		  	round((sum(case when g.status <> 0 then g.`cost` else 0 end)/sum(g.`cost`))*100,2) rate
+			FROM yc_account_tab a,
+		     yc_group_tab b,
+		     yc_house_tab c,
+		     yc_houserank_tab e,
+		     yc_agreement_tab f,
+		]]>
+			<if test="teamIds != null and teamIds != ''">
+				cf_team_rel_area tra,cf_team_rel tr,
+			</if>
+			<if test="user_id != null and user_id != ''">
+				cf_team_member_area tma,
+			</if>
+			financial_receivable_tab g,
+		    financial_category_tab h,
+		    financial_settlements_tab i
+			<if test="teamIds != null and teamIds != ''">
+				where tr.user_id = a.id
+				and tr.team_id = tra.team_id
+				and c.group_id = tra.area_id
+				and tra.team_id in (${teamIds})
+			</if>
+			<if test="user_id != null and user_id != ''">
+				WHERE tma.`area_id` = c.`group_id`
+		 		and a.id = tma.user_id
+			</if>
+		<![CDATA[
+		 and c.group_id = b.id
+		 and c.id = e.house_id
+		 and e.id = f.house_id 
+		 and i.correlation_id = g.correlation
+		 and i.ager_id = f.id
+		 and f.status <> 3
+		 and f.`isdelete` = 1
+		 and h.`id` = g.`category` 
+		 and g.`isdelete` = 1
+		 and g.`cost`>0
+		AND DATE_FORMAT(g.start_time,'%Y-%m') = DATE_FORMAT(now(),'%Y-%m')
+	]]>
+			<if test="teamIds != null and teamIds != ''">
+				and tra.team_id in (${teamIds}) and tra.area_id = c.group_id
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and tma.user_id = #{user_id}
+			</if>
+	</select>
+	<select id="allRankHouse" resultType="java.lang.Integer">
+  	 <![CDATA[
+	  	 select
+	    ifnull(sum(substring_index(r.`rank_spec`, '|', 1)), 0) as r3
+	  from
+	    yc_houserank_tab r,
+	    cf_team_member_area tma,
+	    yc_house_tab h left join yc_group_tab b on h.`group_id` = b.`id` and b.`is_work` = 1 and b.`delete_state` = 1
+	  where r.house_id = h.id
+	    and tma.`area_id` = h.`group_id`
+	    and r.rank_type = 0
+	    and tma.user_id = ${user_id}
+	    and r.`rank_status` in (4,5)
+	    and h.`house_status` <> 10
+	    and h.delete_state = 1
+    ]]>
+	</select>
+	<select id="flatShareHouse" resultType="java.lang.Integer">
+   <![CDATA[ 
+  		    select  count(r.`id`)
+	          from yc_houserank_tab r,cf_team_member_area tma,  yc_house_tab h left join yc_group_tab b on h.`group_id` = b.`id` and b.`is_work` = 1 and b.`delete_state` = 1 
+	 		 where r.house_id = h.id
+	 		   and tma.`area_id` = h.`group_id
+	    	   and r.rank_type = 1
+			   and r.rank_status in (4,5)
+			   and tma.user_id = ${user_id}
+			   and h.`house_status` <> 10
+			   and h.delete_state = 1
+     ]]>
+	</select>
+	<select id="loadSignAllHouse" resultType="java.lang.Integer">
+  	 <![CDATA[
+	  	select ifnull(sum(left(total.spec,1)),0)
+	  	from (
+ 			select distinct ag.id id,  o.spec spec
+	  	   from yc_agreement_tab ag 
+				 left join yc_onstruction_tab o on o.houseid = ag.house_id
+				 left join yc_house_tab b on ag.house_id = b.id 
+         		 left join yc_group_tab c on c.`id` = b.group_id and c.`is_work` = 1
+  	     ]]>
+			<if test="teamIds != null and teamIds != ''">
+				left join cf_team_rel_area tra on tra.area_id = b.`group_id`
+			</if>
+			<if test="user_id != null and user_id != ''">
+				left join cf_team_member_area tma on tma.`area_id` = b.`group_id`
+			</if>
+			where ag.`type` = 1 <!--and ag.`status` = 2--> and o.is_work=1 
+			<![CDATA[
+			and ag.begin_time < date_sub(now(),interval -1 day) and ag.end_time >= date_sub(now(),interval -1 day)
+and (ag.checkouttime is null or ag.checkouttime >= date_sub(now(),interval -1 day))
+]]>
+			<if test="teamIds != null and teamIds != ''">
+				and tra.team_id in (${teamIds})
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and tma.user_id = #{user_id}
+			</if> ) total
+	</select>
+	<select id="loadnoSignAllHouse" resultType="java.lang.Integer">
+  	 <![CDATA[
+	  	 select ifnull(sum(substring_index(b.`spec`, '|', 1)),0) 
+	  	   from  yc_house_tab b 
+	  	   		left join yc_group_tab c on c.`id` = b.group_id and b.`delete_state` = 1 and c.`is_work` = 1
+	  	   		left join cf_team_member_area tma on tma.`area_id` = c.`group_id`
+	  	  where b.`delete_state` = 1 
+	  	    and b.house_status < 5
+	  	    and tma.user_id = #{user_id}
+  	     ]]>
+	</select>
+	<!-- 预约看房订单数量 -->
+	<select id="loadInspectHouse" resultType="java.lang.Integer">
+  	 <![CDATA[
+	  	 select count(distinct t.id)
+	  	 from work_order t 
+	  	 LEFT JOIN yc_account_role_tab ar ON (t.sub_assigned_dealer_id = ar.user_id or ar.role_id = t.sub_assigned_dealer_role_id)
+	  	 ]]>
+	  	 <if test="teamIds != null and teamIds != ''">
+	  	 	left join cf_team_rel tr on tr.user_id = ar.user_id
+	  	 </if>
+	  	 where t.type='D' and t.state != 'C' and t.state != 'D'
+	  	 <if test="teamIds != null and teamIds != ''">
+	  	 	and tr.team_id in (${teamIds})
+	  	 </if>
+	  	 <if test="userId != null and userId != ''">
+	  	 	and t.sub_assigned_dealer_id in (${userId})
+	  	 </if>
+	</select>
+	<!-- 售后跟踪数量 -->
+	<select id="loadAfterSales" resultType="java.lang.Integer" parameterType="map">
+	  select count(distinct t.id)
+	  from work_order t
+	  LEFT JOIN yc_account_role_tab ar ON (t.sub_assigned_dealer_id = ar.user_id or ar.role_id = t.sub_assigned_dealer_role_id)
+	  <if test="teamIds != null and teamIds != ''">
+	  	 	left join cf_team_rel tr on tr.user_id = ar.user_id
+	  </if>
+	  where  
+	  <if test="teamIds != null and teamIds != ''">
+	  	 	tr.team_id in (${teamIds})
+	  </if>
+	  <if test="userId != null and userId != ''">
+	  		t.sub_assigned_dealer_id in (${userId}) 
+	  </if>
+	  <if test="roleIds != null and roleIds != ''">
+	  		or t.sub_assigned_dealer_role_id in (${roleIds})
+	  </if>
+	</select>
+	
+	<select id="loadGroupList" resultType="com.ycdc.appserver.model.house.Area"
+		parameterType="com.ycdc.appserver.model.house.HouseCondition">
+		select * from (
+		select a.id, a.`areaid`, a.`group_name`, a.`coordinate`, b.`area_name`,
+		b.`zone` zones
+		from yc_group_tab a, yc_area_tab b
+		where a.`status` = 1
+		and a.`delete_state` = 1
+		and a.`areaid` = b.`id`
+		and b.`area_type` = 3
+		<if test="areaid != null and areaid != '' ">
+			and areaid = #{areaid}
+		</if>
+		<if test="keyWord != null and keyWord != '' ">
+			and (group_name like concat('%',#{keyWord},'%') or address like
+			concat('%',#{keyWord},'%'))
+		</if>
+		order by a.id desc) a
+		limit ${startPage} , ${pageSize}
+	</select>
+	
+	<select id="getTimeConfigure" resultType="string">
+		select a.value as "time_configure"
+		from yc_systemparameter_tab a
+		where a.key='WAIT_CANCEL_LEASE_TIME'
+	</select>
+	<select id="rankAgreementList" resultType="com.ycdc.appserver.model.house.RankAgreement"
+		parameterType="com.ycdc.appserver.model.house.HouseCondition">
+		select * from (
+		SELECT fn_getarearname(a.areaid) areaName, a.code,
+		fn_getagentname(a.`agents`) agentName, c.`username`,
+		case when #{signStatus} = '$1' then 1 else 0 end signFlag,
+		fn_getdictitemname('GROUP.RANK.AGREEMENT',a.`status`) rankstatus,
+		a.id, a.name, c.`mobile`, a.`cost`,
+		fn_getdictitemname('RANKHOUSE.TYPE',b.`rank_type`) rankType,
+		b.`rank_area`,end_time, ((to_days(end_time) - to_days(now())) + 1)
+		surplusDay
+		FROM yc_agreement_tab a left join yc_userinfo_tab c on c.id = a.user_id
+		and c.is_delete = 1 , yc_houserank_tab b
+		WHERE b.`id` = a.`house_id`
+		and a.isdelete = 1
+		and a.type = 2
+		<if test="status != null and status != ''">
+			and a.status = #{status}
+		</if>
+		<if test="signStatus == '$2'">
+         	<![CDATA[ AND EXISTS(SELECT 1 FROM financial_receivable_tab c WHERE c.`secondary` = a.`id` AND DATE_SUB(c.start_time,INTERVAL 15 DAY) <= NOW() AND c.status = 0  AND c.isdelete = 1 AND c.`category` = 1 AND NOT EXISTS(SELECT 1 FROM yc_task_financial_receivable d WHERE d.is_over = 0 AND d.`payable_tab_id` = c.`id` ))  ]]>
+		</if>
+		<if test="signStatus == '$1'">
+   			<![CDATA[ and a.`status` = 2 and date_format(date_add(now(), interval ${time_configure}-1 day),'%Y-%m-%d') > date_format(a.`end_time`,'%Y-%m-%d') and date_format(now(),'%Y-%m-%d') <= date_format(a.`end_time`,'%Y-%m-%d') ]]>
+		</if>
+		<if test="contractManage != null and contractManage != ''">
+			and agents = #{contractManage}
+		</if>
+		<if test="areaid != null and areaid != ''">
+			and areaid = #{areaid}
+		</if>
+		<if test="trading != null and trading != ''">
+			and a.`areaid` IN (SELECT f.`areaid` FROM yc_group_tab f WHERE
+			f.`trading` = ${trading})
+		</if>
+		<if test="teamIds != null and teamIds != ''">
+			and exists(select 1 
+						from cf_team ct,cf_team_rel_area tra1,yc_house_tab e,yc_group_tab f
+						where e.id = b.house_id and f.id = e.`group_id` and tra1.area_id = f.id and ct.is_delete = 0 and tra1.team_id = ct.id and ct.id in (${teamIds}))
+		</if>
+		<if test="userId != null and userId != '' and teamIds == null ">
+			and exists (select 1 
+						from yc_house_tab e 
+							left join yc_group_tab f on f.id = e.`group_id`
+							left join cf_team_member_area tma on tma.`area_id` = f.`id`, 
+							yc_agreement_tab d
+						where e.`delete_state` = 1
+						and d.`type` = 1
+						and a.`father_id` = d.`id`
+						and d.`house_id` = e.`id`
+						and tma.`user_id` = #{userId})
+		</if>
+		<if test="keyWord != null and keyWord != ''">
+			and (a.name like concat('%',#{keyWord},'%') or c.username like
+			concat('%',#{keyWord},'%') or user_mobile like
+			concat('%',#{keyWord},'%') or a.code like
+			upper(concat('%',#{keyWord},'%')))
+		</if>
+		and a.`status` = 2
+		order by a.id desc) a
+		limit ${startPage} , ${pageSize}
+	</select>
+	<update id="delHouseInfo">
+		UPDATE yc_house_tab a SET a.`delete_state` = 0, a.`operid` = #{operid},
+		a.`update_time` = NOW() WHERE id = #{id}
+	</update>
+	<update id="updateHouseInfo">
+		update yc_house_tab set ${columns} where id = #{id}
+	</update>
+	<select id="checkHouseState" resultType="java.lang.Integer">
+		select count(1) from yc_house_tab where id = ${id} and house_status =
+		${house_status} and delete_state = 1
+	</select>
+	<select id="getHouseInfo" resultType="com.ycdc.appserver.model.house.House">
+		SELECT a.id,a.`house_code` houseCode, b.group_name areaName, a.`house_name`
+		houseName,a.user_id userId, a.`spec`,a.`spec2`,a.`decorate`,a.`area`,
+		a.`floor`, a.purpose, b.`areaid`,
+		a.`descInfo`,a.`address`,a.`house_status`,case when length(appendix) >
+		4 then CONCAT(#{newfilepath},REPLACE(a.appendix,'|',#{filepath})) else
+		'' end `appendix`,a.`coordinate`,a.`lease_period`,
+		a.`cost_a`,a.`payment`,a.`free_rent`,a.`is_cubicle`,a.`publish`,a.`is_top`,
+		house_type houseType, c.mobile, c.username, c.certificateno, c.email
+		FROM (yc_house_tab a LEFT JOIN yc_group_tab b ON a.`group_id` = b.id)
+		LEFT JOIN yc_userinfo_tab c ON c.id = a.user_id
+		WHERE a.id = #{id}
+		and a.`delete_state` = 1
+	</select>
+	<select id="getProjectBaseInfo" resultType="com.ycdc.appserver.model.house.ProjectInfo">
+		SELECT
+		CONCAT(fn_getdictitemname('GROUP.SPEC',SUBSTRING_INDEX(a.`spec`,'|',1)),'',fn_getdictitemname('GROUP.TING',SUBSTRING_INDEX(SUBSTRING_INDEX(a.`spec`,'|',2),'|',-1)))
+		spec,
+		a.`money`, #{furnituremoney} `furnituremoney`, #{appliancesmoney}
+		`appliancesmoney`, #{othermoney}
+		`othermoney`,fn_getdictitemname('PROJECT.TYPE',a.`status`) STATUS ,
+		DATE_FORMAT(a.`constructiontime`,'%Y-%m-%d %T') constructiontime,
+		DATE_FORMAT(a.`completetime`,'%Y-%m-%d %T') completetime,
+		(money+ #{furnituremoney} + #{appliancesmoney} + #{othermoney}) total,
+		DATE_FORMAT(a.`createtime`,'%Y-%m-%d %T') createtime
+		FROM yc_onstruction_tab a
+		WHERE a.`is_work`=1
+		AND a.`is_delete` = 1
+		AND a.`agreementid` = #{agreementid}
+	</select>
+	<select id="checkDays" resultType="map">
+   		<![CDATA[ select item_id from yc_dictionary_item a where a.`group_id` = 'SIGN.DAY' and to_days(#{time}) - to_days(now()) >= item_id ]]>
+	</select>
+	<select id="getProjectMonery" resultType="com.ycdc.appserver.model.house.ProjectInfo">
+		SELECT a.`appliance_cost` appliancesmoney, a.`furniture_cost`
+		furnituremoney, a.`other_cost` othermoney
+		FROM purchase_items_tab a
+		WHERE a.`agree_id` = #{agreementid}
+		AND a.`status` = 1
+	</select>
+
+	<select id="checkHouseNameIsExist" resultType="java.lang.Integer">
+		select count(1) from yc_house_tab a where a.`delete_state` = 1
+		<if test="id != null and id != ''">
+   			<![CDATA[ and id <> #{id} ]]>
+		</if>
+		<if test="houseName != null and houseName != ''">
+			and a.`house_name` = #{houseName}
+		</if>
+	</select>
+
+	<insert id="insertHouse" parameterType="com.ycdc.appserver.model.house.House"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into yc_house_tab(createtime, house_type, house_name, spec, spec2,
+		decorate, area, floor, user_id, descinfo, address, group_id,
+		house_status, coordinate, delete_state, lease_period, cost_a, payment,
+		free_rent, is_cubicle, publish, operid,
+		update_time,account_id,purpose)
+		values(NOW(),#{houseType},#{houseName}, #{spec}, #{spec2},
+		#{decorate}, #{area}, #{floor}, #{userId}, #{descinfo}, #{address},
+		#{groupId}, 0, #{coordinate}, 1, #{lease_period}, #{cost_a},
+		#{payment}, #{free_rent}, #{is_cubicle}, 0, #{operid},
+		now(),#{operid},#{purpose});
+	</insert>
+	<update id="updateHouseCode">
+		update yc_house_tab set house_code =
+		CONCAT(DATE_FORMAT(NOW(),'%y'),'FP',#{regionId},'0',#{id}), appendix =
+		#{appendix} where id = #{id}
+	</update>
+
+	<select id="getProjectList" resultType="com.ycdc.appserver.model.house.ProjectList">
+		select a.`name`,c.`supname`, a.`brand`, a.`spec`, d.`code` ,b.`price`
+		from purchaser_material_tab a, purchaser_material2supplier_tab b,
+		purchaser_supplier_tab c, yc_materialrelation_tab d
+		,purchaser_mcate_tab e
+		where a.`id` = b.`mid`
+		and b.`sid` = c.`id`
+		and d.materialid = a.id
+		and a.type=e.`id`
+		and d.msrelation_id=b.id
+		and d.`onstruid` = #{agreementid}
+		and fatherid ${fatherid}
+	</select>
+
+	<select id="getAgreementInfo" resultType="com.ycdc.appserver.model.house.Agreement">
+		SELECT a.id, a.code, a.name, a.type, a.user_id, a.user_mobile,
+		a.begin_time, a.end_time, a.house_id,fn_getagentname(a.`agents`)
+		agentName,
+		a.file_path, a.desc_text, a.status, a.cost, a.isdelete, a.agents, a.bankcard,
+		a.bankid, a.cardbank, new_old_matched,
+		a.cardowen, a.watercard, a.electriccard, a.gascard, a.pay_type,
+		fn_getdictitemname('AGREEMENT.PAYTYPE', a.pay_type) payType, a.sbcode,
+		a.cost_a, a.pay_time,
+		a.free_period, a.water_meter, a.gas_meter, a.electricity_meter_l,
+		a.electricity_meter_h, end_time,
+		a.electricity_meter, a.is_cubicle, a.keys_count, a.old_matched, a.areaid, a.operid,
+		a.father_id,
+		freeRankType,propertyType,mortgage,propertyCode,propertyPerson,co_owner,wtuserid,dluserid,wtmobile,wtAddress,wtIDCard,wtname,wtemail,wtrealAddress,dlmobile,dlAddress,dlIDCard,dlname,dlemail,
+		fn_getowername(b.`user_id`) `username`,
+		b.`house_name`,cast(timestampdiff(month, begin_time, end_time)/12 as
+		decimal(9,1)) rentMonth,
+		(case when length(file_path) > 0 then
+		CONCAT(#{newfilepath},REPLACE(a.file_path,'|',#{filepath})) else ''
+		end) pic_path,
+		(case when length(propertyPath) > 0 then
+		CONCAT(#{newfilepath},REPLACE(a.propertyPath,'|',#{filepath})) else ''
+		end) propertyPath,
+		(case when length(agentPath) > 0 then
+		CONCAT(#{newfilepath},REPLACE(a.agentPath,'|',#{filepath})) else ''
+		end) agentPath, c.`certificateno`
+		FROM yc_agreement_tab a LEFT JOIN yc_userinfo_tab c ON c.id = a.`user_id`,
+		yc_house_tab b
+		WHERE a.`house_id` = b.id and a.type = 1 and a.`isdelete` = 1
+		<if test="house_id != null and house_id != ''">
+			AND a.`house_id` = #{house_id}
+		</if>
+		<if test="agreementid != null and agreementid != ''">
+			AND a.`id` = #{agreementid}
+		</if>
+	</select>
+	<insert id="saveHouseAgreement" parameterType="com.ycdc.appserver.model.house.Agreement"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into
+		yc_agreement_tab(name,type,user_id,user_mobile,begin_time,end_time,house_id,file_path,desc_text,status,cost,create_time,isdelete,agents,bankcard,cardbank,cardowen,watercard,electriccard,gascard,pay_type,cost_a,pay_time,free_period,water_meter,gas_meter,electricity_meter_h,electricity_meter_l,electricity_meter,is_cubicle,keys_count,new_old_matched,areaid,operid,bankid,freeRankType,propertyType,mortgage,propertyCode,propertyPerson,co_owner,wtuserid,dluserid,wtmobile,wtAddress,wtIDCard,wtname,wtemail,wtrealAddress,dlmobile,dlAddress,dlIDCard,dlname,dlemail)
+		values
+		(#{name},'1',#{user_id},#{user_mobile},#{begin_time},
+		date_sub(ADDDATE(#{begin_time},interval #{rent_month} * 12 MONTH), interval 1 day),
+		#{house_id},#{pic_path},#{desc_text},11,#{cost},now(),1,${agents},#{bankcard},#{cardbank},#{cardowen},#{watercard},#{electriccard},#{gascard},#{pay_type},#{cost_a},#{begin_time},#{free_period},#{water_meter},#{gas_meter},#{electricity_meter_h},#{electricity_meter_l},#{electricity_meter},#{is_cubicle},#{keys_count},#{new_old_matched},#{areaid},#{operid},#{bankId},#{freeRankType},#{propertyType},#{mortgage},#{propertyCode},#{propertyPerson},#{co_owner},#{wtuserid},#{dluserid},#{wtmobile},#{wtAddress},#{wtIDCard},#{wtname},#{wtemail},#{wtrealAddress},#{dlmobile},#{dlAddress},#{dlIDCard},#{dlname},#{dlemail})
+	</insert>
+
+	<select id="loadRankHouseList" resultType="com.ycdc.appserver.model.house.RankHouse">
+		select fn_getdictitemname('RANKHOUSE.TYPE',rank_type) ranktype, a.title,
+		a.rank_code,case when rank_type = 0 then
+		SUBSTRING_INDEX(a.`rank_spec`,'|',1) else 1 end roomcnt,
+		fn_getdictitemname('RANKHOUSE.STATUS',rank_status) rankstatus,
+		rank_status, a.id, a.fee, a.rank_area, a.rank_type
+		from yc_houserank_tab a
+		where a.house_id = #{house_id}
+		and a.isdelete = 1
+		order by rank_type
+	</select>
+	<select id="loadRankHouseStatusByHouseId" resultType="string">
+		select replace(group_concat(rank_status),',','|') rank_status
+		from (select concat(a.`rank_type`, '=', (case when rank_status = 5 then 1
+		when rank_status = 6 then -1 else 0 end)) rank_status
+		from yc_houserank_tab a
+		where a.house_id = #{house_id}
+		and a.isdelete = 1
+		order by rank_type, rank_code) a
+	</select>
+	<select id="loadRankHouseInfo" resultType="com.ycdc.appserver.model.house.RankHouse">
+		select case when length(a.`images`) > 0 then
+		concat(#{newfilepath},REPLACE(a.images,'|',#{filepath})) else '' end
+		images,
+		case when a.rank_type = 0 then
+		concat(fn_getdictitemname('GROUP.SPEC',SUBSTRING_INDEX(a.`rank_spec`,'|',1)),'',fn_getdictitemname('GROUP.TING',SUBSTRING_INDEX(SUBSTRING_INDEX(a.`rank_spec`,'|',2),'|',-1)),'',fn_getdictitemname('GROUP.WEI',SUBSTRING_INDEX(a.`rank_spec`,'|',-1)))
+		else
+		CONCAT(fn_getdictitemname('GROUP.SPEC',SUBSTRING_INDEX(a.`rank_spec`,'|',1)),'',fn_getdictitemname('GROUP.TING',SUBSTRING_INDEX(SUBSTRING_INDEX(a.`rank_spec`,'|',2),'|',-1)))
+		end spec,
+		fn_getdictitemname('RANKHOUSE.TYPE',rank_type) rankType,a.rank_type, a.title,
+		a.rank_code,fn_getdictitemname('RANKHOUSE.STATUS',rank_status)
+		rankStatus, rank_status, a.id, a.fee, a.rank_area
+		FROM yc_houserank_tab a
+		WHERE a.id = #{id}
+		AND a.isdelete = 1
+	</select>
+	<select id="loadRankAgreementList" resultType="com.ycdc.appserver.model.house.RankAgreement">
+		SELECT a.`name`, c.`username`, fn_getdictitemname ('RANKHOUSE.TYPE',
+		b.`rank_type`) rankType, a.`code`, a.id,
+		b.`rank_area`, a.`cost`, fn_getdictitemname ('GROUP.RANK.AGREEMENT', a.`status`)
+		rankstatus, b.rank_code
+		FROM (yc_agreement_tab a LEFT JOIN yc_userinfo_tab c ON c.`id` =
+		a.`user_id`), yc_houserank_tab b
+		WHERE a.`house_id` = b.`id`
+		AND a.`type` = 2
+		AND a.`isdelete` = 1
+		AND a.`house_id` = #{id}
+	</select>
+
+	<select id="getJlAndPaytype" resultType="com.ycdc.appserver.model.syscfg.DictiItem">
+		select item_id, item_value, cast(round((remark * #{cnt} * 100) / 100, 2) as
+		char) item_name
+		from yc_dictionary_item a
+		where a.`group_id` = 'AGGREMENT.PAYFACTOR'
+		and a.`status` = 1
+		order by item_order
+	</select>
+	
+	<select id="getRentDepositList" resultType="com.ycdc.appserver.model.syscfg.DictiItem">
+		select item_id, item_value, cast(round((remark * #{monery} * 100) / 100, 2) as
+		char) item_name
+		from yc_dictionary_item a
+		where a.`group_id` = 'AGGREMENT.RENT_DEPOSIT'
+		and a.`status` = 1
+		order by item_order
+	</select>
+	
+	<select id="getRentDepositByPrice" resultType="string">
+		select cast(round((remark * #{price} * 100) / 100, 2) as char) item_name
+		from yc_dictionary_item a
+		where a.`group_id` = 'AGGREMENT.RENT_DEPOSIT'
+		and a.`status` = 1 and a.item_id=#{rent_month} and a.item_value=#{pay_type}
+	</select>
+	
+	<select id="getRentDeposit" resultType="com.ycdc.appserver.model.syscfg.DictiItem">
+		select item_id, item_value, cast(round((remark * #{item_name} * 100) / 100, 2) as char) item_name
+		from yc_dictionary_item a
+		where a.`group_id` = 'AGGREMENT.RENT_DEPOSIT'
+		and a.`status` = 1 and a.item_id=#{item_id} and a.item_value=#{item_value}
+	</select>
+	
+	<select id="getRankAgreementInfo" resultType="com.ycdc.appserver.model.house.RankAgreement">
+   	<![CDATA[
+   		SELECT (CASE WHEN a.status = 2 THEN fn_checkTaskDo(a.id) ELSE 1 END) is_tj, b.id rankId,h.`house_name`, h.address,a.code agree_code,
+   			   fn_getarearname(a.areaid) areaName, a.`desc_text`,agents,c.email, payway, a.notaryid,
+   			   case when rank_type = 0 then SUBSTRING_INDEX(b.`rank_spec`,'|',1) else 1 end rentRoomCnt,
+   			   SUBSTRING_INDEX(b.`rank_spec`,'|',1) totalRoomCnt, rank_code, b.fee baseMonery,
+   			   case when (to_days(a.begin_time) - to_days(now()) <= 0) and (to_days(a.end_time) - to_days(now()) >= 0) then 1 else 0  end tjflag,
+   			   TIMESTAMPDIFF(MONTH, CONCAT(SUBSTRING(a.begin_time,1,7),'-01'), CONCAT(SUBSTRING(a.end_time,1,7),'-01')) rent_month,a.deposit,
+   			   a.code, fn_getagentname(a.`agents`) agentName, certificateno, username,
+   			   fn_getdictitemname('GROUP.RANK.AGREEMENT',a.`status`) rankstatus, a.id, a.name, a.type, a.user_id,
+   			   c.`mobile`, a.`begin_time`, a.`end_time`, a.`father_id`, b.`house_id`, ((to_days(a.end_time) - to_days(now())) + 1) surplusDay,
+   			   (case when (to_days(a.end_time) - to_days(now()) <= #{time_configure}) and (to_days(now()) - to_days(a.begin_time) > 0) then 1 else 0 end) signFlag,
+   			   serviceMonery,propertyMonery,watercard,water_meter,gas_meter,gascard,electriccard,electricity_meter_h,electricity_meter_l,electricity_meter,old_matched,
+   			   (case when length(file_path) > 0 then CONCAT(#{newfilepath},REPLACE(a.file_path,'|',#{filepath})) else '' end) file_path, a.`status`, 
+   			   a.`cost`, a.`cost_a`, a.`agents`, a.`pay_type`, a.`areaid`, b.title, fn_getdictitemname('RANKHOUSE.TYPE',b.`rank_type`) rankType, b.`rank_area`, b.rank_type,
+   			   a.ifAgent,(select e.mobile from yc_userinfo_tab e where e.id = a.broker) broker
+   	     FROM yc_agreement_tab a  LEFT JOIN yc_userinfo_tab c ON c.id = a.user_id, yc_houserank_tab b,yc_house_tab h
+   	    WHERE h.id = b.house_id 
+   	      AND b.`id` = a.`house_id` 
+   	      AND a.isdelete = 1 
+   	      AND a.type = 2 
+	   	  AND a.id in (${id})
+	   ]]>
+	</select>
+	<select id="checkRankHouseStatus" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM yc_houserank_tab a WHERE a.id = #{id} AND
+		a.`rank_status` = #{rank_status}
+	</select>
+	<select id="getRankAgreementFatherId" resultType="com.ycdc.appserver.model.house.Agreement">
+		SELECT a.`id`, areaid FROM yc_agreement_tab a WHERE a.`house_id` =
+		#{house_id} AND a.`isdelete` = 1 and type = 1
+	</select>
+
+
+	<select id="calcEndTime" resultType="map">
+		select date_sub(ADDDATE(#{begin_time},interval #{rent_month} * #{count} MONTH), interval 1 day)
+		endtime
+	</select>
+
+	<insert id="insertRankAgreement" parameterType="com.ycdc.appserver.model.house.RankAgreement"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		yc_agreement_tab(NAME,TYPE,user_id,user_mobile,begin_time,end_time,father_id,house_id,desc_text,status,cost,create_time,isdelete,agents,pay_type,cost_a,pay_time,operid,areaid,serviceMonery,propertyMonery,watercard,water_meter,gas_meter,gascard,electriccard,electricity_meter_h,electricity_meter_l,electricity_meter,old_matched,payway,deposit,rent_deposit,ifAgent,broker)
+		values
+		(#{name},2,#{user_id},#{mobile},date_add(#{begin_time}, interval 1 hour),date_sub(ADDDATE(#{begin_time},interval #{rent_month} MONTH), interval 1 day),#{father_id},#{rankId},#{desc_text},11,#{rent_month} *
+		#{price},now(),1,#{agents},#{pay_type},
+		#{price},#{begin_time},#{operId},#{areaid},#{serviceMonery},#{propertyMonery},#{watercard},#{water_meter},#{gas_meter},#{gascard},#{electriccard},#{electricity_meter_h},#{electricity_meter_l},#{electricity_meter},#{old_matched},#{payway},#{deposit},#{rent_deposit},#{ifCTerminal},#{broker})
+	</insert>
+
+	<select id="agreementList" resultType="com.ycdc.appserver.model.house.Agreement"
+		parameterType="com.ycdc.appserver.model.house.HouseCondition">
+		select * from (select a.id,
+		a.`name`,a.`code`,fn_getarearname(a.`areaid`) areaid,
+		a.`begin_time`,a.`end_time`, c.username,
+		a.`cost`,fn_getagentname(a.`agents`) agentName,
+		fn_getdictitemname('GROUP.AGREEMENT',a.`status`) status
+		from yc_agreement_tab a LEFT JOIN yc_userinfo_tab c on a.user_id = c.id
+		where a.`type` = 1 AND a.`isdelete` = 1 and c.`is_delete` = 1
+		<if test="status != null and status != ''">
+			and status = #{status}
+		</if>
+		<if test="signStatus == '$1'">
+   			<![CDATA[ and a.`status` = 2 and date_add(now(), interval 16 day) > a.`end_time` and date_format(now(),'%Y-%m-%d') < date_format(a.`end_time`,'%Y-%m-%d')  ]]>
+		</if>
+		<if test="contractManage != null and contractManage != ''">
+			and agents = #{contractManage}
+		</if>
+		<if test="areaid != null and areaid != ''">
+			and areaid = #{areaid}
+		</if>
+		<if test="trading != null and trading != ''">
+			and a.areaid in (select areaid from yc_group_tab b where b.trading =
+			${trading})
+		</if>
+		<if test="keyWord != null and keyWord != ''">
+			and (a.name like concat('%',#{keyWord},'%') or c.username like
+			concat('%',#{keyWord},'%') or a.user_mobile like
+			concat('%',#{keyWord},'%') or code like
+			upper(concat('%',#{keyWord},'%')))
+		</if>
+		order by a.id desc) a
+		limit ${startPage} , ${pageSize}
+	</select>
+
+	<update id="updateRankAgreemtCode">
+		update yc_agreement_tab set code =
+		CONCAT(#{rank_code},'A',DATE_FORMAT(NOW(),'%y'),'R',#{id}), file_path
+		= #{file_path} where id = #{id}
+	</update>
+	<update id="updateRankHouse">
+		update yc_houserank_tab set ${columns} where id = #{id}
+	</update>
+	<update id="updateAgreement">
+		update yc_agreement_tab set ${columns} where id = #{id} and type = #{type}
+	</update>
+	<update id="updateRankHouseStatus">
+		update yc_houserank_tab set rank_status=#{rank_status}, operid=#{operid}
+		where id = #{id}
+	</update>
+	<update id="updateRankAgreementInfo" parameterType="com.ycdc.appserver.model.house.RankAgreement">
+		UPDATE yc_agreement_tab SET NAME = #{name}, begin_time = #{begin_time},
+		end_time = ADDDATE(#{begin_time},INTERVAL #{rent_month} MONTH),
+		file_path = #{file_path}, desc_text = #{desc_text}, cost_a = #{price},
+		agents = #{agents}, pay_type = #{pay_type}, cost = #{rent_month} *
+		#{price}, pay_time = #{begin_time} WHERE id = #{id}
+	</update>
+	<select id="checkAgreementStatus" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM yc_agreement_tab a WHERE a.id = #{id} AND a.`status` =
+		#{status} and type = #{type}
+	</select>
+	<select id="getRankAgreementIdByRankHouseId" resultType="java.lang.String">
+		select group_concat(a.`id`) from yc_agreement_tab a where a.`house_id` =
+		${houseId} and a.`type` = 2 group by a.house_id
+	</select>
+	<select id="loadValidRankAgreementMaxEndTime" resultType="string">
+		select max(a.`end_time`) from yc_agreement_tab a where a.`status` = 2 and
+		a.`type` = 2 and a.`house_id` = #{houseId}
+	</select>
+	<select id="checkIsSelfGrid" resultType="java.lang.Integer">
+		select count(1) 
+		from yc_group_tab a 
+		left join cf_team_member_area tma on tma.`area_id` = a.`group_id`
+		where exists(select 1 
+						from yc_house_tab b  
+						where a.`id` = b.`group_id` 
+							and b.`id` = #{houseId}) 
+							and tma.`user_id` =#{user_id}
+	</select>
+	<select id="checkAgreementISNotPay" resultType="map">
+   		<![CDATA[
+   		select case when (timestampdiff(minute,max(date_format(a.create_time,'%Y-%m-%d %H:%i:%s')),now()) - 60) < 0 then 1 else 0 end as cnt
+ 		  from yc_agreement_tab a 
+ 		 where a.type = 2 
+ 		   and a.`status` in (11,12)  
+ 		   and isdelete = 1
+ 		   and a.`house_id` = #{house_id}
+ 		   and a.ifAgent=0
+ 		 ]]>
+	</select>
+	<select id="selectAgentId" resultType="java.lang.String">
+	   select a.id 
+	   from yc_account_tab a 
+	   left join cf_team_member_area tma on tma.`user_id` = a.`id`
+	   left join yc_house_tab h on h.group_id = tma.area_id
+	   where h.id =#{house_id}
+	</select>
+	<update id="upCRankAreementStatus" parameterType="java.lang.String">
+	    update yc_agreement_tab set status=3
+	      where house_id=#{house_id} and status in(11,13)
+	</update>
+	<insert id="insertRecommend" parameterType="java.lang.String">
+	    insert into yc_recommend_info(name,mobile,area_id,open_id,open_time,state,state_time,type,house_id)
+        values(#{username},#{mobile},#{areaid},#{openid},now(),0,now(),3,#{houseid})
+	</insert>
+	<insert id="insertRecoRelation" parameterType="java.lang.String">
+	    insert into yc_recommend_relation
+	    values(#{recommend_id},2,#{agreementid},1)
+	</insert>
+	<update id="upRecoState" parameterType="java.lang.String">
+	    update yc_recommend_info
+        set state=#{state},state_time=now()
+        where id in(select recommend_id from yc_recommend_relation where relation_id=#{agreementid}) 
+        and type=3
+	</update>
+	<update id="upOtherRecoState" parameterType="java.lang.String">
+	    update yc_recommend_info
+	    set state=3,state_time=now()
+	    where state in(0,1)
+	    and (house_id in(select house_id from yc_agreement_tab where id=#{agreementid}) or mobile in(select user_mobile from yc_agreement_tab where id=#{agreementid}))
+	    and id not in(select recommend_id from yc_recommend_relation where relation_id=#{agreementid})
+	</update>
+	<update id="upRecoRelationState" parameterType="java.lang.String">
+	    update yc_recommend_relation
+	    set state=#{state}
+	    where relation_id=#{agreementid} and relation_type=2
+	</update>
+	<update id="upOtherRecoRelatState" parameterType="java.lang.String">
+	    update yc_recommend_relation
+	    set state=2
+	    where state =1
+	    and relation_id in(select id from yc_recommend_info where house_id in(select house_id from yc_agreement_tab where id=#{agreementid}) 
+	    or mobile in(select user_mobile from yc_agreement_tab where id=#{agreementid}))
+	    and relation_id!=#{agreementid}
+	</update>
+	<select id="selectRecoInfo" parameterType="java.lang.String" resultType="java.lang.String" >
+	    select id from yc_recommend_info
+	    where open_id=#{openid} and house_id=#{houseid} and mobile=#{mobile} and state in(0,1,2)
+	</select>
+	<select id="countOfRankAgreement" parameterType="java.lang.String" resultType="int">
+	    select count(1) from yc_recommend_info a where a.open_id = #{openid} and DATE_FORMAT(a.open_time,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d') and a.type = 3;
+	</select>
+	<select id="getOtherOrder" parameterType="java.lang.String" resultType="map">
+	    select code from work_order t where rental_lease_order_id 
+        in(select relation_id from yc_recommend_relation where recommend_id in(
+        select id from yc_recommend_info where (house_id=#{houseid} or mobile=#{mobile}) and state=1)) and t.type = 'J';
+	</select>
+	<select id="getBrokerId" parameterType="java.lang.String" resultType="java.lang.String">
+	    select broker from yc_agreement_tab where id=#{agreementid}
+	</select>
+	<select id="ifRecommend" parameterType="java.lang.String" resultType="int">
+	   select count(1) from yc_recommend_info where mobile=#{mobile} and state=1
+	</select>
+</mapper>

@@ -1,0 +1,583 @@
+
+package com.ycdc.appserver.bus.dao.house;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ycdc.appserver.model.house.Agreement;
+import com.ycdc.appserver.model.house.Area;
+import com.ycdc.appserver.model.house.House;
+import com.ycdc.appserver.model.house.HouseCondition;
+import com.ycdc.appserver.model.house.ProjectInfo;
+import com.ycdc.appserver.model.house.ProjectList;
+import com.ycdc.appserver.model.house.RankAgreement;
+import com.ycdc.appserver.model.house.RankHouse;
+import com.ycdc.appserver.model.syscfg.DictiItem;
+import com.ycdc.appserver.model.user.User;
+/**
+ * 
+ * @author 冷文佩
+ * @version 1.0
+ * @since 2017年4月27日
+ * @category com.ycdc.appserver.bus.dao.house
+ * @copyright
+ */
+public interface HouseMapper
+{
+
+	/**
+	 * 房源列表
+	 * 
+	 * @param condition
+	 * @return
+	 */
+	List<House> getHouseList(HouseCondition condition);
+
+	/**
+	 * 获取房源信息
+	 * 
+	 * @param id
+	 * @return
+	 */
+	House getHouseInfo(@Param("newfilepath") String newfilepath,
+			@Param("filepath") String filepath, @Param("id") String id);
+
+	/**
+	 * 获取工程基本信息
+	 * 
+	 * @param furnituremoney
+	 * @param appliancesmoney
+	 * @param othermoney
+	 * @param agreementid
+	 * @return
+	 */
+	ProjectInfo getProjectBaseInfo(@Param("furnituremoney") String furnituremoney,
+			@Param("appliancesmoney") String appliancesmoney,
+			@Param("othermoney") String othermoney,
+			@Param("agreementid") String agreementid);
+
+	/**
+	 * 房源花费
+	 * 
+	 * @param agreementId
+	 * @return
+	 */
+	ProjectInfo getProjectMonery(@Param("agreementid") String agreementId);
+
+	/**
+	 * 获取工程清单
+	 * 
+	 * @param agreementId
+	 * @param fatherid
+	 * @return
+	 */
+	List<ProjectList> getProjectList(@Param("agreementid") String agreementId,
+			@Param("fatherid") String fatherid);
+
+	/**
+	 * 获取合约id
+	 * 
+	 * @param agreementId
+	 * @return
+	 */
+	Agreement getAgreementInfo(@Param("newfilepath") String newfilePath,
+			@Param("filepath") String filepath, @Param("agreementid") String agreementId,
+			@Param("house_id") String house_id);
+
+	/**
+	 * 租赁房源信息
+	 * 
+	 * @param house_id
+	 * @return
+	 */
+	List<RankHouse> loadRankHouseList(@Param("house_id") String house_id);
+
+	/**
+	 * 租赁房源明细
+	 * 
+	 * @param rankId
+	 * @return
+	 */
+	RankHouse loadRankHouseInfo(@Param("newfilepath") String newfilepath,
+			@Param("filepath") String filepath, @Param("id") String rankId);
+
+	/**
+	 * 租赁房源合约列表信息
+	 * 
+	 * @param id
+	 * @return
+	 */
+	List<RankAgreement> loadRankAgreementList(@Param("id") String id);
+
+	/**
+	 * 获取出租信息
+	 * 
+	 * @param id
+	 * @param time_configure 
+	 * @return
+	 */
+	List<RankAgreement> getRankAgreementInfo(@Param("newfilepath") String newfilepath,
+			@Param("filepath") String filepath, @Param("id") String id, @Param("time_configure") String time_configure);
+
+	/**
+	 * 验证租赁房源状态
+	 * 
+	 * @param houseId
+	 * @param rank_status
+	 * @return
+	 */
+	int checkRankHouseStatus(@Param("id") String id,
+			@Param("rank_status") String rank_status);
+
+	/**
+	 * 更新用户信息
+	 * 
+	 * @param u
+	 */
+	void updateUserInfo(User u);
+
+	/**
+	 * 获取出租合约的fatherid 和 区域
+	 * 
+	 * @param housee_id
+	 * @return
+	 */
+	Agreement getRankAgreementFatherId(@Param("house_id") String housee_id);
+
+	/**
+	 * 保存出租合约
+	 * 
+	 * @param rankAgreement
+	 */
+	void insertRankAgreement(RankAgreement rankAgreement);
+
+	/**
+	 * 更新出租合约编码
+	 * 
+	 * @param rank_code
+	 * @param id
+	 */
+	void updateRankAgreemtCode(@Param("rank_code") String rank_code,
+			@Param("file_path") String file_path, @Param("id") String id);
+
+	/**
+	 * 更新房源状态
+	 * 
+	 * @param rank_status
+	 * @param operid
+	 * @param id
+	 */
+	void updateRankHouseStatus(@Param("rank_status") String rank_status,
+			@Param("operid") String operid, @Param("id") String id);
+
+	/**
+	 * 更新租赁房源信息
+	 * 
+	 * @param columns
+	 */
+	void updateRankHouse(@Param("columns") String columns, @Param("id") String id);
+
+	/**
+	 * 更新租赁房源
+	 * 
+	 * @param rankAgreement
+	 */
+	void updateRankAgreementInfo(RankAgreement rankAgreement);
+
+	/**
+	 * 更新合约信息
+	 * 
+	 * @param columns
+	 * @param id
+	 */
+	void updateAgreement(@Param("columns") String columns, @Param("id") String id,
+			@Param("type") String type);
+
+	/**
+	 * 验证合约状态
+	 * 
+	 * @param status
+	 * @param id
+	 * @return
+	 */
+	int checkAgreementStatus(@Param("status") String status, @Param("id") String id,
+			@Param("type") String type);
+
+	int checkHouseNameIsExist(@Param("id") String id, @Param("houseName") String houseName);
+
+	int insertHouse(House house);
+
+	void updateHouseCode(@Param("regionId") String regionId, @Param("id") String id,
+			@Param("appendix") String appendix);
+
+	List<Area> loadGroupList(HouseCondition condition);
+
+	/**
+	 * 删除房源信息
+	 * 
+	 * @param id
+	 * @return
+	 */
+	int delHouseInfo(@Param("id") String id, @Param("operid") String operid);
+
+	/**
+	 * 更新房源信息
+	 * 
+	 * @param columns
+	 * @param id
+	 */
+	void updateHouseInfo(@Param("columns") String columns, @Param("id") String id);
+
+	/**
+	 * 验证房源状态
+	 * 
+	 * @param id
+	 * @return
+	 */
+	int checkHouseState(@Param("id") String id, @Param("house_status") String house_status);
+
+	/**
+	 * 出租合约
+	 * 
+	 * @param condition
+	 * @return
+	 */
+	List<Agreement> agreementList(HouseCondition condition);
+
+	/**
+	 * 出租合约列表
+	 * 
+	 * @param condition
+	 * @return
+	 */
+	List<RankAgreement> rankAgreementList(HouseCondition condition);
+
+	/**
+	 * 由月份和开始时间计算结束时间
+	 * 
+	 * @param begin_time
+	 * @param rent_month
+	 * @return
+	 */
+	Map<String, String> calcEndTime(@Param("begin_time") String begin_time,
+			@Param("rent_month") String rent_month, @Param("count") String count);
+
+	/**
+	 * 由租赁房源id获取最近一条出租合约id
+	 * 
+	 * @param rankHouseId
+	 * @return
+	 */
+	String getRankAgreementIdByRankHouseId(@Param("houseId") String rankHouseId);
+
+	/**
+	 * 保存房源签约
+	 * 
+	 * @param agreement
+	 */
+	void saveHouseAgreement(Agreement agreement);
+
+	/**
+	 * 获取月份和租赁类型
+	 * 
+	 * @param cnt
+	 * @return
+	 */
+	List<DictiItem> getJlAndPaytype(@Param("cnt") String cnt);
+	
+	/**
+	 * 获取房屋押金金额
+	 * @param monery
+	 * @return
+	 */
+	List<DictiItem> getRentDepositList(@Param("monery") String monery);
+
+	/**
+	 * 根据租金获取押金
+	 * @param price
+	 * @param pay_type 
+	 * @param rent_month 
+	 * @return
+	 */
+	String getRentDepositByPrice(@Param("price") String price, @Param("rent_month") String rent_month, @Param("pay_type") String pay_type);
+	
+	/**
+	 * 待验收房源数
+	 * 
+	 * @param user_id
+	 * @return
+	 */
+	int loadApprovalHouseCnt(@Param("user_id") String user_id, @Param("teamIds") String teamIds);
+
+	/**
+	 * 待出租房源
+	 * 
+	 * @param user_id
+	 * @return
+	 */
+	int loadRankHouseCnt(@Param("user_id") String user_id);
+
+	/**
+	 * 待缴费数量
+	 * 
+	 * @param user_id
+	 * @return
+	 */
+	List<Map<String, String>> loadPayCnt(@Param("user_id") String user_id, @Param("teamIds") String teamIds);
+
+	/**
+	 * 合约到期
+	 * 
+	 * @param user_id
+	 * @param time_configure 
+	 * @return
+	 */
+	int loadRankExpireCnt(@Param("user_id") String user_id, @Param("teamIds") String teamIds, @Param("time_configure") String time_configure);
+
+	/**
+	 * 待缴费
+	 * 
+	 * @param user_id
+	 * @param keyWord
+	 * @param startPage
+	 * @param pageSize
+	 * @return
+	 */
+	List<Map<String, String>> loadPayCntList(@Param("user_id") String user_id,
+			@Param("keyWord") String keyWord, @Param("startPage") String startPage,
+			@Param("pageSize") String pageSize, @Param("areaid") String areaid,
+			@Param("trading") String trading, @Param(value = "teamIds") String teamIds,
+			@Param("typeId") String typeId,@Param("timeSort") String timeSort);
+
+	/**
+	 * 验证时间是否超时
+	 * 
+	 * @param time
+	 * @return
+	 */
+	Map<String, String> checkDays(@Param("time") String time);
+
+	/**
+	 * 获取有效出租合约最大结束时间
+	 * 
+	 * @param houseId
+	 * @return
+	 */
+	String loadValidRankAgreementMaxEndTime(@Param("houseId") String houseId);
+
+	/**
+	 * 验证网格是否为本人负责的网格
+	 * 
+	 * @param houseId
+	 * @param user_id
+	 * @return
+	 */
+	int checkIsSelfGrid(@Param("houseId") String houseId, @Param("user_id") String user_id);
+
+	/**
+	 * 回款率
+	 * 
+	 * @param user_id
+	 * @return
+	 */
+	String payMentRate(@Param("user_id") String user_id, @Param(value = "teamIds") String teamIds);
+
+	/**
+	 * 加载该网格已经签约的房间
+	 * 
+	 * @param user_id
+	 * @return
+	 */
+	int loadSignAllHouse(@Param("user_id") String user_id, @Param("teamIds") String teamIds);
+
+	/**
+	 * 未签约房源数量
+	 * 
+	 * @param user_id
+	 * @return
+	 */
+	int loadnoSignAllHouse(@Param("user_id") String user_id);
+
+	/**
+	 *待处理预约看房数量 
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	int loadInspectHouse(@Param("userId") String userId, @Param("teamIds") String teamIds);
+
+	/**
+	 * 待处理售后订单数量，看房订单除外
+	 * 
+	 * @param userId
+	 * @param userRoles
+	 * @return
+	 */
+	int loadAfterSales(Map<String,Object> rolesAndId);
+	
+	/**
+	 * 合租
+	 * 
+	 * @param user_id
+	 * @return
+	 */
+	int flatShareHouse(@Param("user_id") String user_id);
+
+	/**
+	 * 整租
+	 * 
+	 * @param user_id
+	 * @return
+	 */
+	int allRankHouse(@Param("user_id") String user_id);
+
+	/**
+	 * 验证合同在10分钟内没有认证或者缴费
+	 * 
+	 * @param houseId
+	 * @return
+	 */
+	Map<String, String> checkAgreementISNotPay(@Param("house_id") String houseId);
+
+	/**
+	 * 通过房源编码判断出租房间的状态 5 已出租 6失效 其他 待出租
+	 * 
+	 * @param houseId
+	 * @return
+	 */
+	String loadRankHouseStatusByHouseId(@Param("house_id") String houseId);
+
+	/**
+	 * 已经签约的房源 状态为 2，11，12
+	 * 
+	 * @param user_id
+	 * @return
+	 */
+	int readySignRankHouse(@Param("user_id") String user_id, @Param("teamIds") String teamIds);
+	/**
+	 * 通过租赁表id获取片区管家id
+	 * 
+	 * @param houseId
+	 * @return
+	 */
+	String selectAgentId(@Param("house_id") String houseId);
+	/**
+	 * 管家审批通过其余经纪人合约置为无效
+	 * @param houseId
+	 * @return
+	 */
+	int upCRankAreementStatus(@Param("house_id") String houseId);
+	/**
+	 * 插入经纪人推荐信息表，type是3为经纪人签约，状态是0刚创建
+	 * @param username
+	 * @param mobile
+	 * @param areaid
+	 * @param openid
+	 * @param houseid
+	 * @return
+	 */
+	int insertRecommend(@Param("username") String username,@Param("mobile") String mobile,@Param("areaid") String areaid,@Param("openid") String openid,@Param("houseid") String houseid);
+	/**
+	 * 插入经纪人推荐关联表，类型为合约2，状态为进行中1
+	 * @param id
+	 * @param agreementid
+	 * @return
+	 */
+	int insertRecoRelation(@Param("recommend_id") String id,@Param("agreementid") String agreementid);
+	/**
+	 * 更新经纪人推荐表状态1用户确认，2推荐成功（用户支付成功），3推荐失败（审批拒绝）和时间
+	 * @param state
+	 * @param agreementid
+	 * @return
+	 */
+	int upRecoState(@Param("state") String state,@Param("agreementid") String agreementid);
+	/**
+	 * 更新经纪人关联表的状态，审批通过为2结束
+	 * @param state
+	 * @param agreementid
+	 * @return
+	 */
+	int upRecoRelationState(@Param("state") String state,@Param("agreementid") String agreementid);
+	/**
+	 * 审批通过一个合约后更新其他推荐信息的状态为3推荐失败
+	 * @param agreementid
+	 * @return
+	 */
+	int upOtherRecoState(@Param("agreementid") String agreementid);
+	/**
+	 * 
+	 * @param openid
+	 * @param houseid
+	 * @param username
+	 * @return
+	 */
+	String selectRecoInfo(@Param("openid") String openid,@Param("houseid") String houseid,@Param("mobile") String mobile);
+	/**
+	 * 流控（同一个经纪人一天只能签约限制个数）
+	 * @param openid
+	 * @return
+	 */
+	int countOfRankAgreement(@Param("openid") String openid);
+	/**
+	 * 查询需要关闭（同一手机号或同一个house_id）的服务订单
+	 * @param houseid
+	 * @param mobile
+	 * @return
+	 */
+	List<Map<String,String>> getOtherOrder(@Param("houseid") String houseid,@Param("mobile") String mobile);
+	/**
+	 * 通过合约ID查询审批人ID
+	 * @param agreementid
+	 * @return
+	 */
+	String getBrokerId(@Param("agreementid") String agreementid);
+	/**
+	 * 判断该用户是否被推荐过并且用户已确认
+	 * @param mobile
+	 * @return
+	 */
+	int ifRecommend(@Param("mobile") String mobile);
+	/**
+	 * 更新其他的关联为2已结束
+	 * @param agreementid
+	 * @return
+	 */
+	int upOtherRecoRelatState(@Param("agreementid") String agreementid);
+
+	/**
+	 * 获取待退租配置时长
+	 * @return
+	 */
+	String getTimeConfigure();
+
+	/**
+	 * 获取未缴费类型列表
+	 * @return
+	 */
+	List<Map<String, Object>> getCategoryTypeList();
+
+	/**
+	 * 是否有预缴费信息
+	 * @param category_id
+	 * @return
+	 */
+	int getPrepayment(@Param("secondary") String secondary);
+
+	/**
+	 * 有预缴费信息数量
+	 * @param categoryIdStr
+	 * @return
+	 */
+	int loadPayCntTotal(@Param("secondaryStr") String secondaryStr);
+
+	/**
+	 * 根据租金获取押金
+	 * @param item_name 租金
+	 * @param item_id
+	 * @param item_value
+	 * @return
+	 */
+	DictiItem getRentDeposit(@Param("item_name") String item_name, @Param("item_id") String item_id, @Param("item_value") String item_value);
+}

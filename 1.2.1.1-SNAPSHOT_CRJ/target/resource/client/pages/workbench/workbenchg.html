@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../css/workbenchg.css"/>
+    <script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="../../js/common.client.js"></script>
+    <style>
+   
+    	
+    </style>
+</head>
+<body>
+	<img src="../../images/aa.jpg" style="width:100%;height:auto;"/>
+	<div id="opt">
+		<div class="box_x">
+			<div class="tit">待开<br/>工</div>			
+		</div>		
+	    <div class="box_x">
+	    	<div class="tit">待验<br/>收</div>
+    	</div>
+	    <div class="box_x">
+	  		 <div class="tit">房源<br/>查询</div>
+	    </div>	    
+	</div>	
+	<div>
+		<img src="../../images/banner.png" style="width:100%;height:auto;"/>
+	</div>
+	<script>
+	$(function(){
+		var width=$(".box_x").css("width");
+		$("#opt div").css({"height":"50px"});
+	    $(".box_x").hover(function(){
+		  $(this).css({"background":"#3c82bc","color":"#fff","border":"1px solid #3c82bc"});
+	    });
+	    $(".box_x").mouseout(function(){
+		 $(this).css({"background":"#efefee","color":"#000","border":"1px solid #767575"});
+	    });
+	    $('.box_x').click(function(){
+		 var url = '/client/pages/workbench/workbench.html';
+		 var title = '欢迎使用';
+		 njyc.phone.openWebKit(url, title, '0', '0', '', '', '', '', '', '', '', '0');		
+	    });
+	 });
+	</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

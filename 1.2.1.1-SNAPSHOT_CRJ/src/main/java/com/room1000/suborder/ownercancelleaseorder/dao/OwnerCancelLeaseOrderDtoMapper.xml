@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.suborder.ownercancelleaseorder.dao.OwnerCancelLeaseOrderDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.suborder.ownercancelleaseorder.dto.OwnerCancelLeaseOrderDto">
+    <!--
+    @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="work_order_id" jdbcType="INTEGER" property="workOrderId" />
+    <result column="take_house_order_id" jdbcType="INTEGER" property="takeHouseOrderId" />
+    <result column="staff_id" jdbcType="INTEGER" property="staffId" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="appointment_date" jdbcType="TIMESTAMP" property="appointmentDate" />
+    <result column="node_name" jdbcType="VARCHAR" property="nodeName" />
+    <result column="actual_dealer_id" jdbcType="INTEGER" property="actualDealerId" />
+    <result column="assigned_dealer_id" jdbcType="INTEGER" property="assignedDealerId" />
+    <result column="assigned_dealer_role_id" jdbcType="INTEGER" property="assignedDealerRoleId" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="attr_catg_id" jdbcType="INTEGER" property="attrCatgId" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="stateDate" />
+    <result column="update_person_id" jdbcType="INTEGER" property="updatePersonId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="comments" jdbcType="VARCHAR" property="comments" />
+    <result column="take_house_order_name" jdbcType="VARCHAR" property="takeHouseOrderName" />
+    <result column="state_name" jdbcType="VARCHAR" property="stateName" />
+    <result column="type_name" jdbcType="VARCHAR" property="typeName" />
+    <result column="actual_dealer_name" jdbcType="VARCHAR" property="actualDealerName" />
+    <result column="assigned_dealer_name" jdbcType="VARCHAR" property="assignedDealerName" />
+    <result column="assigned_dealer_phone" jdbcType="VARCHAR" property="assignedDealerPhone" />
+    <result column="update_person_name" jdbcType="VARCHAR" property="updatePersonName" />
+    <result column="assigned_dealer_role_name" jdbcType="VARCHAR" property="assignedDealerRoleName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, code, work_order_id, take_house_order_id, staff_id, created_date, appointment_date, 
+    node_name, actual_dealer_id, assigned_dealer_id, assigned_dealer_role_id, type, attr_catg_id, state, 
+    state_date, comments, update_person_id, update_date
+  </sql>
+  <select id="selectDetailById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    a.*, 
+    b.name take_house_order_name, 
+    c.state_name,
+    d.type_name, 
+    f.name actual_dealer_name,
+    g.name assigned_dealer_name,
+    g.mobile assigned_dealer_phone,
+    h.name update_person_name,
+    i.role_name assigned_dealer_role_name
+    from owner_cancel_lease_order a 
+    left join yc_agreement_tab b on a.take_house_order_id = b.id
+    left join sub_order_state c on a.state = c.state
+    left join owner_cancel_lease_order_type d on a.type = d.type
+    left join yc_account_tab f on a.actual_dealer_id = f.id
+    left join yc_account_tab g on a.assigned_dealer_id = g.id
+    left join yc_account_tab h on a.update_person_id = h.id
+    left join yc_role_new_tab i on a.assigned_dealer_role_id = i.role_id
+    where a.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select a.*
+    from owner_cancel_lease_order a
+    where a.code = #{code,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByCond" parameterType="com.room1000.suborder.ownercancelleaseorder.dto.OwnerCancelLeaseOrderDto" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from owner_cancel_lease_order
+    <where>
+      <if test="id != null">
+        and id = #{id,jdbcType=INTEGER}
+      </if>
+      <if test="code != null">
+        and code = #{code,jdbcType=VARCHAR}
+      </if>
+      <if test="workOrderId != null">
+        and work_order_id = #{workOrderId,jdbcType=INTEGER}
+      </if>
+      <if test="takeHouseOrderId != null">
+        and take_house_order_id = #{takeHouseOrderId,jdbcType=INTEGER}
+      </if>
+      <if test="staffId != null">
+        and staff_id = #{staffId,jdbcType=INTEGER}
+      </if>
+      <if test="createdDate != null">
+        and created_date = #{createdDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="appointmentDate != null">
+        and appointment_date = #{appointmentDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="nodeName != null">
+        and node_name = #{nodeName,jdbcType=VARCHAR}
+      </if>
+      <if test="actualDealerId != null">
+        and actual_dealer_id = #{actualDealerId,jdbcType=INTEGER}
+      </if>
+      <if test="assignedDealerId != null">
+        and assigned_dealer_id = #{assignedDealerId,jdbcType=INTEGER}
+      </if>
+      <if test="assignedDealerRoleId != null">
+        and assigned_dealer_role_id = #{assignedDealerRoleId,jdbcType=INTEGER}
+      </if>
+      <if test="type != null">
+        and type = #{type,jdbcType=CHAR}
+      </if>
+      <if test="attrCatgId != null">
+        and attr_catg_id = #{attrCatgId,jdbcType=INTEGER}
+      </if>
+      <if test="state != null">
+        and state = #{state,jdbcType=CHAR}
+      </if>
+      <if test="stateDate != null">
+        and state_date = #{stateDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="comments != null">
+        and comments = #{comments,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+</mapper>

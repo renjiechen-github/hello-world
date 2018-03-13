@@ -1,0 +1,363 @@
+package com.room1000.costImport.util;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import com.room1000.costImport.pojo.Constant;
+import com.room1000.costImport.pojo.WegBean;
+import com.ycdc.util.ExcelException;
+
+import pccom.common.util.FtpUtil;
+import pccom.web.beans.SystemConfig;
+
+/**
+ * 费用导入工具类
+ * 
+ * @author chenrj
+ * @data 20180122
+ */
+public class CostImportUtil {
+
+	/**
+	 * @MethodName : checkRepeatSet
+	 * @Description : 比较两个set是否相等
+	 * @param set1
+	 * @param set2
+	 * @return 1-相等,0-不相等
+	 */
+	public static int checkRepeatSet(Set<Object> set1, Set<Object> set2) {
+		int result = 1;
+		if (set1 == null || set2 == null || set1.size() != set2.size() || set1.size() == 0 || set2.size() == 0) {
+			return 0;
+		}
+		Iterator<Object> ite = set2.iterator();
+		while (ite.hasNext()) {
+			if (!set1.contains(ite.next())) {
+				result = 0;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @MethodName : setFieldValueByName
+	 * @Description : 根据字段名给对象的字段赋值
+	 * @param fieldName
+	 *            字段名
+	 * @param fieldValue
+	 *            字段值
+	 * @param o
+	 *            对象
+	 */
+	public static void setFieldValueByName(String fieldName, Object fieldValue, Object o) throws Exception {
+
+		Field field = getFieldByName(fieldName, o.getClass());
+		if (field != null) {
+			field.setAccessible(true);
+			// 获取字段类型
+			Class<?> fieldType = field.getType();
+			// 根据字段类型给字段赋值
+			if (String.class == fieldType) {
+				field.set(o, String.valueOf(fieldValue));
+			} else if ((Integer.TYPE == fieldType) || (Integer.class == fieldType)) {
+				field.set(o, Integer.parseInt(fieldValue.toString()));
+			} else if ((Long.TYPE == fieldType) || (Long.class == fieldType)) {
+				field.set(o, Long.valueOf(fieldValue.toString()));
+			} else if ((Float.TYPE == fieldType) || (Float.class == fieldType)) {
+				field.set(o, Float.valueOf(fieldValue.toString()));
+			} else if ((Short.TYPE == fieldType) || (Short.class == fieldType)) {
+				field.set(o, Short.valueOf(fieldValue.toString()));
+			} else if ((Double.TYPE == fieldType) || (Double.class == fieldType)) {
+				field.set(o, Double.valueOf(fieldValue.toString()));
+			} else if (Character.TYPE == fieldType) {
+				if ((fieldValue != null) && (fieldValue.toString().length() > 0)) {
+					field.set(o, Character.valueOf(fieldValue.toString().charAt(0)));
+				}
+			} else if (Date.class == fieldType) {
+				field.set(o, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(fieldValue.toString()));
+			} else {
+				field.set(o, fieldValue);
+			}
+		} else {
+			throw new ExcelException(o.getClass().getSimpleName() + "类不存在字段名 " + fieldName);
+		}
+	}
+
+	/**
+	 * @MethodName : getFieldByName
+	 * @Description : 根据字段名获取字段
+	 * @param fieldName
+	 *            字段名
+	 * @param clazz
+	 *            包含该字段的类
+	 * @return 字段
+	 */
+	public static Field getFieldByName(String fieldName, Class<?> clazz) {
+		// 拿到本类的所有字段
+		Field[] selfFields = clazz.getDeclaredFields();
+
+		// 如果本类中存在该字段，则返回
+		for (Field field : selfFields) {
+			if (field.getName().equals(fieldName)) {
+				return field;
+			}
+		}
+
+		// 否则，查看父类中是否存在此字段，如果有则返回
+		Class<?> superClazz = clazz.getSuperclass();
+		if (superClazz != null && superClazz != Object.class) {
+			return getFieldByName(fieldName, superClazz);
+		}
+
+		// 如果本类和父类都没有，则返回空
+		return null;
+	}
+	
+	/**
+	 * 当前期的开始时间
+	 * @param stageDate 期数时间
+	 * @param mun 动态变更时间差
+	 * @return 期数变更后的时间
+	 * @throws Exception
+	 */
+	public static String firstDate(String stageDate, int mun) throws Exception {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date dt = sdf.parse(stageDate);
+		Calendar rightNow = Calendar.getInstance();
+		rightNow.setTime(dt);
+
+		rightNow.add(Calendar.MONTH, mun);
+		Date dt1 = rightNow.getTime();
+		String reStr = sdf.format(dt1);
+
+		return reStr;
+	}
+	
+	/**
+	 * 当前期的结束时间
+	 * @param stageDate 期数时间
+	 * @return 当前期的结束时间
+	 */
+	public static String lastDate(String stageDate) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cl = Calendar.getInstance();
+		Date date = null;
+
+		try {
+			date = (Date) sdf.parse(stageDate);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		cl.setTime(date);
+		// 时间减一天
+		cl.add(Calendar.DAY_OF_MONTH, -1);
+		date = cl.getTime();
+		return sdf.format(date);
+	}
+	
+	/**
+	 * 根据maxHandleId获取handleId
+	 * @param maxhandleId 已存在的最大操作id
+	 * @return handldeId 操作id
+	 */
+	public static String getHandleId(String maxHandleId) {
+		Long handldeId = Long.parseLong(maxHandleId)+1;
+		return handldeId+"";
+	}
+	
+	/**
+	 * 初始状态中根据maxHandleId获取的handleId
+	 * @return handldeId 操作id
+	 */
+	public static String getHandleId() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		String initialHandleId =sdf.format(new Date())+Constant.initialHandleIdBottom;
+		Long handldeId = Long.parseLong(initialHandleId);
+		return handldeId+"";
+	}
+	
+	/**
+	 * 获取临时操作表（实际为普通表）名
+	 * @return tempTableName 临时操作表名
+	 */
+	public static String getTempTableName() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		String time =sdf.format(new Date());
+		String tempTableName= Constant.tempTableNameTop+time+Constant.tempTableNameBottom;
+		return tempTableName;
+	}
+	
+	/**
+	 * 获取外部临时表名
+	 * @return tempTableName 临时操作表名
+	 */
+	public static String getTemporaryTableName() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		String time =sdf.format(new Date());
+		String TemporaryTableName= Constant.tempTableNameTop+time+Constant.normalTableNameBottom;
+		return TemporaryTableName;
+	}
+	
+	/**
+	 * 获取对应格式时间戳字符
+	 * @param str 时间戳格式
+	 * @return 对应格式时间字符串
+	 */
+	public static String getNowDate(String str) {
+		SimpleDateFormat sdf = new SimpleDateFormat(str);
+		String date =sdf.format(new Date());
+		return date;
+	}
+	
+	/**
+	 * 返回异常数据的remark
+	 * @param wegs 异常数据
+	 * @param msg 错误信息
+	 * @return
+	 */
+	public static List<WegBean> getErrorMsg(List<WegBean> wegs,String msg) {
+		for (WegBean weg : wegs) {
+			weg.setRemark(msg);
+		}
+		return wegs;
+	}
+	
+	/**
+	 * 根据拆分结果生成remark内容
+	 * @param result 拆分结果值
+	 * @return 对应remark值
+	 */
+	public static String getWegSplitMsg(int result) {
+		String remark = "";
+		if (-1==result) {
+			remark = Constant.noAgreementRemark;
+		}else if (-2==result) {
+			remark = Constant.noTenantRemark;
+		}else if (-3==result) {
+			remark = Constant.waterSplitRemark;
+		}else if (-4==result) {
+			remark = Constant.elementSplitRemark;
+		}else if (-5==result) {
+			remark = Constant.gasSplitRemark;
+		}else if (1==result) {
+			remark = Constant.successSplitRemark;
+		}else {
+			remark = Constant.otherRemark;
+		}
+		return remark;
+	}
+	
+	/**
+	 * 
+	 * @param path
+	 * @return 服务器保存路径
+	 */
+	public static String upLoadWegCostFile(String path){
+		try {
+			String ftpFilePath="";
+			String localFile = "";
+//			localFile = path.substring(path.lastIndexOf("/"), path.length());
+			localFile = path;
+			String newFileName = "";
+			newFileName = getNowDate("yyyyMMddHHmmss")+path.substring(path.lastIndexOf("."), path.length());
+			String remotePath = "";
+			remotePath = SystemConfig.getValue("FTP_COSTIMPORT_PATH")+getNowDate("yyyyMMdd");
+			FtpUtil ftpUtil = new FtpUtil();
+			ftpUtil.uploadFile(localFile, newFileName, remotePath);
+			ftpFilePath = SystemConfig.getValue("FTP_HTTP")+"/data"+remotePath+"/"+ newFileName;
+			return ftpFilePath;
+		} catch (Exception e) {
+			e.getMessage();
+			e.printStackTrace();
+			return "";
+		}
+	}
+	
+	/**
+	 * 翻译水电燃类型
+	 * @param tempType
+	 * @return 水电燃对应类型值
+	 */
+	public static String getType(String tempType){
+		String type="";
+		if (null!=tempType&&!"".equals(tempType)) {
+			if ("水费".equals(tempType)) {
+				type = "11";
+			}else if ("电费".equals(tempType)) {
+				type = "12";
+			}else {
+				type = "13";
+			}
+		}
+		return type;
+	}
+	
+	/**
+	 * 保存Excel文件到本地临时文件中
+	 * @param inputStream
+	 * @param fileName
+	 * @return 本地文件临时路径-绝对路径
+	 */
+	public static String saveTempFile(InputStream inputStream, String fileName,String path){
+		String filePath = "";
+		String tempFileName = CostImportUtil.getNowDate("yyyyMMddhhmmss");
+		tempFileName = tempFileName+fileName.substring(fileName.lastIndexOf("."),fileName.length());
+		OutputStream os = null;
+	    try {
+	      filePath = path+tempFileName;
+	      // 2、保存到临时文件
+	      // 1K的数据缓冲
+	      byte[] bs = new byte[1024];
+	      // 读取到的数据长度
+	      int len;
+	      // 输出的文件流保存到本地文件
+	 
+	      File tempFile = new File(path);
+	      if (!tempFile.exists()) {
+	        tempFile.mkdirs();
+	      }
+	      os = new FileOutputStream(tempFile.getPath() + File.separator + tempFileName);
+	      // 开始读取
+	      while ((len = inputStream.read(bs)) != -1) {
+	        os.write(bs, 0, len);
+	      }
+	 
+	    } catch (IOException e) {
+	      e.printStackTrace();
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    } finally {
+	      // 完毕，关闭所有链接
+	      try {
+	        os.close();
+	        inputStream.close();
+	      } catch (IOException e) {
+	        e.printStackTrace();
+	      }
+	    }
+	    return filePath;
+	}
+	
+	/**
+	 * 删除本地生成的临时Excel文件
+	 * @param path
+	 */
+	public static void delTempFolder(String path) {
+		try {
+			File file = new File(path);
+			file.delete();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}

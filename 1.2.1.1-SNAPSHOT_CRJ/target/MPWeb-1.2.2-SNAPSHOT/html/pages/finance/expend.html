@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>财务支出</title>
+  <style type="text/css">
+  	.bzh{
+  		background-color: #e68d8d !important;
+  	}
+  	.bzh td{
+  		background-color: #e68d8d !important;
+  		color: #fff;
+  	}
+  	.panel-body .form-group{
+  		margin-top: 5px;
+  	}
+  	.daterangepicker{
+  		z-index: 99999999 !important;
+  	}
+  </style>
+</head>
+
+<body>
+       <section class="panel">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+			            <div class="form-group">
+	                        <label class="" for="secondary_type">类型:</label>
+	                        <select class="form-control" id="secondary_type" name="secondary_type" >
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="" for="category_type">财务类目:</label>
+	                        <select class="form-control" id="category_type" name="category_type" >
+                                <option value="">请选择...</option>
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="" for="status">状态:</label>
+	                        <select class="form-control" id="status" name="status" >
+                                <option value="">请选择...</option>
+                                <option value="0">未发生</option>
+                                <option value="1">已支付</option>
+                                <option value="2">已核算</option>
+                                <option value="3">已提交金蝶处理</option>
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="" for="isfq">是否可发起支付:</label>
+	                        <select class="form-control" id="isfq" name="isfq" >
+                                <option value="">请选择...</option>
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="" for="name">查询条件:</label>
+	                        <input type="text" class="form-control" id="name" name="name" placeholder="模糊查询">
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="plattime">计划时间:</label>
+	                        <input type="text" style="width: 275px" name="actiontime" readonly="readonly" id="plattime" class="form-control" placeholder=""  class="span4"/>
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="paytime">实际时间:</label>
+	                        <input type="text" style="width: 275px" name="actiontime" readonly="readonly" id="paytime" class="form-control" placeholder=""  class="span4"/>
+	                    </div>
+	                    <div class="form-group ">
+	                    	<div class="tools" >
+								<a href="javascript:;" class="fa fa-search yc_seach" table="example" >查询</a>
+								<!-- <a href="javascript:;" class="fa fa-search yc_edit" >新增</a>
+								<a href="javascript:;" class="fa fa-search " id="payauditbnt" >批量支付审批</a>	 -->
+								<!-- <a href="/financial/getList.do?isDc=true&expname=%25E9%2593%25B6%25E5%259F%258E%25E5%258D%2583%25E4%25B8%2587%25E9%2597%25B4%25E5%2590%258E%25E5%258F%25B0%25E7%25AE%25A1%25E7%2590%2586%25E7%25B3%25BB%25E7%25BB%259F&colum=%255B%257B%2522name%2522%3A%2522name%2522%2C%2522title%2522%3A%2522%25E5%2590%258D%25E7%25A7%25B0%2522%257D%2C%257B%2522name%2522%3A%2522secondary_type_name%2522%2C%2522title%2522%3A%2522%25E7%25B1%25BB%25E5%259E%258B%2522%257D%2C%257B%2522name%2522%3A%2522category_name%2522%2C%2522title%2522%3A%2522%25E8%25B4%25A2%25E5%258A%25A1%25E7%25B1%25BB%25E7%259B%25AE%2522%257D%2C%257B%2522name%2522%3A%2522createtime%2522%2C%2522title%2522%3A%2522%25E5%2588%259B%25E5%25BB%25BA%25E6%2597%25B6%25E9%2597%25B4%2522%257D%2C%257B%2522name%2522%3A%2522cost%2522%2C%2522title%2522%3A%2522%25E6%2598%258E%25E7%25BB%2586%25E9%2587%2591%25E9%25A2%259D%2522%257D%2C%257B%2522name%2522%3A%2522plattime%2522%2C%2522title%2522%3A%2522%25E8%25AE%25A1%25E5%2588%2592%25E6%2597%25B6%25E9%2597%25B4%2522%257D%2C%257B%2522name%2522%3A%2522paytime%2522%2C%2522title%2522%3A%2522%25E5%25AE%259E%25E9%2599%2585%25E5%258F%2591%25E7%2594%259F%2522%257D%2C%257B%2522name%2522%3A%2522oper_name%2522%2C%2522title%2522%3A%2522%25E6%2593%258D%25E4%25BD%259C%25E4%25BA%25BA%25E5%2591%2598%2522%257D%2C%257B%2522name%2522%3A%2522status_name%2522%2C%2522title%2522%3A%2522%25E7%258A%25B6%25E6%2580%2581%2522%257D%2C%257B%2522name%2522%3A%2522BankSlip%2522%2C%2522title%2522%3A%2522%25E7%259B%25AE%25E6%25A0%2587%25E9%2593%25B6%25E8%25A1%258C%2522%257D%2C%257B%2522name%2522%3A%2522target_user%2522%2C%2522title%2522%3A%2522%25E7%259B%25AE%25E6%25A0%2587%25E4%25BA%25BA%25E5%2591%2598%2522%257D%2C%257B%2522name%2522%3A%2522sbcode%2522%2C%2522title%2522%3A%2522%25E5%2590%2588%25E5%2590%258C%25E7%25BC%2596%25E5%258F%25B7%2522%257D%2C%257B%2522name%2522%3A%2522code%2522%2C%2522title%2522%3A%2522%25E5%2590%2588%25E7%25BA%25A6%25E7%25BC%2596%25E5%258F%25B7%2522%257D%2C%257B%2522name%2522%3A%2522yzname%2522%2C%2522title%2522%3A%2522%25E4%25B8%259A%25E4%25B8%25BB%2522%257D%2C%257B%2522name%2522%3A%2522mobile%2522%2C%2522title%2522%3A%2522%25E8%2581%2594%25E7%25B3%25BB%25E7%2594%25B5%25E8%25AF%259D%2522%257D%2C%257B%2522name%2522%3A%2522start_time%2522%2C%2522title%2522%3A%2522%25E5%25BC%2580%25E5%25A7%258B%25E6%2597%25B6%25E9%2597%25B4%2522%257D%2C%257B%2522name%2522%3A%2522end_time%2522%2C%2522title%2522%3A%2522%25E7%25BB%2593%25E6%259D%259F%25E6%2597%25B6%25E9%2597%25B4%2522%257D%2C%257B%2522name%2522%3A%2522remarks%2522%2C%2522title%2522%3A%2522%25E5%25A4%2587%25E6%25B3%25A8%2522%257D%255D&category_type=&secondary_type=&name=&plattime=&paytime=&status=0&isfq=1&ispayemp=1" class="fa fa-search " id="payauditbnt" >可支付数据导出</a> -->	                    		
+	                    	</div>
+			            </div>
+	                </form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="example" class="display tablehover table table-bordered dataTable" aria-describedby="dynamic-table_info"  width="100%">
+			        <thead>
+			            <tr>
+			            	<th></th>
+			             	<th></th>
+			                <th>名称</th>
+			                <th>财务编号</th>
+			                <th>财务项目</th>
+			                <th>类型</th>
+			                <th>财务类目</th>
+			                <th>创建时间</th>
+			                
+			                <th>明细金额</th>
+			                <th>计划时间</th>
+			                <th>实际发生</th>
+			                <th>操作人员</th>
+			                
+			                <th>合约编号</th>
+			                <th>客户姓名</th>
+			                <th>客户号码</th>
+			                <th>网格管家</th>
+			                <th>区域</th>
+			                <th>网格</th>
+			                
+			                <th>状态</th>
+			                <th>是否有效</th>
+			                <th></th>
+			            </tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+   	</section>
+   	<script type="text/javascript">
+   		
+   		var expend={ 
+				showQd:function(obj){
+					
+	   			},
+   			init:function(){
+   				var nowTemp = new Date();
+   				$('#plattime,#paytime').daterangepicker({
+					startDate:nowTemp.getFullYear()+'-'+(nowTemp.getMonth()+1)+'-02',
+					timePicker12Hour:false,
+	                timePicker: true,
+					separator:'至',
+					//分钟间隔时间
+	                timePickerIncrement: 10,
+	                format: 'YYYY-MM-DD HH:mm'
+	              }, function(start, end, label) {
+	                console.log(start.toISOString(), end.toISOString(), label);
+	              });
+   				
+   				common.loadItem('FINANCIAL.SECONDARY_TYPE', function(json){
+		            var html = "";
+		            for (var i = 0; i < json.length; i++) {
+						html += '<option  value="' + json[i].item_id + '" >' + json[i].item_name + '</option>';
+		            }
+		            $('#secondary_type').empty();
+		            //$('#secondary_type').append('<option value="">请选择...</option>');
+		            $('#secondary_type').append(html);
+		        },false);
+		        common.ajax({
+		        	url: common.root + '/financial/type/getTypeList.do',
+		        	data:{
+		        		iDisplayStart:0,
+		        		iDisplayLength:100
+		        	},
+		        	dataType: 'json',
+		        	loadfun: function(isloadsucc, data){
+		            	if (isloadsucc) {
+		            		var html = "";
+				            for (var i = 0; i < data.data.length; i++) {
+								html += '<option  value="' + data.data[i].id + '" >' + data.data[i].name + '</option>';
+				            }
+				            $('#category_type').empty();
+				            $('#category_type').append('<option value="">请选择...</option>');
+				            $('#category_type').append(html);
+		            	}
+		            }
+		        });
+		        $('#payauditbnt').click(function(){
+		        	expend.sendPayAudit();
+		        });
+		        $('.yc_edit').click(function(){
+		        	//打开对于的窗口
+		            common.openWindow({
+		                type: 3,
+		                title: '新增财务支出明细',
+		                name:'expendAdd',
+		                url: '/html/pages/finance/expend_add.html'
+		            });
+		        });
+		        
+   			},
+   			/**
+   			*改变状态
+   			**/
+   			changestate:function(obj){
+   				var data = table.getRowData('example', obj);
+   				if(data.status == '1'){
+   					common.alert({msg:'已经是支付状态，无需更改'});
+   					return;
+   				}
+   				common.alert({
+		            msg: '确定需要需要将状态改为已支付吗？',
+		            confirm: true,
+		            fun: function(action){
+		                if (action) {
+		                    common.ajax({
+		                        url: common.root + '/financial/changePayableState.do',
+		                        data: {
+		                            id: data.id
+		                        },
+		                        dataType: 'json',
+		                        loadfun: function(isloadsucc, data){
+		                            if (isloadsucc) {
+		                                if (data.state == '1') {
+		                                    common.alert({
+		                                        msg: '状态更改成功',
+		                                        fun: function(){
+		                                            table.refreshRedraw('example');
+		                                        }
+		                                    });
+		                                }
+		                                else {
+		                                    common.alert(common.msg.error);
+		                                }
+		                            }else {
+		                            	common.alert(common.msg.error);
+		                            }
+		                        }
+		                    });
+		                }
+		            }
+		        });
+   			},
+   			//发起审批
+   			sendPayAudit:function(ids,username,targetbank){
+   				var data = table.getSelectData('example');
+//   				common.log(data);
+//   				if(data.length == 0){
+//   					common.alert('请先选择数据信息');
+//   					return;
+//   				}
+//   				//循环出id值
+//   				var ids = "";
+//   				for(var i=0;i<data.length;i++){
+//   					ids += data[i].id+',';
+//   				}
+//   				ids = ids.substr(0,ids.length-1);
+                                
+                                if(ids == null||ids == undefined || ids == ''){
+   					common.alert('请先选择数据信息');
+   					return;
+   				}
+                                
+   				common.alert({
+   					msg:'是否确定进行提交审批？',
+   					confirm:true,
+   					fun:function(action){
+   						if(action){
+   							//common.load.load('正在提交审批');
+   							common.alert({
+   								title:'请填写备注说明',
+   								msg:'<div>\n\
+                                                                        <b>业务时间：<b id="ywtime_e" class="error" style="color:red" ></b></b><input type="text" id="ywtime" name="ywtime" readonly="readonly" value="" placeholder="请选择业务时间" class="form-control" >\n\
+                                                                        <b>交易类型：<b id="target_type_e" class="error" style="color:red" ></b></b><select id="target_type" name="target_type" class="form-control" >\n\
+                                                                                    <option value="">请选择...</option>\n\
+                                                                                    <option value="1" selected="true" >银卡转帐</option>\n\
+                                                                                    <option value="0">支付宝服务号支付</option>\n\
+                                                                                    <option value="4">支付宝app支付</option>\n\
+                                                                                    <option value="6">支付宝转账</option>\n\
+                                                                                    <option value="2">微信公众号支付</option>\n\
+                                                                                    <option value="3">微信app支付</option>\n\
+                                                                                    <option value="5">其他</option>\n\
+                                                                                  </select>\n\
+                                                                        <b>账户姓名：<b id="target_user_e" class="error" style="color:red" ></b></b><input type="text" id="target_user" name="target_user" value="'+username+'" placeholder="请填写账户姓名,支付宝与微信填写对应支付宝号、微信号" class="form-control" >\n\
+                                                                        <b>银行名称：<b id="target_bank_e" class="error" style="color:red" ></b></b><input type="text" id="target_bank" name="target_bank" value="" placeholder="请填写银行名称或微信或支付宝" class="form-control" >\n\
+                                                                        <b>银行账户：<b id="target_account_e" class="error" style="color:red" ></b></b><input  type="text" id="target_account" name="target_account" value="'+targetbank+'" placeholder="请填写银行账户或微信或支付宝" class="form-control" >\n\
+                                                                        <b>银行流水号：<b id="target_Serial_e" class="error" style="color:red" ></b></b><input type="text" id="target_Serial" name="target_Serial" value="" placeholder="请填写" class="form-control" >\n\
+                                                                        <textarea id="flowremark" rows="6" maxlength="150" class="form-control" placeholder="可填写备注信息"></textarea>\n\
+                                                                    </div>\n\
+                                                                    <script>$("#ywtime").daterangepicker({startDate: moment().startOf(\'day\'),singleDatePicker : true,timePicker12Hour:false,timePicker: false,format: \'YYYY-MM-DD HH:mm:ss\'});<\/script>',
+   								confirm:true,
+   								fun:function(action){
+   									if(action){
+                                                                                $('.error').text('');
+                                                                                var target_type = $('#target_type').val();
+                                                                                var target_user = $('#target_user').val();
+                                                                                var target_bank = $('#target_bank').val();
+                                                                                var target_account = $('#target_account').val();
+                                                                                var target_Serial = $('#target_Serial').val();
+                                                                                var ywtime = $('#ywtime').val();
+                                                                                if(ywtime == ''){
+                                                                                    $('#ywtime_e').text('请选择业务时间');
+                                                                                    return false;
+                                                                                }
+                                                                                if(target_type == ''){
+                                                                                    $('#target_type_e').text('请选择交易类型');
+                                                                                    return false;
+                                                                                }
+                                                                                if(target_user == ''){
+                                                                                    $('#target_user_e').text('请填写账户姓名');
+                                                                                    return false;
+                                                                                }
+                                                                                if(target_bank == ''){
+                                                                                    $('#target_bank_e').text('请填写银行名称');
+                                                                                    return false;
+                                                                                }
+                                                                                if(target_account == '' && target_Serial == ''){
+                                                                                    $('#target_account_e').text('银行账户与银行流水号必填一个');
+                                                                                    $('#target_Serial_e').text('银行账户与银行流水号必填一个');
+                                                                                    return false;
+                                                                                }
+   										common.ajax({
+   											url:common.root + '/financial/sendPayTask.do',
+   											data:{
+   												ids:ids,
+   												flowremark:$('#flowremark').val(),
+   												time:$('#ywtime').val(),
+                                                                                                target_type:target_type,
+                                                                                                target_user:target_user,
+                                                                                                target_bank:target_bank,
+                                                                                                target_account:target_account,
+                                                                                                target_Serial:target_Serial
+   											},
+   											dataType: 'json',
+                                                                                        loadfun: function(isloadsucc, data){
+                                                                                                if(isloadsucc){
+                                                                                                        common.alert(data.msg);
+                                                                                                        table.refreshRedraw('example');
+                                                                                                }else{
+                                                                                                        common.alert(common.msg.error);
+                                                                                                }
+                                                                                        }
+   										});
+   									}
+   								}
+   							});
+   						}
+   					}
+   				});
+   			}
+   		}
+   		expend.init();
+   		var table1 = table.init({
+   			id:'#example',
+   			url:common.root+'/financial/getList.do',
+   			expname:'财务支出',
+   			columns:["name",
+   			     	"settlements_code",
+   			        "settlements_name",
+   					"secondary_type_name",
+   					"category_name",
+   					"createtime",
+   					"cost",
+   					"plattime",
+   					"paytime",
+   					/* "update_time", */
+   					/* "target_bank",
+   					"target_user",
+   					"target_type_name", */
+   					"oper_name",
+   					
+   					"code",
+   					"username",
+   					"mobile",
+   					"gjname",
+   					"area_name",
+   					"g_name",
+   					
+   					"status_name",
+   					"isdeletename",
+   					{name:"target_bank",isshow:false,title:'目标银行',isover:false},
+   					{name:"target_user",isshow:false,title:'目标人员',isover:false},
+   					{name:"settle_num",isshow:false,title:'结算单号',isover:false},
+   					{name:"target_type_name",isshow:false,title:'发生类型',isover:false},
+   					{name:"cost_a",isshow:false,title:'每年租金',isover:false},
+   					/* {name:"sbcode",isshow:false,title:'合同编号',isover:false},
+   					{name:"code",isshow:false,title:'合约编号',isover:false},
+   					{name:"yzname",isshow:false,title:'业主',isover:false},
+   					{name:"mobile",isshow:false,title:'联系电话',isover:false},
+   					{name:"start_time",isshow:false,title:'开始时间',isover:false},
+   					{name:"end_time",isshow:false,title:'结束时间',isover:false}, */
+   					{name:"remarks",isshow:false,title:'备注',isover:false}/* ,
+   					"<button onclick='expend.showQd(this);' title='查看拆分数据信息' class=\"button button-circle button-tiny\"><i class=\"fa fa-pencil-square-o\"></i></button>" */],
+   			bnt:[
+   				{
+   					name:'查看费用分摊',
+   					fun:function(data,row){
+   						var html = '<table class="display tablehover table table-bordered dataTable" >'+
+   						        '     	<tr>'+
+                                                        '	<td>名称</td>'+
+                                                        '	<td>年份</td>'+
+                                                        '	<td>1月</td>'+
+                                                        '	<td>2月</td>'+
+                                                        '	<td>3月</td>'+
+                                                        '	<td>4月</td>'+
+                                                        '	<td>5月</td>'+
+                                                        '	<td>6月</td>'+
+                                                        '	<td>7月</td>'+
+                                                        '	<td>8月</td>'+
+                                                        '	<td>9月</td>'+
+                                                        '	<td>10月</td>'+
+                                                        '	<td>11月</td>'+
+                                                        '	<td>12月</td>'+
+                                                        '</tr>';
+                                            common.ajax({
+                                                url: common.root + '/financial/qd/getQDList.do',
+                                                data: {
+                                                    id: data.id,
+                                                    type:1
+                                                },
+                                                dataType: 'json',
+                                                loadfun: function(isloadsucc, data){
+                                                    if (isloadsucc) {
+                                                            common.log(data);
+                                                            for(var i=0;i<data.data.length;i++){
+                                                                    html += '<tr>'+
+                                                                                 '<td>'+data.data[i].name+'</td>'+
+                                                                                 '<td>'+data.data[i].years+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_1+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_2+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_3+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_4+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_5+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_6+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_7+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_8+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_9+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_10+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_11+'</td>'+
+                                                                                 '<td>￥'+data.data[i].m_12+'</td>'+
+                                                                         '</tr>';
+                                                            }
+                                                            html += '</table>';
+                                                            common.openWindow({
+                                                                     type: 1,
+                                                                         area:['900px','530px'],
+                                                                     name:'projectPayQdWin', 
+                                                                     title: '费用分摊',
+                                                                     content:html 
+                                                                 });
+                                                    }else{
+                                                          common.alert(common.msg.error);   
+                                                    }
+                                                }
+                                            });
+   					}
+   				}  ,
+                               {
+   					name:'支出审批',
+   					isshow:function(data,row){
+   						if(data.status_name != '未发生'){
+   							return false;
+   						}
+   						return true;
+   					},
+   					fun:function(data,row){
+                                            common.log(data);
+                                            expend.sendPayAudit(data.id,data.username,data.target_account);
+   					}
+   				}
+   			],
+   			ismultiple:false,
+   			"aLengthMenu":[5,10, 25, 50,100,200,500,1000],
+   			param:function(){
+   				var a = new Array();
+   				a.push({ "name": "category_type", "value": $('#category_type').val()});
+   				a.push({ "name": "secondary_type", "value": $('#secondary_type').val()});
+   				a.push({ "name": "name", "value": $('#name').val()});
+   				a.push({ "name": "plattime", "value": $('#plattime').val()});
+   				a.push({ "name": "paytime", "value": $('#paytime').val()});
+   				a.push({"name":"status","value":$('#status').val()});
+   				a.push({"name":"isfq","value":$('#isfq').val()});
+   				return a;
+   			},
+			/**
+			 * 创建函数执行
+			 * @param {Object} rowindex 所在行
+			 * @param {Object} colindex 所在列
+			 * @param {Object} name 字段名称
+			 * @param {Object} value 字段值 
+			 * @param {Object} data 此行的数据信息 json数据格式
+			 */
+            createRow:function(rowindex,colindex,name,value,data,row){
+				/* if(data.status_name=='已支付'){
+					if(name == '操作'){
+						return "";
+					}
+				} */
+				
+				if(data.status_name != '未发生' || data.issh != 1){//只有未发生状态并且达到15天内的
+					$('td:eq(1)',row).find('#_table_select_').remove();	
+				} else{
+					//给符合条件的添加背景颜色
+					$(row).addClass('bzh');
+				}
+				if(name == 'cost'){
+					return '<i class="fa fa-jpy"></i>'+value;
+				}
+				return value;
+			},
+			fnDrawCallback:function(){
+				var sec = $('#secondary_type').val();
+				if(sec == '1'||sec == '0' ||sec == '2'){
+					$('#example thead th:eq(11)').show();
+					$('#example tbody tr td:nth-child(12)').show();
+					$('#example thead th:eq(12)').show();
+					$('#example tbody tr td:nth-child(13)').show();
+					$('#example thead th:eq(13)').show();
+					$('#example tbody tr td:nth-child(14)').show();
+					$('#example thead th:eq(14)').show();
+					$('#example tbody tr td:nth-child(15)').show();
+					$('#example thead th:eq(15)').show();
+					$('#example tbody tr td:nth-child(16)').show();
+					$('#example thead th:eq(16)').show();
+					$('#example tbody tr td:nth-child(17)').show();
+				}else{
+					$('#example thead th:eq(11)').hide();
+					$('#example tbody tr td:nth-child(12)').hide();
+					$('#example thead th:eq(12)').hide();
+					$('#example tbody tr td:nth-child(13)').hide();
+					$('#example thead th:eq(13)').hide();
+					$('#example tbody tr td:nth-child(14)').hide();
+					$('#example thead th:eq(14)').hide();
+					$('#example tbody tr td:nth-child(15)').hide();
+					$('#example thead th:eq(15)').hide();
+					$('#example tbody tr td:nth-child(16)').hide();
+					$('#example thead th:eq(16)').hide();
+					$('#example tbody tr td:nth-child(17)').hide();
+				}
+			}
+   		});
+   	</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>工作台</title>
+    <link rel="stylesheet" type="text/css" href="../../css/workbench.css"/>
+	<script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="../../js/common.client.js"></script>
+</head>
+<body>
+	<div style="margin-top: 60pt"></div>
+	<div id="opt">
+		<div class="box_x">
+			<div class="tit">运营<br/>报表</div>			
+		</div>
+	    <div class="box_x">
+	    	<div class="tit">市场<br/>报告</div>
+    	</div>
+	    <div class="box_x">
+	  		 <div class="tit">工程<br/>报告</div>
+	    </div>
+	    <div class="box_x">
+    		<div class="tit">服务<br/>报告</div>
+	    </div>
+	</div>	
+	<div>
+		<img src="../../images/banner.png" style="width:100%;height:auto;"/>
+	</div>
+	<script>
+	$(function(){
+		var width=$(".box_x").width();
+		$("#opt div").css({"height":"50px"});
+		$(".box_x").hover(function(){
+			$(this).css({"background":"#16a7b4","color":"#fff","border":"1px solid #16a7b4"});
+		});
+		$(".box_x").mouseout(function(){
+			$(this).css({"background":"#efefee","color":"#000","border":"1px solid #767575"});
+		});
+		
+		$('.box_x').click(function(){
+			var url = '/client/pages/workbench/workbench.html';
+			var title = '欢迎使用';
+			njyc.phone.openWebKit(url, title, '1', '0', '', '', '', '', '', '', '', '0');		
+		});
+	});
+	</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

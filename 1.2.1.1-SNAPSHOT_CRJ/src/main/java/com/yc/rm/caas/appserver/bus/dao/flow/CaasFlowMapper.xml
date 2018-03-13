@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.rm.caas.appserver.bus.dao.flow.ICaasFlowDao">
+	<select id="getMyStepWorkOrderList" resultType="com.yc.rm.caas.appserver.model.flow.FlowBean" parameterType="com.yc.rm.caas.appserver.bus.controller.flow.fo.FlowFo">
+	select t.id,t.name,t.code,t.created_date,t.state,ws.state_name,
+		   t.created_staff_id,ac.name,
+		   t.sub_assigned_dealer_id,acc.`name`,
+		   t.sub_assigned_dealer_role_id,ro.role_name
+  	  from work_order t 
+      left join yc_account_tab ac on ac.id = t.created_staff_id
+	  left join yc_account_tab acc on acc.id = t.sub_assigned_dealer_id
+	  left join yc_role_new_tab ro on ro.role_id = t.sub_assigned_dealer_role_id
+	  left join work_order_state ws on ws.state = t.state
+     where t.`sub_assigned_dealer_id` = #{userId}
+     <if test="status != null and status != ''">
+     	and t.state = #{status}
+     </if>
+	</select>
+	<select id="orderStateList" resultType="map">
+		select state,state_name from work_order_state
+	</select>
+	<select id="orderTypeList" resultType="map">
+		select type,type_name from work_order_type
+	</select>
+</mapper>

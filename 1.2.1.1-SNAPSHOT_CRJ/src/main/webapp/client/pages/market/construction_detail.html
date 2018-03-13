@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+<title>工程详细页面</title>
+<link rel="stylesheet" type="text/css" href="../../css/normalize.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../css/market/construction_detail.min.css" />
+</head>
+
+<body>
+	<form action="" id="form2">
+	<div class="body">
+		<div class="b1 com cons1 active">
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<p>当前户型</p>
+					</div>
+					<div class="weui_cell_ft" id="hx"></div>
+				</div>
+			</div>
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<p>流转时间</p>
+					</div>
+					<div class="weui_cell_ft" id="lztime"></div>
+				</div>
+			</div>
+			<div class="weui_cells" id="agreementDiv">
+		        <div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		                <p>开工时间</p>
+		            </div>
+		            <div class="weui_cell_ft" id="kgtime"></div>
+		        </div>
+    		</div>
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<p>完工时间</p>
+					</div>
+					<div class="weui_cell_ft" id="wgtime">
+						 
+					</div>
+				</div>
+			</div>
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<p>装修金额</p>
+					</div>
+					<div class="weui_cell_ft" id="zxmonery">
+						 
+					</div>
+				</div>
+			</div>
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<p>家具金额</p>
+					</div>
+					<div class="weui_cell_ft" id="jjmonery">
+						 
+					</div>
+				</div>
+			</div>
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<p>家电金额</p>
+					</div>
+					<div class="weui_cell_ft" id="djmonery">
+						 
+					</div>
+				</div>
+			</div>
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<p>保洁与其它</p>
+					</div>
+					<div class="weui_cell_ft" id="othermonery">
+						 
+					</div>
+				</div>
+			</div>
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<p>工程总计</p>
+					</div>
+					<div class="weui_cell_ft" id="totalmonery">
+						 
+					</div>
+				</div>
+			</div>
+			<div class="weui_cells">
+				<div class="weui_cell">
+					<div class="weui_cell_bd weui_cell_primary">
+						<p>工程进度</p>
+					</div>
+					<div class="weui_cell_ft" id="gcjd">
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="sf_contract"  onclick="construction_detail.showOrHidenInfo(1);return false;">
+			<div class="division">
+				<div class="left">
+				<hr>
+				</div>
+				<div class="center">
+					↓家具配套清单
+				</div>
+				<div class="right">
+				<hr>
+				</div>			
+			</div>
+			<div id="listDiv1">
+				
+			</div>
+		</div>
+		<div class="sf_contract"  onclick="construction_detail.showOrHidenInfo(2);return false;">
+			<div class="division">
+				<div class="left">
+				<hr>
+				</div>
+				<div class="center">
+					↓家电配套清单
+				</div>
+				<div class="right">
+				<hr>
+				</div>			
+			</div>
+			<div id="listDiv2" style="display: none;">
+				
+			</div>
+		</div>
+		<div class="sf_contract"   onclick="construction_detail.showOrHidenInfo(0);return false;">
+			<div class="division">
+				<div class="left">
+				<hr>
+				</div>
+				<div class="center">
+					↓其它相关清单
+				</div>
+				<div class="right">
+				<hr>
+				</div>			
+			</div>
+			<div id="listDiv0" style="display: none;">
+				
+			</div>
+		</div>
+		
+		
+		
+	</div>
+</form>
+</body>
+<script type="text/javascript" src="../../js/jquery-1.10.2.js"></script> 
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../js/common.client.js"></script>
+<script type="text/javascript" src="../../js/house_info/construction_detail.js"></script>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="ThemeBucket">
+        <link rel="shortcut icon" href="#" type="image/png">
+        <title>财务账单明细</title>
+        <style  >
+            .nav > li > a:hover, .nav > li > a:focus{
+                color: white;
+            }
+        </style>
+    </head>
+
+    <body>
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active">
+                <a href="#home" data-toggle="tab">
+                    用户支付明细
+                </a>
+            </li>
+            <li><a href="#ios" data-toggle="tab">财务明细</a></li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="home">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>账单编号</th>
+                            <th>支付方式</th>
+                            <th>待支付金额</th>
+                            <th>支付状态</th>
+                            <th>支付创建时间</th>
+                            <th>开始支付时间</th>
+                            <th>支付完成时间</th>
+                            <th>支付响应回调时间</th>
+                            <th>响应第三方流水ID</th>
+                            <th>当前用户名称</th>
+                            <th>操作人</th>
+                            <th>当前支付时合约的手机号</th>
+                            <th>银行名称</th>
+                            <th>银行账户</th>
+                            <th>交易备注信息</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detial-pay-tbody" >
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="ios">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>金额</th>
+                            <th>备注</th>
+                            <th>财务类别</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detial-tbody" >
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            var bill_detial = {
+                init: function () {
+                    common.ajax({
+                        url: common.root + '/financial/getBillLDetailList.do',
+                        data: {
+                            id: common.getWindowsData('billdetail').id
+                        },
+                        dataType: 'json',
+                        loadfun: function (a, b) {
+                            if (a) {
+                                if (b.detailList) {
+                                    var html = "";
+                                    for(var i=0;i<b.detailList.length;i++){
+                                        html += '<tr>'+
+                                                '    <td>'+b.detailList[i].name+'</td>'+
+                                                '    <td>￥'+b.detailList[i].cost+'</td>'+
+                                                '    <td>'+b.detailList[i].remarks+'</td>'+
+                                                '    <td>'+b.detailList[i].cat_name+'</td>'+
+                                                '</tr>';
+                                    }
+                                    $('#detial-tbody').html(html);
+                                }
+                                if (b.detailPayList) {
+                                    var html = "";
+                                    for(var i=0;i<b.detailPayList.length;i++){
+                                        html += '<tr>'+
+                                                '    <td>'+b.detailPayList[i].id+'</td>'+
+                                                '    <td>'+(b.detailPayList[i].type=='1'?'支付宝公众号':b.detailPayList[i].type=='2'?'微信公众号':b.detailPayList[i].type=='3'?'支付宝网页支付':b.detailPayList[i].type=='4'?'支付宝app支付':b.detailPayList[i].type=='5'?'微信app支付':b.detailPayList[i].type=='6'?'银行转账':b.detailPayList[i].type=='7'?'支付宝转账':"其他")+'</td>'+
+                                                '    <td>'+b.detailPayList[i].cost+'</td>'+
+                                                '    <td>'+(b.detailPayList[i].state=='1'?'创建支付(用户输入金额后的支付创建状态)':b.detailPayList[i].state=='2'?'支付中(用户发起支付时等待响应的状态)':b.detailPayList[i].state=='3'?'支付完成（支付响应完成成功）':b.detailPayList[i].state=='4'?'支付失败':"其他")+'</td>'+
+                                                '    <td>'+b.detailPayList[i].create_date_+'</td>'+
+                                                '    <td>'+b.detailPayList[i].start_time_+'</td>'+
+                                                '    <td>'+b.detailPayList[i].pay_time_+'</td>'+
+                                                '    <td>'+b.detailPayList[i].callback_time_+'</td>'+
+                                                '    <td>'+b.detailPayList[i].tro_no+'</td>'+
+                                                '    <td>'+b.detailPayList[i].user_name+'</td>'+
+                                                '    <td>'+b.detailPayList[i].oper_name+'</td>'+
+                                                '    <td>' + b.detailPayList[i].mobile + '</td>' +
+                                                '    <td>'+b.detailPayList[i].bank_name+'</td>'+
+                                                '    <td>'+b.detailPayList[i].bank_account+'</td>'+
+                                                '    <td>'+b.detailPayList[i].remark+'</td>'+
+                                                '</tr>';
+                                    }
+                                    $('#detial-pay-tbody').html(html);
+                                }
+                            } else {
+                                alert('页面加载失败');
+                            }
+                        }
+                    });
+                },
+                addevent: function () {
+
+                },
+                loadTable: function () {
+
+                }
+            };
+            $(function () {
+                bill_detial.init();
+            });
+        </script>
+    </body>
+</html>
+

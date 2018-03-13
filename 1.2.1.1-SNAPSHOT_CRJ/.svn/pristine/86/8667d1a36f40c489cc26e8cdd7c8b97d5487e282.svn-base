@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.suborder.houselookingorder.dao.HouseLookingOrderChannelDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.suborder.houselookingorder.dto.HouseLookingOrderChannelDto">
+    <!--
+    @mbg.generated
+    -->
+    <id column="channel" jdbcType="CHAR" property="channel" />
+    <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
+    <result column="channel_name_en" jdbcType="VARCHAR" property="channelNameEn" />
+    <result column="comments" jdbcType="VARCHAR" property="comments" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+    @mbg.generated
+    -->
+    channel, channel_name, channel_name_en, comments
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--
+    @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from house_looking_order_channel
+    where channel = #{channel,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from house_looking_order_channel
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!--
+    @mbg.generated
+    -->
+    delete from house_looking_order_channel
+    where channel = #{channel,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.room1000.suborder.houselookingorder.dto.HouseLookingOrderChannelDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into house_looking_order_channel (channel, channel_name, channel_name_en, 
+      comments)
+    values (#{channel,jdbcType=CHAR}, #{channelName,jdbcType=VARCHAR}, #{channelNameEn,jdbcType=VARCHAR}, 
+      #{comments,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.suborder.houselookingorder.dto.HouseLookingOrderChannelDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into house_looking_order_channel
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="channel != null">
+        channel,
+      </if>
+      <if test="channelName != null">
+        channel_name,
+      </if>
+      <if test="channelNameEn != null">
+        channel_name_en,
+      </if>
+      <if test="comments != null">
+        comments,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="channel != null">
+        #{channel,jdbcType=CHAR},
+      </if>
+      <if test="channelName != null">
+        #{channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNameEn != null">
+        #{channelNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="comments != null">
+        #{comments,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.suborder.houselookingorder.dto.HouseLookingOrderChannelDto">
+    <!--
+    @mbg.generated
+    -->
+    update house_looking_order_channel
+    <set>
+      <if test="channelName != null">
+        channel_name = #{channelName,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNameEn != null">
+        channel_name_en = #{channelNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="comments != null">
+        comments = #{comments,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where channel = #{channel,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.suborder.houselookingorder.dto.HouseLookingOrderChannelDto">
+    <!--
+    @mbg.generated
+    -->
+    update house_looking_order_channel
+    set channel_name = #{channelName,jdbcType=VARCHAR},
+      channel_name_en = #{channelNameEn,jdbcType=VARCHAR},
+      comments = #{comments,jdbcType=VARCHAR}
+    where channel = #{channel,jdbcType=CHAR}
+  </update>
+</mapper>

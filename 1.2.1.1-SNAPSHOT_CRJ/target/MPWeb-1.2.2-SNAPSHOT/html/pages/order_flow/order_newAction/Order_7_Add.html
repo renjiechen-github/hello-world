@@ -1,0 +1,149 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>新增退租订单</title>
+</head>
+
+<body>
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<form id="form2" class="form-horizontal adminex-form" role="form">
+				<!-- 基本信息-->
+				<div class="form-group">
+					<label class="col-sm-2  control-label"></label>
+					<div class="col-sm-6"></div>
+					<div class="col-sm-4"></div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label"><b style="color: red">*</b>退租房源：</label>
+					<div class="col-sm-3">
+						<input id="rankName" maxlength="40" type="text"
+							onClick="orderModal.Open();" readonly dataType="Require"
+							class="form-control" msg="请选择退租房源！" />
+					</div>
+        <label class="col-sm-2  control-label"><b style="color: red">*</b>订单名称：</label>
+        <div class="col-sm-3">
+          <input type="text" maxlength="50" name="orderName" id="orderName" msg="请填写订单名称" class="form-control" placeholder="建议保留系统生成名称" dataType="Require" />
+        </div>					
+					<div class="col-sm-2"></div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">
+						联系方式：</label>
+					<div class="col-sm-3">
+						<input id="ouserMobile" maxlength="15" msg="请输入正确的手机号码" class="form-control" dataType="Number">
+					</div>
+
+					<label class="col-sm-2 control-label">
+						用户名称：</label>
+					<div class="col-sm-3">
+						<input type="text" maxlength="8" name="ouserName" id="ouserName" msg="请填写用户名称"
+							class="form-control" dataType="Require" />
+					</div>
+
+
+					<div class="col-sm-2"></div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2  control-label"><b style="color: red">*</b>
+						退租类型：</label>
+					<div class="col-sm-3">
+						<select class="form-control js-cancel-lease-type" dataType="Require" msg="请选择退租类型">
+							<option value="">请选择...</option>
+							<option value="B" checked>已入住违约退租</option>
+							<!-- <option value="C">未入住违约退租</option> -->
+							<option value="A">正常退租</option>
+						</select>
+					</div>
+					<label class="col-sm-2 control-label"><b style="color: red">*</b>
+						退租时间：</label>
+					<div class="col-sm-3">
+						<input msg="请选择时间" readonly dataType="Require" name="groupDate" type="text" id="oserviceTime" class="form-control" onFocus="WdatePicker({startDate:'%y-%M-%d %H:%m:%s',dateFmt:'yyyy-MM-dd HH:mm',alwaysUseStartDate:true,readOnly:true})" />
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2  control-label">订单说明：</label>
+					<div class="col-sm-8">
+						<textarea id="odesc" rows="6" maxlength="255" class="form-control"
+							placeholder="请填写订单相关信息"></textarea>
+					</div>
+					<div class="col-sm-2"></div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2  control-label"></label>
+					<div class="col-sm-6"></div>
+					<div class="col-sm-4"></div>
+				</div>
+				<div class="text-center">
+					<button class="btn btn-info" id="orderadd_bnt" type="button">保存</button>
+				</div>
+			</form>
+		</div>
+		
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+			aria-labelledby="myModalLabel">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h3 class="modal-title" id="myModalLabel">选择客户</h3>
+						<div class="row">
+							<form class="form-inline text-right">
+								区域选择：<select class="form-control" id="area" style="width: 120px">
+									<option value="">请选择</option>
+								</select> <input type="search" id="keywordT" class="form-control "
+									placeholder="关键字" style="width: 120px"> <span
+									class="form-group tools"><a href="javascript:;"
+									class="fa fa-search yc_seach" id="search" table="agreetable">查询</a>
+								</span>
+							</form>
+						</div>
+					</div>
+					<div class="modal-body">
+						<div class="adv-table">
+							<table id="agreetable"
+								class="display tablehover table table-bordered dataTable"
+								cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th></th>
+										<th></th>
+										<th>合约编码</th>
+										<th>房源信息</th>
+										<th>客户名称</th>
+										<th>联系方式</th>
+										<th>开始时间</th>
+										<th>结束时间</th>
+										<th></th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+					<div class="row">&nbsp;</div>
+					<div class="row">&nbsp;</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="/html/js/order_flow/order_newAction/Order_7_Add.js"></script>
+<script type="text/javascript" src="/html/js/order_flow/order_action/orderModals.js"></script>
+</html>

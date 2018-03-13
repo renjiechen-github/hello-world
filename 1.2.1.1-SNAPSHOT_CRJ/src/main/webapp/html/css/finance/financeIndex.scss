@@ -1,0 +1,26 @@
+.financeIndex{
+	.value,.name{
+		font-size: 15px;
+	    font-weight: bold; 
+	    margin-bottom: 5px;
+	}
+	.deep-purple-box{
+		.panel-heading{
+			text-align:center;
+			color:#F7F6F6;
+		}
+	}
+	.calendar-block {
+		.day{
+			position:relative;
+			.faloading{
+				position: absolute;
+			    top: 50%; 
+			    left: 50%;
+			    margin-left: -0.6em;
+			    margin-top: -0.4em;
+				display:none;
+			}
+		}
+	}
+}

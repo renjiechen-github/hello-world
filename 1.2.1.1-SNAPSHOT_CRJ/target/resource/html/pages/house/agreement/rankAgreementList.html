@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>租房合约管理</title>
+<style type="text/css">
+	.paddingClass
+	{
+		padding: 1px 10px !important;
+	}
+	.ulClass
+	{
+		min-width: 10px;
+	}
+</style>
+</head>
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+					<form class="form-inline" role="form">
+						<div class="form-group">
+							<label for="areaid">区域:</label> <select
+								class="form-control" id="areaid" name="areaid">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="trading">商圈:</label> 
+							<select id="trading" class="form-control">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="status">状态:</label> <select
+								class="form-control" id="status" name="status">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="accountid">收房管家:</label> <select
+								class="form-control" id="accountid" name="accountid">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="keyword">关键字:</label> <input type="text"
+								class="form-control" id="keyword" name="keyword"
+								placeholder="模糊查询名称，编码，租客姓名、租客号码">
+						</div>
+						<div class="form-group" style="cursor: pointer;">
+							 <input type="checkbox" name="isSelf" id="isSelf" value="1" /><label id="myDiv">本人网格</label> 
+						</div>
+						<span class="form-group tools"> <a href="javascript:;"
+							class="fa fa-search yc_seach" table="rank_agreement_list_table" id="serach">查询</a> </span>
+						&nbsp;&nbsp;
+					</form>
+					<br>
+					<form class="form-inline" role="form" style="">
+						<div class="form-group">
+							<label for="selectTime"><select class="form-control" name="selectTime" id="selectTime"><option value="0">到期时间</option><option value="1">创建时间</option></select></label> <input type="text"
+								style="width: 275px" name="endtime" readonly="readonly"
+								id="endtime" class="form-control"
+								placeholder="" class="span4" />
+						</div> 
+					</form>
+				</div>
+			</section>
+			<div class="adv-table">
+				<table id="rank_agreement_list_table"
+					class="display tablehover table table-bordered dataTable"
+					cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+							<th>合同编码</th>
+							<th>合同名称</th>
+							<th>房间名称</th>
+							<th>租客</th>
+							<th>结束日期</th>
+							<th>类型</th>
+							<th>租金(月)</th>
+							<th>租期(月)</th>
+							<th>总价</th>
+							<th>租赁状态</th>
+							<th>退租日期</th>
+							<th></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+	<form id="form3" action="" method="post" target="_blank">
+		<input type="hidden" name="content" id="content" value="" /> <input
+			type="hidden" name="signed" id="signed" value="" /> <input
+			type="hidden" name="key" id="key" value="" /> <input type="hidden"
+			name="apiid" id="apiid" value="" />
+	</form>
+</body> 
+<script type="text/javascript" src="/html/js/house/agreement/rank_agreement_list.js"></script>
+</html>

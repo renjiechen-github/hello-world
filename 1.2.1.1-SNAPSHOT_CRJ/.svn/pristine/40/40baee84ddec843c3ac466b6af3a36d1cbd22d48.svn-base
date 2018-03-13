@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.costImport.dao.CostImportMapper">
+	<resultMap type="com.room1000.costImport.pojo.CostImportHandle" id="CostImportMap">
+		<result column="id" property="id"/>
+		<result column="handleId" property="handleId"/>
+		<result column="handleTime" property="handleTime"/>
+		<result column="handler" property="handler"/>
+		<result column="handlerPhone" property="handlerPhone"/>
+		<result column="remarks" property="remarks"/>
+		<result column="type" property="type"/>
+		<result column="count" property="count"/>
+	</resultMap>
+	<resultMap type="com.room1000.costImport.pojo.WegBean" id="WegCostMap">
+		<result column="id" property="id"/>
+		<result column="handleId" property="handleId"/>
+		<result column="year" property="year"/>
+		<result column="month" property="month"/>
+		<result column="startMeter" property="startMeter"/>
+		<result column="endMeter" property="endMeter"/>
+		<result column="amount" property="amount"/>
+		<result column="cost" property="cost"/>
+		<result column="type" property="type"/>
+		<result column="state" property="state"/>
+		<result column="remark" property="remark"/>
+		<result column="firstDate" property="firstDate"/>
+		<result column="lastDate" property="lastDate"/>
+	</resultMap>
+	<select id="queryCostImportHandle" parameterType="Map" resultMap="CostImportMap">
+		select DISTINCT a.id,a.handleId,a.handleTime,a.`handler`,a.handlerPhone,
+		a.remarks,a.filePath,a.successNum,a.failedNum,b.type
+		from yc_weghandler_tab a
+		left join yc_wegcost_tab b on a.handleId = b.handleId
+		where 1 = 1
+		<if test="null!= handleId and ''!= handleId">
+		and b.handleId like CONCAT('%',#{handleId},'%')
+		</if>
+		<if test="null!= beginTime and ''!= beginTime">
+		and a.handleTime between #{beginTime,jdbcType=VARCHAR} and #{endTime,jdbcType=VARCHAR}
+		</if>
+		<if test="null!= handler and ''!= handler">
+		and a.`handler` like CONCAT('%',#{handler},'%')
+		</if>
+		<if test="null!= handlerPhone and ''!= handlerPhone">
+		and a.handlerPhone = #{handlerPhone}
+		</if>
+		<if test="null!= type and ''!= type">
+		and b.type = #{type}
+		</if>
+		<if test="null!= id and ''!= id">
+		and a.id = #{id}
+		</if>
+	</select>
+	
+	<select id="queryMaxHandleId" parameterType="Map" resultType="String">
+		select MAX(handleId) from yc_weghandler_tab
+	</select>
+	
+	<select id="queryTempMaxHandleId" parameterType="Map" resultType="String">
+		select MAX(handleId) from yc_wegcost_temp_tab
+	</select>
+	
+	<insert id="insertCostImport" parameterType="Map">
+		insert into yc_wegcost_tab 
+		(agerId,`year`,`month`,startMeter,endMeter,amount,cost,type,state,remark,handleId,firstDate,lastDate,sbCode,`room`)
+		select agerId,`year`,`month`,startMeter,endMeter,amount,cost,type,state,remark,handleId,firstDate,lastDate,sbCode,`room` 
+		from yc_wegcost_temp_tab;
+	</insert>
+	
+	<insert id="insertTempCostImport" parameterType="Map">
+		insert into yc_wegcost_temp_tab (handleId,`agerId`, `year`, `month`, `startMeter`, `endMeter`, `amount`, `cost`,firstDate,lastDate,sbCode,type,room)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+            (#{item.handleId,jdbcType=INTEGER},
+            <if test="item.agerId ==''">
+            	null,
+            </if>
+            <if test="item.agerId !=''">
+            	#{item.agerId,jdbcType=INTEGER},
+            </if>
+            #{item.year,jdbcType=VARCHAR},#{item.month,jdbcType=VARCHAR},
+            #{item.startMeter,jdbcType=DOUBLE},#{item.endMeter,jdbcType=DOUBLE},#{item.amount,jdbcType=DOUBLE},#{item.cost,jdbcType=DOUBLE},
+            #{item.firstDate,jdbcType=TIMESTAMP},#{item.lastDate,jdbcType=TIMESTAMP},#{item.sbCode,jdbcType=VARCHAR},#{item.type,jdbcType=VARCHAR},#{item.roomName,jdbcType=VARCHAR})
+        </foreach>
+	</insert>
+	
+	<select id="queryRepeatCostImport" parameterType="Map" resultMap="WegCostMap">
+		SELECT agerId,`year`,`month`,startMeter,endMeter,amount,cost,handleId,room as roomName
+		from yc_wegcost_temp_tab  where (agerId,`year`,`month`,type) in
+		(SELECT agerId,`year`,`month`,type from yc_wegcost_temp_tab GROUP BY agerId,`year`,`month`,type HAVING count(*)>1)
+		and handleId= #{maxHandleId}
+		GROUP BY agerId,`month`,`year`
+	</select>
+	
+	<select id="queryAgerId" parameterType="Map" resultMap="WegCostMap">
+		SELECT agerId,sbCode,startMeter,endMeter,`year`,`month`,amount,cost,type
+		from yc_wegcost_temp_tab
+		where agerId is null and sbCode is null
+		and handleId = #{maxHandleId}
+	</select>
+	
+	<select id="checkMeter" parameterType="Map" resultMap="WegCostMap">
+		SELECT agerId,sbCode,startMeter,endMeter,`year`,`month`,amount,cost,type,room as roomName
+		from yc_wegcost_temp_tab
+		where (startMeter-endMeter)>0 or(endMeter-startMeter)!=amount
+		and handleId = #{maxHandleId}
+	</select>
+	<select id="checkMonth" parameterType="String" resultMap="WegCostMap">
+		SELECT agerId,sbCode,startMeter,endMeter,`year`,`month`,amount,cost,type,room as roomName
+		from yc_wegcost_temp_tab
+		where `month` is null or `month` not between 1 and 12 and handleId = #{handleId}
+	</select>
+	<select id="queryRepeatCostImportWithNormal" parameterType="Map" resultMap="WegCostMap">
+		SELECT t2.agerId,t2.sbCode,t2.startMeter,t2.endMeter,t2.`year`,t2.`month`,t2.amount,t2.cost,t2.type,t2.room as roomName
+		from yc_wegcost_tab t1,yc_wegcost_temp_tab t2 
+		where t1.agerId = t2.agerId and t1.`year` = t2.`year` and t1.`month` = t2.`month` and t2.type=t1.type
+		GROUP BY t2.agerId,t2.`month`,t2.`year`
+	</select>
+	
+	<select id="checkType" parameterType="Map" resultType="Integer">
+		select count(*) from (select count(*) as num  from yc_wegcost_temp_tab t1
+		 where handleId=#{handleId}	group by type) t2
+	</select>
+	
+	<select id="querySuccessNum" parameterType="Map" resultType="Integer">
+		select count(*)
+		from yc_wegcost_tab
+		where state = 1
+		and handleId=#{handleId}
+	</select>
+	
+	<select id="queryFailedNum" parameterType="Map" resultType="Integer">
+		select count(*)
+		from yc_wegcost_tab
+		where state = 2
+		and handleId=#{handleId}
+	</select>
+	
+	<delete id="delCostImport" parameterType="Map">
+		delete from yc_wegcost_tab
+		where handleId=#{handleId}
+	</delete>
+	
+	<delete id="delTempCostImport" parameterType="Map">
+		delete from yc_wegcost_temp_tab
+		where handleId=#{handleId}
+	</delete>
+	
+	<select id="queryCostImport" parameterType="Map" resultMap="WegCostMap">
+		select room as roomName,agerId,sbCode,year,month,startMeter,endMeter,amount,cost,type,remark,state
+		from yc_wegcost_tab
+		where 1=1
+		<if test="null!= handleId and ''!=handleId">
+			and handleId = #{handleId}
+		</if>
+	</select>
+	
+	<select id="queryType" parameterType="string" resultType="string">
+		select type from yc_wegcost_tab 
+		where handleId=#{_parameter} LIMIT 1
+	</select>
+	<!--  根据老合约ID获取新合约ID -->
+	<update id="updateAgerIdByOldAgerId">
+		update yc_wegcost_temp_tab t set t.agerId=(select a.id from yc_agreement_tab a where a.sbcode=t.sbcode and a.type=1 
+		and a.`status`=2
+		) where t.agerId is null 
+	</update>
+	
+	<select id="queryAgerIdIsExist" parameterType="String" resultMap="WegCostMap">
+		select agerId,sbCode,startMeter,endMeter,`year`,`month`,amount,cost,type
+		from yc_wegcost_temp_tab
+		where agerId not in(select id from yc_agreement_tab)
+	</select>
+	
+	<select id="queryCostImportByHandleId" parameterType="Map" resultType="Integer">
+		select count(*)
+		from yc_wegcost_temp_tab
+		where handleId = #{handleId}
+	</select>
+	<insert id="insertWegHandle" parameterType="Map">
+		insert into yc_weghandler_tab
+		(handleId,handleTime,handler,handlerPhone,filePath,successNum,failedNum)
+		values(#{handleId},#{handleTime},#{handler},#{handlerPhone},#{filePath},#{successNum},#{failedNum})
+	</insert>
+</mapper>

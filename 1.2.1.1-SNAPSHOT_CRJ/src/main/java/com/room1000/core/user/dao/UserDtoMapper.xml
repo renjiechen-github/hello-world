@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.core.user.dao.UserDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.core.user.dto.UserDto">
+    <!--
+    @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="certificateno" jdbcType="VARCHAR" property="certificateno" />
+    <result column="qq" jdbcType="VARCHAR" property="qq" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="wechat" jdbcType="VARCHAR" property="wechat" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="birthday" jdbcType="VARCHAR" property="birthday" />
+    <result column="photourl" jdbcType="VARCHAR" property="photourl" />
+    <result column="registertime" jdbcType="TIMESTAMP" property="registertime" />
+    <result column="desc_text" jdbcType="VARCHAR" property="descText" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="lastlogintime" jdbcType="TIMESTAMP" property="lastlogintime" />
+    <result column="equipment" jdbcType="VARCHAR" property="equipment" />
+    <result column="ipadress" jdbcType="VARCHAR" property="ipadress" />
+    <result column="ca_author" jdbcType="INTEGER" property="caAuthor" />
+    <result column="registrationid" jdbcType="VARCHAR" property="registrationid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+    @mbg.generated
+    -->
+    id, username, mobile, certificateno, qq, email, wechat, sex, birthday, photourl, 
+    registertime, desc_text, is_delete, password, type, lastlogintime, equipment, ipadress, 
+    ca_author, registrationid
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+    @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from yc_userinfo_tab
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByCond" parameterType="com.room1000.core.user.dto.UserDto" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yc_userinfo_tab
+    <where>
+      <if test="mobile != null">
+        and mobile = #{mobile, jdbcType=VARCHAR}
+      </if>
+      <if test="username != null">
+        and username = #{username, jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--
+    @mbg.generated
+    -->
+    delete from yc_userinfo_tab
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.room1000.core.user.dto.UserDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into yc_userinfo_tab (id, username, mobile, 
+      certificateno, qq, email, 
+      wechat, sex, birthday, 
+      photourl, registertime, desc_text, 
+      is_delete, password, type, 
+      lastlogintime, equipment, ipadress, 
+      ca_author, registrationid)
+    values (#{id,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, 
+      #{certificateno,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{wechat,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{birthday,jdbcType=VARCHAR}, 
+      #{photourl,jdbcType=VARCHAR}, #{registertime,jdbcType=TIMESTAMP}, #{descText,jdbcType=VARCHAR}, 
+      #{isDelete,jdbcType=INTEGER}, #{password,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{lastlogintime,jdbcType=TIMESTAMP}, #{equipment,jdbcType=VARCHAR}, #{ipadress,jdbcType=VARCHAR}, 
+      #{caAuthor,jdbcType=INTEGER}, #{registrationid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.core.user.dto.UserDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into yc_userinfo_tab
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="certificateno != null">
+        certificateno,
+      </if>
+      <if test="qq != null">
+        qq,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="wechat != null">
+        wechat,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="birthday != null">
+        birthday,
+      </if>
+      <if test="photourl != null">
+        photourl,
+      </if>
+      <if test="registertime != null">
+        registertime,
+      </if>
+      <if test="descText != null">
+        desc_text,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="lastlogintime != null">
+        lastlogintime,
+      </if>
+      <if test="equipment != null">
+        equipment,
+      </if>
+      <if test="ipadress != null">
+        ipadress,
+      </if>
+      <if test="caAuthor != null">
+        ca_author,
+      </if>
+      <if test="registrationid != null">
+        registrationid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="certificateno != null">
+        #{certificateno,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null">
+        #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="wechat != null">
+        #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null">
+        #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="photourl != null">
+        #{photourl,jdbcType=VARCHAR},
+      </if>
+      <if test="registertime != null">
+        #{registertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="descText != null">
+        #{descText,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="lastlogintime != null">
+        #{lastlogintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="equipment != null">
+        #{equipment,jdbcType=VARCHAR},
+      </if>
+      <if test="ipadress != null">
+        #{ipadress,jdbcType=VARCHAR},
+      </if>
+      <if test="caAuthor != null">
+        #{caAuthor,jdbcType=INTEGER},
+      </if>
+      <if test="registrationid != null">
+        #{registrationid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.core.user.dto.UserDto">
+    <!--
+    @mbg.generated
+    -->
+    update yc_userinfo_tab
+    <set>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="certificateno != null">
+        certificateno = #{certificateno,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null">
+        qq = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="wechat != null">
+        wechat = #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null">
+        birthday = #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="photourl != null">
+        photourl = #{photourl,jdbcType=VARCHAR},
+      </if>
+      <if test="registertime != null">
+        registertime = #{registertime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="descText != null">
+        desc_text = #{descText,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="lastlogintime != null">
+        lastlogintime = #{lastlogintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="equipment != null">
+        equipment = #{equipment,jdbcType=VARCHAR},
+      </if>
+      <if test="ipadress != null">
+        ipadress = #{ipadress,jdbcType=VARCHAR},
+      </if>
+      <if test="caAuthor != null">
+        ca_author = #{caAuthor,jdbcType=INTEGER},
+      </if>
+      <if test="registrationid != null">
+        registrationid = #{registrationid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.core.user.dto.UserDto">
+    <!--
+    @mbg.generated
+    -->
+    update yc_userinfo_tab
+    set username = #{username,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      certificateno = #{certificateno,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      wechat = #{wechat,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      birthday = #{birthday,jdbcType=VARCHAR},
+      photourl = #{photourl,jdbcType=VARCHAR},
+      registertime = #{registertime,jdbcType=TIMESTAMP},
+      desc_text = #{descText,jdbcType=VARCHAR},
+      is_delete = #{isDelete,jdbcType=INTEGER},
+      password = #{password,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      lastlogintime = #{lastlogintime,jdbcType=TIMESTAMP},
+      equipment = #{equipment,jdbcType=VARCHAR},
+      ipadress = #{ipadress,jdbcType=VARCHAR},
+      ca_author = #{caAuthor,jdbcType=INTEGER},
+      registrationid = #{registrationid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.rm.caas.appserver.bus.dao.report.ICaasReportDao">
+	  <select id="getHouseCreateNumByDate" parameterType="com.yc.rm.caas.appserver.bus.controller.view.fo.ViewFo" resultType="int">
+	    <if test="agreeType == 1">
+		select ifnull(sum(left(o.spec,1)),0) 
+		  from yc_agreement_tab ag 
+		  left join yc_onstruction_tab o on ag.house_id = o.houseid 
+		 where o.is_work = 1
+		</if>
+		<if test="agreeType == 2">
+		select ifnull(sum(left(h.rank_spec,1)),0) 
+		  from yc_agreement_tab ag 
+		  left join yc_houserank_tab h on ag.house_id = h.id
+		 where h.isdelete = 1
+		</if>	
+		   and ag.type = #{agreeType}
+		<![CDATA[
+		   and ag.begin_time < date_sub(#{date},interval -1 day) 	
+		]]>	 
+		<if test="begin_date != null">
+		<![CDATA[	
+		   and ag.begin_time >= #{begin_date}
+		]]>	   
+		</if>	  
+	 </select>
+   <select id="getHouseCheckOutNumByDate" parameterType="com.yc.rm.caas.appserver.bus.controller.view.fo.ViewFo" resultType="int">
+    <if test="agreeType == 1">
+	  <![CDATA[ 
+	select ifnull(sum(case when ag.status = 3 and ag.checkouttime < date_sub(#{date},interval -1 day)
+                   then left(o.spec,1)
+                   else 0 end),0)
+	  from yc_agreement_tab ag 
+	  left join yc_onstruction_tab o on ag.house_id = o.houseid 
+	 where o.is_work = 1
+	 ]]>
+	</if>
+	<if test="agreeType == 2">
+	 <![CDATA[ 
+	select ifnull(sum(case when ag.status = 3 and ag.checkouttime < date_sub(#{date},interval -1 day)
+                   then left(h.rank_spec,1)
+                   else 0 end),0)
+	  from yc_agreement_tab ag 
+	  left join yc_houserank_tab h on ag.house_id = h.id
+	 where h.isdelete = 1
+	 ]]>
+	</if>
+	   and ag.type = #{agreeType}
+	<![CDATA[
+	   and ag.checkouttime < date_sub(#{date},interval -1 day)
+	]]>
+	<if test="begin_date != null">
+	<![CDATA[
+	   and ag.checkouttime >= #{begin_date}
+	]]>
+	</if>
+ </select>
+  <select id="getHouseNum" parameterType="com.yc.rm.caas.appserver.bus.controller.view.fo.ViewFo" resultType="int">
+    <!-- 当前房源数量（收、租）0点之前，合约状态=2的房间数 -->
+    <if test="agreeType == 1">
+	select ifnull(sum(left(o.spec,1)),0) 
+	  from yc_agreement_tab ag 
+	  left join yc_onstruction_tab o on ag.house_id = o.houseid 
+	 where o.is_work = 1
+	</if>
+	<if test="agreeType == 2">
+	select ifnull(sum(left(h.rank_spec,1)),0) 
+	  from yc_agreement_tab ag 
+	  left join yc_houserank_tab h on ag.house_id = h.id
+	 where h.isdelete = 1
+	</if>
+	   and ag.type = #{agreeType} and ag.isdelete=1
+	<![CDATA[
+	   and ag.begin_time < date_sub(#{date},interval -1 day)
+	   and ag.end_time >= date_sub(#{date},interval -1 day)
+	   and (ag.checkouttime is null or ag.checkouttime >= date_sub(#{date},interval -1 day)) 
+	]]>
+ </select>
+  <select id="getChkOutIngHouseNum" parameterType="com.yc.rm.caas.appserver.bus.controller.view.fo.ViewFo" resultType="int">
+  	<if test="agreeType == 1">
+	select ifnull(sum(left(o.spec,1)),0) 
+	  from yc_agreement_tab ag 
+	  left join yc_onstruction_tab o on ag.house_id = o.houseid 
+	 where o.is_work = 1
+	</if>
+	<if test="agreeType == 2">
+	select ifnull(sum(left(h.rank_spec,1)),0) 
+	  from yc_agreement_tab ag 
+	  left join yc_houserank_tab h on ag.house_id = h.id
+	 where h.isdelete = 1
+	</if>
+	   and ag.status = 7
+	   and ag.type = #{agreeType}
+	 <![CDATA[
+	   and ag.end_time < date_sub(#{date},interval -1 day)
+	   ]]>
+ </select>
+ <select id="getSellerNum" resultType="int">
+  	SELECT ifnull(count(a.`id`),0)
+  	   FROM yc_group_tab g, cf_team_member_area tma, yc_account_tab a 
+       left join yc_area_tab ar on ar.id = b.areaid
+       left join yc_account_role_tab r on a.`id` = r.`user_id` 
+  	  WHERE r.`role_id` = 22
+  	  	AND g.id = tma.area_id
+  	  	AND a.id = tma.user_id
+  	    AND r.`state` = 1
+  	    AND a.`is_delete` = 1
+ </select>
+ <select id="cumulativeIdle"  parameterType="com.yc.rm.caas.appserver.bus.controller.view.fo.ViewFo" resultType="float">
+	<!-- 累计空置    出租（状态=2：合同开始时间~今天  +  状态退租中和失效：合同开始时间~退租时间）/ 收房（状态=2：合同开始时间~今天-免租期  +  状态退租中和失效：合同开始时间~退租时间-免租期）-->
+	<![CDATA[
+	SELECT 100 - ROUND(a.zu / b.shou * 100, 2)
+	 FROM (
+		SELECT
+			1 AS id,
+			sum(
+				CASE WHEN a.begin_time <  date_sub(#{date},interval -1 day) 
+					  and a.end_time   >= date_sub(#{date},interval -1 day) 
+					  and (a.checkouttime >= date_sub(#{date},interval -1 day) or a.checkouttime is null)
+					 THEN datediff(last_day(#{date}),a.begin_time) * LEFT(b.rank_spec, 1)
+					 ELSE datediff(a.checkouttime,a.begin_time) * LEFT(b.rank_spec, 1)
+					  END
+			) AS 'zu'
+		FROM yc_agreement_tab a
+		LEFT JOIN yc_houserank_tab b ON a.house_id = b.id
+		WHERE a.type = 2) a,
+		(SELECT
+			1 AS id,
+			sum(
+				CASE WHEN a.begin_time < date_sub(#{date},interval -1 day) 
+				      and a.end_time   >=date_sub(#{date},interval -1 day)
+				      and (a.checkouttime >= date_sub(#{date},interval -1 day) or a.checkouttime is null)
+					 THEN (datediff(last_day(#{date}),a.begin_time)-IFNULL(a.free_period,0)) * LEFT(b.spec, 1)
+					 ELSE (datediff(a.checkouttime,a.begin_time)-IFNULL(a.free_period,0)) * LEFT(b.spec, 1)
+					  END
+			) AS 'shou'
+		FROM yc_agreement_tab a
+		LEFT JOIN yc_onstruction_tab b ON a.id = b.agreementid
+		WHERE	b.is_work = 1
+		  AND a.type = 1) b
+	where a.id = b.id
+    ]]>
+ </select>
+ <select id="rentalDiff" parameterType="com.yc.rm.caas.appserver.bus.controller.view.fo.ViewFo" resultType="float"> 	
+	<!-- 租差    （状态=2 出租合同的月租金）/出租间数 - （对应收房合同的月支出（找到当前这个月对应的房租））/收房间数 -->
+	<!-- 收房总价 -->
+	<![CDATA[
+	select round(a.chu-b.shou,2) as diff from (	
+	SELECT
+			sum(a.cost_a)/sum(left(d.rank_spec,1)) as chu
+		FROM
+			yc_agreement_tab a
+		LEFT JOIN yc_account_tab b ON a.agents = b.id
+		LEFT JOIN yc_houserank_tab d ON a.house_id = d.id
+		WHERE a.begin_time < date_sub(#{date},interval -1 day) 
+		  and a.end_time >= date_sub(#{date},interval -1 day) 
+		  and (a.checkouttime >= date_sub(#{date},interval -1 day) or a.checkouttime is null)
+		  AND a.type = 2
+		  AND a.begin_time > date_sub(date_sub(#{date},interval -1 day),interval 1 month)) a,	
+	(SELECT
+    sum(substring_index(substring_index(a.cost_a,'|',abs(timestampdiff(year,#{date},adddate(a.begin_time,interval - a.free_period day))) + 1),'|',-1))/ 
+		sum(LEFT (d.rank_spec, 1)) as shou
+	FROM
+		yc_agreement_tab a
+	LEFT JOIN yc_houserank_tab d ON a.house_id = d.house_id
+	AND d.rank_type = 0
+	AND a.type = 1
+	WHERE
+		a.id IN (
+			SELECT
+				a.father_id
+			FROM
+				yc_agreement_tab a
+			LEFT JOIN yc_account_tab b ON a.agents = b.id
+			LEFT JOIN yc_houserank_tab d ON a.house_id = d.id
+			WHERE a.begin_time < date_sub(#{date},interval -1 day) and a.end_time >= #{date} and (a.checkouttime >= #{date} or a.checkouttime is null)
+			AND a.type = 2
+			AND a.begin_time > date_sub(date_sub(#{date},interval -1 day),interval 1 month) 
+		))b
+    ]]>
+ </select>
+ <select id="getLiveHousePrice" parameterType="com.yc.rm.caas.appserver.bus.controller.view.fo.ViewFo" resultType="float">
+ <!-- 单间成本  所有收房合同（家具+装修+家电）/间     -->
+ <!-- 暂时使用状态值，后期改为 begin_time< now and end_time >= now and (checkouttime is null or checkouttime >= now)  -->
+	SELECT ROUND(money / total, 2) FROM
+	(
+		SELECT
+			sum(a.money + b.cost) AS money,
+			sum(LEFT(a.spec, 1)) AS total
+		FROM yc_agreement_tab c
+		LEFT JOIN purchase_items_tab b ON b.agree_id = c.id
+		LEFT JOIN yc_onstruction_tab a ON a.agreementid = b.agree_id
+		WHERE a. STATUS > 2
+		  AND b. STATUS = 1
+		  AND c. type   = 1
+		  AND c. end_time >= date_sub(#{date},interval -1 day)
+		  and c. checkouttime >= date_sub(#{date},interval -1 day)
+	) s
+ </select>
+ <select id="workingNum" parameterType="com.yc.rm.caas.appserver.bus.controller.view.fo.ViewFo" resultType="int">
+ <![CDATA[
+ 	 select ifnull(sum(left(r.rank_spec,1)),0) 
+ 	   from yc_house_tab a 
+ 	   left join yc_houserank_tab r on a.id = r.house_id and r.rank_type = 0
+ 	   left join yc_group_tab c on a.group_id = c.id 
+ 	   left join yc_agreement_tab ag on ag.house_id = a.id and ag.type = 1
+	  where a.delete_state = 1
+	    and a.house_status = 5 
+	    and ag.begin_time < date_sub(#{date},interval -1 day)
+	    ]]>
+ </select>
+ <select id="waitHandNum" parameterType="com.yc.rm.caas.appserver.bus.controller.view.fo.ViewFo" resultType="int">
+ <![CDATA[
+ 	 select ifnull(sum(left(r.rank_spec,1)),0) 
+ 	   from yc_house_tab a 
+ 	   left join yc_houserank_tab r on a.id = r.house_id and r.rank_type = 0
+ 	   left join yc_group_tab c on a.group_id = c.id 
+ 	   left join yc_agreement_tab ag on ag.house_id = a.id and ag.type = 1
+	  where a.delete_state = 1
+	    and a.house_status = 6 
+	    and ag.begin_time < date_sub(#{date},interval -1 day)
+	    ]]>
+ </select>
+  <select id="waitWorkNum" resultType="int">
+ <![CDATA[
+ 	 select sum(left(o.spec,1)) 
+ 	   from yc_onstruction_tab o 
+ 	  where o.`status` < 2 
+ 	    and o.is_work = 1 
+ 	    and is_delete = 1 
+	    ]]>
+ </select> 
+</mapper>

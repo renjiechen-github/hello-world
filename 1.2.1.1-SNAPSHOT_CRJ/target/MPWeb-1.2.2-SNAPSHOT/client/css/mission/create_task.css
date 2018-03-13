@@ -1,0 +1,219 @@
+﻿ * {
+    margin: 0px;
+    padding: 0px;
+    font-family: 微软雅黑
+}#banner {
+    width: 100%;
+    z-index: 100;
+    text-align: center;
+    position: fixed;
+    box-sizing: border-box;
+    padding: 15px 10px;
+    background-color: #bbbbbb;
+    top: 0px;
+    left: 0px;
+    padding-top: 30px
+}#banner .inpy {
+    margin-left: auto;
+    margin-right: auto;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex
+}#banner .inpy .button-group {
+    -webkit-box-flex: 3;
+    -webkit-flex: 3;
+    flex: 3;
+    border: 1px solid black
+}#banner .inpy .button-group select {
+    border-radius: initial;
+    width: 100%;
+    padding: 5px;
+    border: 0px;
+    color: black;
+    font-family: 微软雅黑;
+    height: 31px;
+    font-size: 15px;
+    -webkit-appearance: listbox
+}#banner .inpy .inputdiv {
+    -webkit-box-flex: 6;
+    -webkit-flex: 6;
+    flex: 6;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black
+}#banner .inpy .inputdiv input {
+    border-radius: initial;
+    width: 100%;
+    padding-left: 5px;
+    border-right: 0px;
+    border-left: 0px;
+    border: 0px;
+    cursor: pointer;
+    color: black;
+    height: 31px;
+    box-shadow: none
+}#banner .inpy .buttondiv {
+    -webkit-box-flex: 3;
+    -webkit-flex: 3;
+    flex: 3
+}#banner .inpy .buttondiv .button {
+    cursor: pointer;
+    border-color: black;
+    background-color: black;
+    border: none;
+    font-family: 微软雅黑;
+    font-size: 15px;
+    color: white;
+    height: 33px;
+    width: 100%;
+    padding: 3px
+}#banner .inpy .rightdiv {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    height: 33px
+}#banner .hide {
+    display: none;
+    width: 80%;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    margin-left: auto;
+    margin-right: auto
+}#banner .hide .hidediv {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex
+}#banner .hide select {
+    border-radius: initial;
+    border: 0px;
+    color: white;
+    background-color: #bbbbbb;
+    font-size: 15px;
+    -webkit-appearance: initial;
+    text-align: center
+}#banner .hide em {
+    font-style: normal;
+    color: white;
+    margin: 0 10px
+}#banner .hide .divflex {
+    -webkit-box-flex: 3;
+    -webkit-flex: 3;
+    flex: 3
+}#banner .hide .divflex1 {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1
+}#banner .hide .divflex2 {
+    -webkit-box-flex: 3;
+    -webkit-flex: 3;
+    flex: 3
+}#banner .hide .divflex3 {
+    -webkit-box-flex: 3;
+    -webkit-flex: 3;
+    flex: 3
+}.body {
+    font-size: 14px;
+    padding: 0px 2%;
+    box-sizing: border-box;
+    padding-top: 85px
+}.body a {
+    text-decoration: none;
+    color: #717173;
+    -webkit-tap-highlight-color: transparent
+}.body .div {
+    margin-bottom: 2px
+}.body .div .con {
+    padding: 0px 15px 1px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    position: relative
+}.body .div .con p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    white-space: normal;
+    word-break: break-all
+}.body .div .con .info {
+    -webkit-box-flex: 7;
+    -webkit-flex: 7;
+    flex: 7;
+    color: #717173;
+    padding: 5px 0px 0px;
+    padding-right: 10px
+}.body .div .con .info p {
+    font-weight: bold
+}.body .div .con .info p.state {
+    color: #0D0D0E;
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    white-space: normal;
+    word-break: break-all
+}.body .div .con2 {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    padding: 0px 15px 6px
+}.body .div .con2 .info1 {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+    color: #717173;
+    padding: 1px 0px;
+    padding-right: 10px
+}.body .div .con2 .state1 {
+    -webkit-box-flex: 2;
+    -webkit-flex: 2;
+    flex: 2;
+    padding: 1px 0px
+}.body .div .mark {
+    float: left;
+    background-image: url(../../images/mission/1.png);
+    width: 16px;
+    height: 16px;
+    margin-right: 5px
+}.body .div .mark1 {
+    float: left;
+    background-image: url(../../images/mission/2.png);
+    width: 16px;
+    height: 16px;
+    margin-right: 5px
+}.body .div .con1 {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    padding: 0px 15px 0px;
+    position: relative
+}.body .div .con1 .common {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1
+}.body .div .con1 .common.r-item {
+    position: absolute;
+    right: 15px
+}.body .div .con1 .common1 {
+    -webkit-box-flex: 2;
+    -webkit-flex: 2;
+    flex: 2
+}.body hr {
+    border-bottom: 1px solid #dcdbdb;
+    border-top: none;
+    width: 95%;
+    margin: 0 auto
+}.body .color2 {
+    color: #aba9a9;
+    padding: 1px 0px
+}.body .color2 span {
+    color: #a22d10
+}.rot2 {
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+    filter: progid:
+
+DXImageTransform.Microsoft.BasicImage(rotation=2);-ms-filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=2)}

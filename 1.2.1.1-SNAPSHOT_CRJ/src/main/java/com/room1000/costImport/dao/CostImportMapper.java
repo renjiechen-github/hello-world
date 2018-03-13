@@ -1,0 +1,131 @@
+package com.room1000.costImport.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.room1000.costImport.pojo.CostImportHandle;
+import com.room1000.costImport.pojo.WegBean;
+
+/**
+ * 费用导入数据层
+ * @author chenrj
+ * @data 20180122
+ */
+public interface CostImportMapper {
+
+	/**
+	 * 查询费用导入操作表数据
+	 */
+	List<CostImportHandle> queryCostImportHandle(Map<String, Object> map);
+	/**
+	 * 插入数据至费用导入表
+	 */
+	int insertCostImport(Map<String, Object> map);
+	int insertWegHandle(Map<String, Object> map);
+	/**
+	 * 插入数据至临时数据导入表
+	 */
+	int insertTempCostImport(Map<String, Object> map);
+//	/**
+//	 * 创建临时费用导入表
+//	 */
+//	int createTempCostImportTable(Map<String, Object> map);
+	/**
+	 * 查询操作表中最大handleId
+	 */
+	String queryMaxHandleId();
+	/**
+	 * 查询导入数据是否存在重复
+	 */
+	List<WegBean> queryRepeatCostImport(Map<String, Object> map);
+	/**
+	 * 筛查agerId异常
+	 */
+	List<WegBean> queryAgerId(String handleId);
+	/**
+	 * 筛查起止读数大小
+	 */
+	List<WegBean> checkMeter(String handleId);
+	/**
+	 * 查询费用表中是否存在重复数据
+	 */
+	List<WegBean> queryRepeatCostImportWithNormal(Map<String, Object> map);
+	/**
+	 * 查询临时表中最大操作id
+	 */
+	String queryTempMaxHandleId();
+	/**
+	 * 根据老合约id翻译出新合约id
+	 */
+	int updateAgerIdByOldAgerId();
+	
+	/**
+	 * 查询临时表中不存在的agerId
+	 */
+	List<WegBean> queryAgerIdIsExist();
+	/**
+	 * 校验导入类型是否一致
+	 */
+	int checkType(String handleId);
+	/**
+	 * 根据handleId查询临时表中数据
+	 */
+	int queryCostImportByHandleId(Map<String, Object> map);
+	
+	/**
+	 * 查询拆分明细成功的条数
+	 * @return 成功条数
+	 */
+	int querySuccessNum(Map<String, Object> map);
+	/**
+	 * 查询拆分明细失败的条数
+	 * @return 失败条数
+	 */
+	int queryFailedNum(Map<String, Object> map);
+	/**
+	 * 删除临时表中数据 
+	 */
+	int delTempCostImport(Map<String, Object> map);
+	/**
+	 * 删除正常表中数据 
+	 */
+	int delCostImport(Map<String, Object> map);
+	/**
+	 * 查询费用导入表中数据
+	 * @param map 参数
+	 * @return 查询结果集合
+	 */
+	List<WegBean> queryCostImport(Map<String, Object> map);
+	
+	String queryType(String maxHanleId);
+	
+	/**
+	 * 期数不能为空切不能大于12
+	 * @param handleId
+	 * @return
+	 */
+	List<WegBean> checkMonth(String handleId);
+	
+	/**
+	 * 
+	 */
+	List<WegBean> checkFirstAndLastDate(String handleId);
+	
+	/**
+	 * 将sbcode长度不足4位的在前位补0至4位
+	 * @param handleId
+	 */
+	int addZeroForSbcode(String handleId);
+	
+	/**
+	 * 查询sbcode长度不足4位
+	 * @param handleId
+	 */
+	int queryLessSbcode(String handleId);
+	
+	/**
+	 * 校验agerId是否全都翻译完成
+	 * @param handleId
+	 */
+	List<WegBean> checkAgerIdIsNull(String handleId);
+}

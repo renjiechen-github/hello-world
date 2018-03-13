@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.room1000.com/">
+  <process id="HouseLookingOrderProcess" name="HouseLookingOrderProcess" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="usertask1" name="C,2,接单">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${TakeOrderNode}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="usertask4" name="H,5,待评价">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${Wait2CommentNode}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="usertask7" name="D,3,执行">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${DoingInOrderNode}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow12" sourceRef="usertask7" targetRef="usertask4"></sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="usertask4" targetRef="servicetask1"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow16" sourceRef="servicetask1" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow17" sourceRef="usertask1" targetRef="usertask7"></sequenceFlow>
+    <serviceTask id="servicetask1" name="关闭订单" activiti:delegateExpression="${CompleteOrderNode}"></serviceTask>
+    <sequenceFlow id="flow21" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_HouseLookingOrderProcess">
+    <bpmndi:BPMNPlane bpmnElement="HouseLookingOrderProcess" id="BPMNPlane_HouseLookingOrderProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="32.0" y="83.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="170.0" y="73.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask4" id="BPMNShape_usertask4">
+        <omgdc:Bounds height="55.0" width="105.0" x="560.0" y="73.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask7" id="BPMNShape_usertask7">
+        <omgdc:Bounds height="55.0" width="105.0" x="370.0" y="73.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="960.0" y="83.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="754.0" y="73.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="475.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="560.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="665.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="754.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="859.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="960.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="275.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="370.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="67.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="170.0" y="100.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

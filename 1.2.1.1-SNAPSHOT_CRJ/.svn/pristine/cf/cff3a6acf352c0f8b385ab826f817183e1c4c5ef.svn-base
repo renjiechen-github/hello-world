@@ -1,0 +1,111 @@
+package com.room1000.costImport.pojo;
+
+/**
+ * 费用导入常量类
+ * @author chenrj
+ * @data 20180122
+ */
+public class Constant {
+
+	/**
+	 * 导入模板表头
+	 */
+	public final static String[] EXCEL_TITLE = new String[]{"合同号","系统号","辅助账房间","年","期","用量","费用","起","止","类型"};
+	
+	/**
+	 * 表起始字符
+	 */
+	public final static String tempTableNameTop = "yc_";
+	
+	/**
+	 * 临时表结束符
+	 */
+	public final static String tempTableNameBottom = "_tmp_table";
+	
+	/**
+	 * 普通表结束符
+	 */
+	public final static String normalTableNameBottom = "_normal_table";
+	
+	/**
+	 * 操作id初始值
+	 */
+	public final static String initialHandleIdBottom = "00001";
+	
+	public final static int perDayTime = 20180101;
+	
+	
+	/**
+	 * 合约id异常
+	 */
+	public final static String agerIdError = "合约id异常";
+	
+	/**
+	 * 起止读数异常
+	 */
+	public final static String meterError = "起止读数异常"; 
+	
+	/**
+	 * 存在已导入数据
+	 */
+	public final static String existNormalRepeatError = "存在已导入数据";
+	
+	/**
+	 * 存在重复数据
+	 */
+	public final static String existRepeatError = "存在重复数据";
+	
+	/**
+	 * 合约id不存在
+	 */
+	public final static String noAgerIdError = "合约id不存在";
+	
+	/**
+	 * 未查询到对应合约
+	 */
+	public final static String noAgreementRemark = "未查询到对应合约";
+	/**
+	 * 未查询到对应租客
+	 */
+	public final static String noTenantRemark = "未查询到对应租客";
+	/**
+	 * 水费明细生成异常
+	 */
+	public final static String waterSplitRemark = "水费明细生成异常";
+	/**
+	 * 电费明细生成异常
+	 */
+	public final static String elementSplitRemark = "电费明细生成异常";
+	/**
+	 * 燃气费明细生成异常
+	 */
+	public final static String gasSplitRemark = "燃气费明细生成异常";
+	/**
+	 * 费用明细生成成功
+	 */
+	public final static String successSplitRemark = "费用明细生成成功";
+	/**
+	 * 其他生成问题
+	 */
+	public final static String otherRemark = "其他生成问题";
+	
+	/**
+	 * 最大导入条数
+	 */
+	public final static int maxTotalNum = 10000;
+	
+	/**
+	 * 最大导入次数
+	 */
+	public final static int maxImportNum = 100000;
+	
+	/**
+	 * 上海环境测试ftp根路径
+	 */
+	public final static String testServerFileRoot ="http://test.room10000.com:9003";
+	
+	/**
+	 * 正式环境ftp根路径
+	 */
+	public final static String formalServerFileRoot ="http://file.room1000.com:9003";
+}

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.rm.caas.appserver.bus.dao.user.IUserDao">
+	
+	<!-- 根据查询条件，查询用户信息 -->
+	<select id="selectUserList" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo"
+		resultType="com.yc.rm.caas.appserver.model.user.User">
+		select
+		a.id as "userId",
+		a.name as "userName",
+		a.mobile as "userPhone",
+		a.create_time as "createTime",
+		a.state as "state",
+		a.equipment as "device",
+		a.ipadress as "ipAdress",
+		a.lastlogintime as "lastLoginTime",
+		a.is_delete as "isDelete",
+		a.desc_text as "descText",
+		b.item_name as "stateName",
+		group_concat(distinct d.id) as "roleId",
+		group_concat(distinct d.name) as "roleName",
+		group_concat(distinct g.org_id) as "orgId", 
+		group_concat(distinct h.org_name) as "orgName",
+		f.id as "teamId",
+		f.name as "teamName"
+		from yc_account_tab a
+		left join yc_dictionary_item b on a.state=b.item_id
+		left join cf_userrole c on a.id=c.user_id
+		left join cf_role d on c.role_id=d.id
+		left join cf_team_rel e on a.id=e.user_id
+		left join cf_team f on e.team_id=f.id
+		left join yc_account_org_tab g on a.id=g.user_id
+		left join yc_organization_tab h on g.org_id=h.org_id
+		<where>
+			a.mobile is not null and a.mobile!='' and b.group_id='ACCOUNT.STATE' <![CDATA[and a.mobile>=0]]> and a.is_delete=1
+			<if test="state != null and state != ''">
+				and a.state=#{state}
+			</if>
+			<if test="beginTime != null and beginTime != ''">
+				<![CDATA[and a.create_time>=#{beginTime}]]>
+			</if>						
+			<if test="endTime != null and endTime != ''">
+				<![CDATA[and a.create_time<=#{endTime}]]>
+			</if>
+			<if test="userName != null and userName != ''">
+				and a.name like concat('%',#{userName},'%')
+			</if>
+			<if test="device != null and device != ''">
+				and a.equipment like concat('%',#{device},'%')
+			</if>			
+			<if test="teamId != null and teamId != ''">
+				and f.id in (${teamId})
+			</if>
+			<if test="roleId != null and roleId != ''">
+				and d.id=#{roleId}
+			</if>
+			<if test="keyWord != null and keyWord !=''">
+				and (a.mobile like concat('%',#{keyWord},'%') or a.name like concat('%',#{keyWord},'%')
+				or d.name like concat('%',#{keyWord},'%') or f.name like concat('%',#{keyWord},'%')
+				or h.org_name like concat('%',#{keyWord},'%'))
+			</if>
+			<if test="userId != null and userId != ''">
+				and a.id=#{userId}
+			</if>
+		</where>
+		group by a.id
+	</select>
+
+	<!-- 新增用户 -->
+	<insert id="insertUser" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo"
+		useGeneratedKeys="true" keyProperty="userId">
+		insert into yc_account_tab
+		(
+		mobile,
+		name,
+		type,
+		roleid,
+		desc_text,
+		create_time,
+		passwd,
+		is_delete,
+		state,
+		relation
+		)
+		values (
+		#{userPhone},
+		#{userName},
+		0,
+		0,
+		<choose>
+			<when test="descText!=null and descText!=''">
+				#{descText},
+			</when>
+			<otherwise>
+				'',
+			</otherwise>
+		</choose>
+		now(),
+		#{password},
+		1,
+		1,
+		0
+		)
+	</insert>
+	
+	<!-- 入库团队和用户关联关系表 -->
+	<insert id="insertRelationByTeam" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo">
+		insert into cf_team_rel
+		(
+		team_id,
+		user_id
+		)	
+		values (
+		#{teamId},
+		#{userId}
+		)	
+	</insert>
+	
+	<!-- 入库角色和用户关联关系表 -->
+	<insert id="insertRelationByRole" useGeneratedKeys="true">
+		insert into cf_userrole
+		(
+		user_id,
+		role_id,
+		create_id,
+		modify_id,
+		modify_date
+		)
+		values 
+		<foreach collection="roleIds" item="roleId" index="index" separator="," > 
+		( #{userId}, #{roleId}, #{createId}, #{createId}, now())
+		</foreach>
+	</insert>	
+	
+	<!-- 入库组织和用户关联关系表 -->
+	<insert id="insertRelationByOrg" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo" useGeneratedKeys="true">
+		insert into yc_account_org_tab
+		(
+		user_id,
+		org_id,
+		state
+		)
+		values 
+		<foreach collection="orgIds" item="orgId" index="index" separator="," > 
+		( #{userId}, #{orgId}, 1)
+		</foreach>
+	</insert>	
+
+	<!-- 按照当前登录者ID查询团队层级信息 -->
+	<select id="selectTeamInfoById" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo"
+		resultType="map">
+		select
+		a.id as "teamId",
+		a.name as "teamName",
+		a.parent_teamid as "parentTeamId"
+		from cf_team a
+		where find_in_set(a.id, getTeamChildList(#{createId}))
+	</select>
+	
+	<!-- 按照当前登录者ID查询角色信息 -->
+	<select id="selectRoleInfoById" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo"
+		resultType="map">
+		select 
+		a.id as "roleId",
+		a.name as "roleName"
+		from cf_role a 
+		where a.create_id=#{createId}
+	</select>
+	
+	<!-- 查询用户状态信息 -->
+	<select id="selectStateInfo" resultType="map">
+		select
+		a.item_id as "state",
+		a.item_name as "stateName"
+		from yc_dictionary_item a 
+		where a.group_id='ACCOUNT.STATE' 
+		order by a.item_id desc
+	</select>
+	
+	<!-- 查询用户组织信息 -->
+	<select id="selectOrgInfo" resultType="map">
+		select 
+		a.org_id as "orgId",
+		a.org_name as "orgName"
+		from yc_organization_tab a where a.state=1
+	</select>
+
+	<!-- 根据手机号校验客户是否存在 -->
+	<select id="selectCustomerByPhone" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo"
+		resultType="int">
+		select count(1) as "total"
+		from yc_account_tab a where a.mobile=#{userPhone}
+	</select>
+	
+	<!-- 更改用户删除状态 -->
+	<update id="updateUsrIsDelete" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo">
+		update yc_account_tab a set a.is_delete=#{isDelete} where a.id =#{userId}
+	</update>
+	
+	<!-- 更改客户基本信息 -->
+	<update id="updateUser" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo">
+		update yc_account_tab a
+		<set>
+			<if test="userName != null and userName != ''">
+				a.name=#{userName},
+			</if>
+			<if test="descText != null and descText != ''">
+				a.desc_text=#{descText}
+			</if>
+		</set>
+		where a.id=#{userId}
+	</update>
+	
+	<!-- 更改用户团队关联关系 -->
+	<update id="updateRelationByTeam" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo">
+		update cf_team_rel a 
+		set a.team_id=#{teamId}
+		where a.user_id=#{userId}
+	</update>
+	
+	<!-- 删除用户与角色关联关系 -->
+	<delete id="deleteRelationByRole" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo">
+		delete from cf_userrole where user_id=#{userId}
+	</delete>
+	
+	<!-- 删除用户与组织关联关系 -->
+	<delete id="deleteRelationByOrg" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo">
+		delete from yc_account_org_tab where user_id=#{userId}
+	</delete>
+	
+	<!-- 禁用账号 -->
+	<update id="updateDisabledUser" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo">
+		update yc_account_tab a 
+		set a.state=0
+		where a.id=#{userId}
+	</update>
+	
+	<!-- 启用账号 -->
+	<update id="updateEnabledUser" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo">
+		update yc_account_tab a 
+		set a.state=1
+		where a.id=#{userId}
+	</update>
+	
+	<!-- 初始化密码 -->
+	<update id="modifyInitializePassword" parameterType="com.yc.rm.caas.appserver.bus.controller.user.fo.UserFo">
+		update yc_account_tab a 
+		set a.passwd=#{password}
+		where a.id=#{userId} 
+	</update>
+
+</mapper>

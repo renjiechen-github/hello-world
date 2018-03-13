@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<link rel="stylesheet" type="text/css" href="/html/adminX/js/jstree/themes/default/style.css" />
+<link rel="stylesheet" type="text/css" href="/html/adminX/css/zTree/zTreeStyle.css" />
+<title>新增</title>
+</head>
+<body>
+	<section class="panel">
+		<ul id="myTab" class="nav nav-tabs">
+			<li class="active"><a href="#addIndex" data-toggle="tab">基本信息</a>
+			<input type="hidden" id="role_id" name="role_id">
+		</ul>
+	  		<form class="form-inline" role="form" style="float: right;">
+                  <div class="form-group">
+                      <label for="exampleInputEmail2">名称:</label>
+                      <input type="email" class="form-control" id="menuname" name="menuname" placeholder="模糊查询菜单名称,只能查找菜单已经打开的子菜单">
+                  </div>
+	       		<span class="form-group tools">
+	               	<a href="javascript:;" class="fa fa-search " id="searchmenu"  >查询</a>
+	            </span>
+            </form>
+				<button class="btn btn-info" id="user_add_bnt" type="button">保存</button>
+	</section>
+	<span style="font-size: 25px;">当前角色:</span><span style="font-size: 20px;color: red" name="role_name"  id="role_name"></span>
+<!--   	<input type="text" name="role_name"  id="role_name" > -->
+	<div class="adv-table">
+      	<div id="flatTree3" class="tree tree-plus-minus tree-solid-line tree-unselectable">
+      	</div>
+</body>
+<script src="/html/adminX/js/jstree/jstree.js"></script>
+<script type="text/javascript" src="/html/adminX/js/dropzone/dropzone.js"></script>
+<script type="text/javascript" src="/html/js/sys/role/role_update.js"></script>
+</html>

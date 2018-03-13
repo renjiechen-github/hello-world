@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<link rel="stylesheet" href="/html/yc/rm/caass/appserv/base/common/style.css" />
+<title>团队管理</title>
+<style type="text/css">
+.teamInfo-contr {
+	padding-right: 0px;
+	padding-left: 15px;
+	text-align: left;
+	width: inherit;
+}
+
+a, img {
+	border: 0;
+}
+
+.selectbox {
+	width: 500px;
+}
+
+.selectbox div {
+	float: left;
+}
+
+.selectbox .select-bar {
+	padding: 0 10px;
+}
+
+.selectbox .select-bar select {
+	width: 150px;
+	height: 150px;
+	border: 1px #E4E3E8 solid;
+	padding: 4px;
+	font-size: 14px;
+	font-family: "microsoft yahei";
+}
+
+.btn-bar {
+	margin-top: 50px;
+}
+
+.btn-bar p .btn {
+	background: #E3E4E8;
+	color: black;
+	overflow: hidden;
+	width: 50px;
+	height: 30px;
+	cursor: pointer;
+	font-family: simsun;
+	font-size: 14px;
+}
+
+p .btn:hover {
+	background: #CBCBCB;
+}
+
+.btn-primary:hover {
+	color: black;
+	border: #CACACA;
+	background: #CACACA;
+}
+
+</style>
+</head>
+<body>
+	<main class="content">
+		<div class="subnav">
+			<nav class="search-nav">
+				<div class="dropdown team-drop">
+					<button class="btn btn-default dropdown-toggle drop-button" type="button" id="team-level" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="true">
+					团队 <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu drop-ul" aria-labelledby="dropdownMenu1">
+					<li><a class="item" href="#" id="1" onclick="teamInfo.teamLevelChoose(event)">团队 </a></li>
+					<li><a class="item" href="#" id="2" onclick="teamInfo.teamLevelChoose(event)">员工 </a></li>
+				</ul>
+			</div>
+			<button id="search" class="search">
+				<span class="glyphicon glyphicon-search" style="margin: 0 0.5em 0 0.7em;"></span>搜索
+			</button>
+			<div class="search-input">
+				<input class="t-name" id="t-name" type="text" name="name" placeholder="名称" />
+			</div>
+		</nav>
+	</div>
+	<div style="width: 100%;overflow-y: hidden; overflow-x: scroll">
+		<div style="width: 123%;">
+			<div class="team-view">
+				<div class="first-team">
+					<div class="list-content">
+						<ul class="list-info">
+						</ul>
+					</div>
+				</div>
+				<div class="four-team">
+					<div class="list-content">
+						<ul class="list-info">
+						</ul>
+					</div>
+				</div>
+				<div style="overflow: hidden;">
+					<div class="second-team">
+						<div class="list-content">
+							<ul class="list-info">
+							</ul>
+						</div>
+					</div>
+					<div class="third-team">
+						<div class="list-content">
+							<ul class="list-info">
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="four-team-member">
+				<div class="list-content">
+					<ul class="list-info">
+					</ul>
+				</div>
+			</div>
+		</div>		
+	</div>	
+</main>
+
+	<!-- 新增团队模态框 -->
+	<div class="modal" id="addTeamInfo">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #65CEA7; text-align: center;">
+					<button type="button" style="overflow: hidden;" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">新增团队</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form" class="form-horizontal adminex-form " role="form">
+						<div class="tab-content">
+							<div class="tab-pane fade in active">
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队名称</label>
+									<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+										<input maxlength="20" id="addTeamName" type="text" class="form-control" style="padding-left: 10px;" />
+									</div>
+									<label class="col-sm-2 control-label teamInfo-contr">父团队名称</label>
+									<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+										<input readonly id="parentTeamName" type="text" class="form-control" style="padding-left: 10px;">
+										<!-- 团队等级 -->
+										<input id="addTeamLevelId" type="hidden">
+										<!-- 父团队id -->
+										<input id="addParentTeamId" type="hidden">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队成员</label>
+									<div class="selectbox">
+										<div class="select-bar">
+											<div style="width: 150px; text-align: center; background: #E3E4E8;">未分配成员</div><br>
+											<div style="height: 150px; width: 150px; border: 1px #E4E3E8 solid; overflow:auto;">
+												<div style="padding-left: 5px; padding-top: 5px;">
+													<input id="addTeamUserSearchInput1" type="text" style="width: 74px; height: 22px;" />
+													<button type="button" style="width: 45px; height: 23px; font-size: 12px;" onclick="teamInfo.addTeamUserSearch(1, addUndistributedUser);">搜索</button>	
+												</div>
+												<div style="padding-left: 15px;">
+													<table id="addUserTable1"></table>
+												</div>
+											</div>
+										</div>
+										<div class="btn-bar">
+											<p>
+												<span id="addTeamSelect" onclick="teamInfo.addTeamSelect();">
+													<input type="button" style="" class="btn" value=">>" title="移动选择项到右侧" />
+												</span>
+											</p>
+											<p>
+												<span id="removeTeamSelect" onclick="teamInfo.removeTeamSelect();">
+													<input type="button" class="btn" value="<<" title="移动选择项到左侧" />
+												</span>
+											</p>
+										</div>
+										<div class="select-bar">
+											<div style="width: 150px; text-align: center; background: #E3E4E8;">已分配成员</div><br>
+											<div style="height: 150px; width: 150px; border: 1px #E4E3E8 solid; overflow:auto;">
+													<div style="padding-left: 5px; padding-top: 5px;">
+													<input id="addTeamUserSearchInput2" type="text" style="width: 74px; height: 22px;" />
+													<button type="button" style="width: 45px; height: 23px; font-size: 12px;" onclick="teamInfo.addTeamUserSearch(2, addAssignedUser);">搜索</button>	
+												</div>
+												<div style="padding-left: 15px;">
+													<table id="addUserTable2"></table>
+												</div>
+											</div>											
+											<!-- 初始的已分配成员ID -->
+											<input type="hidden" id="addUserIds">
+											<!-- 初始的未分配成员ID -->
+											<input type="hidden" id="removeUserIds">
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队负责人</label>
+									<div class="col-sm-4" style="height: 80px; width: 400px; border: 1px #E4E3E8 solid; overflow:auto;">
+										<table id="addUserTable3"></table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer" style="text-align: center;">
+					<button type="button" class="btn btn-primary" id="addTeamInfoBtn">保存</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 更改团队名称模态框 -->
+	<div class="modal" id="modifyTeamNameInfo">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #4596F8;">
+					<button type="button" style="overflow: hidden;" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">修改团队</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal adminex-form " role="form">
+						<div class="tab-content">
+							<div class="tab-pane fade in active">
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队姓名&nbsp;&nbsp;&nbsp;</label>
+									<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+										<input maxlength="20" id="modifyTeamName" type="text" class="form-control" style="padding-left: 0px;" />
+									</div>
+									<label class="col-sm-2 control-label teamInfo-contr">团队级别</label>
+									<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+										<input disabled="disabled" id="modifyTeamLevel" type="text" class="form-control" style="padding-left: 0px;">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队负责人</label>
+									<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+										<input disabled="disabled" id="modifyTeamLeader" type="text" class="form-control" style="padding-left: 0px;">									
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer" style="text-align: center;">
+					<input type="hidden" id="modifyTeamParentTeamId" /> 
+					<button type="button" class="btn btn-primary" id="modifyTeamNameInfoBtn">保存</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>		
+	
+	<!-- 变更团队成员模态框 -->
+	<div class="modal" id="updateUserInfo">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #65CEA7; text-align: center;">
+					<button type="button" style="overflow: hidden;" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">变更团队成员</h4>
+				</div>
+				<div class="modal-body">
+					<form id="form" class="form-horizontal adminex-form " role="form">
+						<div class="tab-content">
+							<div class="tab-pane fade in active">
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队名称</label>
+									<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+										<input disabled="disabled" id="updateUserTeamName" type="text" class="form-control" style="padding-left: 10px;" />
+										<!-- 团队id -->
+										<input type="hidden" id="updateUserTeamId" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队成员</label>
+									<div class="selectbox">
+										<div class="select-bar">
+											<div style="width: 150px; text-align: center; background: #E3E4E8;">未分配成员</div><br>
+											<div style="height: 150px; width: 150px; border: 1px #E4E3E8 solid; overflow:auto;">
+												<div style="padding-left: 5px; padding-top: 5px;">
+													<input id="updateTeamUserSearchInput1" type="text" style="width: 74px; height: 22px;" />
+													<button type="button" style="width: 45px; height: 23px; font-size: 12px;" onclick="teamInfo.updateTeamUserSearch(1, updateUndistributedUser);">搜索</button>	
+												</div>
+												<div style="padding-left: 15px;">
+													<table id="updateUserTable1"></table>
+												</div>
+											</div>
+										</div>
+										<div class="btn-bar">
+											<p>
+												<span id="updateTeamSelect" onclick="teamInfo.updateTeamSelect();">
+													<input type="button" style="" class="btn" value=">>" title="移动选择项到右侧" />
+												</span>
+											</p>
+											<p>
+												<span id="updateRemoveTeamSelect" onclick="teamInfo.updateRemoveTeamSelect();">
+													<input type="button" class="btn" value="<<" title="移动选择项到左侧" />
+												</span>
+											</p>
+										</div>
+										<div class="select-bar">
+											<div style="width: 150px; text-align: center; background: #E3E4E8;">已分配成员</div><br>
+											<div style="height: 150px; width: 150px; border: 1px #E4E3E8 solid; overflow:auto;">
+												<div style="padding-left: 5px; padding-top: 5px;">
+													<input id="updateTeamUserSearchInput2" type="text" style="width: 74px; height: 22px;" />
+													<button type="button" style="width: 45px; height: 23px; font-size: 12px;" onclick="teamInfo.updateTeamUserSearch(2, updateAssignedUser);">搜索</button>	
+												</div>
+												<div style="padding-left: 15px;">
+													<table id="updateUserTable2"></table>
+												</div>
+												<!-- 初始的已分配成员 -->
+												<input type="hidden" id="updateUserIds">
+												<input type="hidden" id="updateUserParentTeamId">												
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer" style="text-align: center;">
+					<button type="button" class="btn btn-primary" id="updateUserTeamInfoBtn">保存</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 更改团队负责人模态框 -->
+	<div class="modal" id="updateTeamLeaderInfo">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #65CEA7; text-align: center;">
+					<button type="button" style="overflow: hidden;" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">变更团队负责人</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal adminex-form " role="form">
+						<div class="tab-content">
+							<div class="tab-pane fade in active">
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队姓名&nbsp;&nbsp;&nbsp;</label>
+									<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+										<input disabled="disabled" id="updateName" type="text" class="form-control" style="padding-left: 0px;" />
+									</div>
+									<label class="col-sm-2 control-label teamInfo-contr">上级团队名称</label>
+									<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+										<input disabled="disabled" id="updateLevel" type="text" class="form-control" style="padding-left: 0px;">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队负责人</label>
+									<div class="col-sm-4" style="height: 80px; width: 400px; border: 1px #E4E3E8 solid; overflow:auto;">
+										<table id="updateTeamLeader"></table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>					
+				</div>
+				<div class="modal-footer" style="text-align: center;">
+					<input type="hidden" id="updateLeaderParentTeamId" />
+					<button type="button" class="btn btn-primary" id="updateTeamLeaderInfoBtn">保存</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>		
+
+	<!-- 变更小区模态框 -->
+	<div class="modal" id="updateGroupInfo">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header" style="background: #65CEA7; text-align: center;">
+					<button type="button" style="overflow: hidden;" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">变更团队小区</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal adminex-form " role="form">
+						<div class="tab-content">
+							<div class="tab-pane fade in active">
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">团队姓名&nbsp;&nbsp;&nbsp;</label>
+									<div class="col-sm-3" style="padding-left: 5px; width: 30%;">
+										<input disabled="disabled" id="updateTeamName" type="text" class="form-control" style="padding-left: 0px;" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label teamInfo-contr">小区分配&nbsp;&nbsp;</label>
+									<div class="selectbox">
+										<div class="select-bar">
+											<div style="width: 150px; text-align: center; background: #E3E4E8;">未分配小区</div><br>
+											<div style="height: 150px; width: 150px; border: 1px #E4E3E8 solid; overflow:auto;">
+												<div style="padding-left: 5px; padding-top: 5px;">
+													<input id="updateTeamGroupSearchInput1" type="text" style="width: 74px; height: 22px;" />
+													<button type="button" style="width: 45px; height: 23px; font-size: 12px;" onclick="teamInfo.updateTeamGroupSearch(1, updateGroupUndistributedUser);">搜索</button>	
+												</div>
+												<div style="padding-left: 15px;">
+													<table id="updateGroupTable1"></table>
+												</div>
+											</div>
+										</div>
+										<div class="btn-bar">
+											<p>
+												<span id="updateTeamGroupSelect" onclick="teamInfo.updateTeamGroupSelect();">
+													<input type="button" style="" class="btn" value=">>" title="移动选择项到右侧" />
+												</span>
+											</p>
+											<p>
+												<span id="updateRemoveTeamGroupSelect" onclick="teamInfo.updateRemoveTeamGroupSelect();">
+													<input type="button" class="btn" value="<<" title="移动选择项到左侧" />
+												</span>
+											</p>
+										</div>
+										<div class="select-bar">
+											<div style="width: 150px; text-align: center; background: #E3E4E8;">已分配小区</div><br>
+											<div style="height: 150px; width: 150px; border: 1px #E4E3E8 solid; overflow:auto;">
+												<div style="padding-left: 5px; padding-top: 5px;">
+													<input id="updateTeamGroupSearchInput2" type="text" style="width: 74px; height: 22px;" />
+													<button type="button" style="width: 45px; height: 23px; font-size: 12px;" onclick="teamInfo.updateTeamGroupSearch(2, updateGroupAssignedUser);">搜索</button>	
+												</div>
+												<div style="padding-left: 15px;">
+													<table id="updateGroupTable2"></table>
+												</div>
+												<!-- 初始的已分配小区 -->
+												<input type="hidden" id="updateGroupIds">
+												<input type="hidden" id="updateTeamId">										
+												<input type="hidden" id="teamMem">
+												<input type="hidden" id="teamMemUserId">
+												<input type="hidden" id="updateGroupPranetTeamId">												
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+					</form>
+				</div>
+				<div class="modal-footer" style="text-align: center;">
+					<button type="button" class="btn btn-primary" id="updateGroupInfoBtn">保存</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+<script type="text/javascript" src="/html/yc/rm/caass/appserv/bus/team/js/teamInfo.js"></script>
+</html>

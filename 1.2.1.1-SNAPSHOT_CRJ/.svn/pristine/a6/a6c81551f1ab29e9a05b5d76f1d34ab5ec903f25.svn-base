@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.recommend.dao.RecommendRelationDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.recommend.dto.RecommendRelationDto">
+    <!--
+    @mbg.generated
+    -->
+    <result column="recommend_id" jdbcType="INTEGER" property="recommendId" />
+    <result column="relation_type" jdbcType="INTEGER" property="relationType" />
+    <result column="relation_id" jdbcType="VARCHAR" property="relationId" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    recommend_id, relation_type, relation_id, state
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yc_recommend_relation
+    where relation_type = #{relationType,jdbcType=INTEGER}
+    and relation_id = #{relationId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByRecommendIdAndType" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yc_recommend_relation
+    where relation_type = #{relationType,jdbcType=INTEGER}
+    and recommend_id = #{recommendId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectTotalByRecommendId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+  	from yc_recommend_relation 
+  	where recommend_id = #{recommendId,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.room1000.recommend.dto.RecommendRelationDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into yc_recommend_relation (recommend_id, relation_type, relation_id, 
+      state)
+    values (#{recommendId,jdbcType=INTEGER}, #{relationType,jdbcType=INTEGER}, #{relationId,jdbcType=VARCHAR}, 
+      #{state,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.recommend.dto.RecommendRelationDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into yc_recommend_relation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="recommendId != null">
+        recommend_id,
+      </if>
+      <if test="relationType != null">
+        relation_type,
+      </if>
+      <if test="relationId != null">
+        relation_id,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="recommendId != null">
+        #{recommendId,jdbcType=INTEGER},
+      </if>
+      <if test="relationType != null">
+        #{relationType,jdbcType=INTEGER},
+      </if>
+      <if test="relationId != null">
+        #{relationId,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.recommend.dto.RecommendRelationDto">
+    update yc_recommend_relation
+    set state = #{state,jdbcType=INTEGER}
+    where relation_type = #{relationType,jdbcType=INTEGER}
+      and relation_id = #{relationId,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>新增</title>
+
+</head>
+
+<body>
+       <section class="panel">
+        <div class="panel-body">
+        	 <form id="form2" class="form-horizontal adminex-form" role="form">
+	            <div class="form-group ">
+                     <label class="col-sm-2 control-label">名称：</label>
+                     <div class="col-sm-3">
+                         <input type="text" title="请输入名称：如xxxx_合约编号,方便列表查询" dataType="Require" msg="请输入名称：如xxxx_合约编号" class="form-control" placeholder="请填写名称" id="name" name="name" >
+                     </div>
+                     <label class="col-sm-2 control-label">类型：</label>
+                     <div class="col-sm-3">
+                         <select dataType="Require" msg="请选择类型！" class="form-control" id="type" name="type" >
+                             <option value="" >请选择...</option>
+                             <option value="0" >收房合约</option>
+                             <option value="1" >出租合约</option>
+                             <option value="2" >服务订单</option>
+                             <option value="4" >工程合同</option>
+                             <option value="3" >其他</option>
+                         </select>
+                     </div>
+	            </div>
+	            <div class="form-group ">
+                     <label class="col-sm-2  control-label">明细类目：</label>
+                     <div class="col-sm-3">
+						<select dataType="Require" msg="请选择类型！" class="form-control" id="category" name="category" >
+                             <option value="" >请选择...</option>
+                         </select>
+                     </div>
+                     <label class="col-sm-2  control-label">财务项目名称：</label>
+                     <div class="col-sm-3">
+						<select dataType="Require" msg="请选择财务项目名称！" class="form-control" id="correlation" name="correlation" >
+                             <option value="" >请选择...</option>
+                         </select>                         
+                     </div>
+	            </div>
+	            <div class="form-group ">
+                     <label class="col-sm-2 control-label secondary_labe">类型明细：</label>
+                     <div class="col-sm-3">
+                         <select dataType="Require" msg="请选择结算类型！" class="form-control" id="secondary" name="secondary" >
+                             <option value="" >请选择...</option>
+                         </select>
+                     </div>
+                     <label class="col-sm-2 control-label">明细金额：</label>
+                     <div class="col-sm-3">
+                         <input type="text" dataType="Double" msg="请填写明细金额！" class="form-control" placeholder="请填写明细金额" id="cost" name="cost" >
+                     </div>
+	            </div>
+	            <div class="form-group">
+                     <label class="col-sm-2 col-sm-2 control-label">计划时间：</label>
+                     <div class="col-sm-2">
+                         <input type="text" title="如果是退款、物业，请选择相同与计划时间相同，可以是当天时间，租金请选择租金的开始于结束时间" dataType="Require" msg="请选择计划时间！" readonly="readonly" class="form-control" placeholder="请选择计划时间" id="plat_time" name="plat_time" >
+                     </div>
+                     <label class="col-sm-2 col-sm-2 control-label">开始时间：</label>
+                     <div class="col-sm-2">
+                         <input type="text"  title="如果是退款、物业，请选择相同与计划时间相同，可以是当天时间，租金请选择租金的开始于结束时间" dataType="Require" msg="请填写开始时间" readonly="readonly" class="form-control" placeholder="请填写开始时间" id="start_time" name="start_time" >
+                     </div>
+                     <label class="col-sm-2 col-sm-2 control-label">结束时间：</label>
+                     <div class="col-sm-2">
+                         <input type="text" title="如果是退款、物业，请选择相同与计划时间相同，可以是当天时间，租金请选择租金的开始于结束时间" dataType="Require" msg="请填写结束时间" readonly="readonly" class="form-control" placeholder="请填写结束时间"  id="end_time" name="end_time" ></textarea>
+                     </div>
+	            </div>
+	            <div class="form-group">
+                     <label class="col-sm-2 col-sm-2 control-label">备注：</label>
+                     <div class="col-sm-10">
+                         <textarea rows="6" class="form-control" id="remark" name="remark" ></textarea>
+                     </div>
+	            </div>
+	            <div class="text-center">
+			         <button class="btn btn-info" id="income_add_bnt" type="button">确定提交</button>&nbsp;&nbsp;&nbsp;
+		        </div>
+	         </form>
+	    </div>
+   	</section>
+   	<script type="text/javascript" src="/html/js/finance/expend_add.js" ></script>
+</body>
+</html>

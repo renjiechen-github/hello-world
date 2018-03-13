@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>工作台</title>
+    <link rel="stylesheet" type="text/css" href="../../css/workbenchs.css"/>
+    <script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="../../js/common.client.js"></script>
+</head>
+<body>
+	<img src="../../images/aa.jpg" style="width:100%;height:auto;"/>
+	<div id="layout">
+		<div id="opt">
+			<div class="box_x">
+				<div class="tit">房源<br/>管理</div>			
+			</div>		
+		    <div class="box_x">
+		    	<div class="tit">委托<br/>合约</div>
+	    	</div>
+		    <div class="box_x">
+		  		 <div class="tit">出租<br/>合约</div>
+		    </div>
+		    <div class="box_x">
+	    		<div class="tit">新增<br/>看房</div>
+		    </div>
+		</div>
+		<div id="opt">
+			<div class="box_x">
+				<div class="tit">财务</div>			
+			</div>		
+		    <div class="box_x">
+				<div class="tit">警告</div>			
+			</div>	
+			<div class="box_x" style="opacity: 0;" >
+				<div class="tit">警告</div>			
+			</div>
+			<div class="box_x" style="opacity: 0;">
+				<div class="tit">警告</div>			
+			</div>
+		</div>
+		
+	</div>	
+	
+	<div>
+		<img src="../../images/banner.png" style="width:100%;height:auto;"/>
+	</div>
+	<script>
+		$(function(){
+			var width=$(".box_x").css("width");
+			$("#opt div").css({"height":"50px"});
+		//	$(".box_xx").css({"width":width});
+			$(".box_xx,.box_x").hover(function(){
+				$(this).css({"background":"#f8b62b","color":"#fff","border":"1px solid #f8b62b"});
+			});
+			$(".box_xx,.box_x").mouseout(function(){
+				$(this).css({"background":"#efefee","color":"#555","border":"1px solid #999999"});
+			});
+			$('.box_x').click(function(){
+				var url = '/h5/workbench.html';
+				var title = '欢迎使用';
+				njyc.phone.openWebKit(url, title, '0', '0', '', '', '', '', '', '', '', '0');		
+			});
+		});
+	</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

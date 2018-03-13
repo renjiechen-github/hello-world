@@ -1,0 +1,11 @@
+###################################################
+#                                                 #
+#    image.http.properties config file         #
+#                                                 #
+###################################################
+
+# http image server upload server
+transfer.server = http://127.0.0.1:8081/
+
+# http image server download server
+download.server = http://127.0.0.1:8081/

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>服务报表</title>
+<style type="text/css">
+.paddingClass {
+	padding: 1px 10px !important;
+}
+
+.ulClass {
+	min-width: 10px;
+}
+
+.head {
+	display: flex;
+	height: 50px;
+	line-height: 50px;
+	background-color: #ecb292;
+	width: 80%;
+	margin: 20px auto;
+}
+
+.leftdiv {
+	flex: 1;
+	text-align: center;
+	cursor: pointer;
+	border-right: 1px solid white;
+	color: white;
+	background-color: #ecb292;
+}
+
+.rightdiv {
+	flex: 1;
+	text-align: center;
+	cursor: pointer;
+	color: white;
+	background-color: #ecb292;
+}
+
+.movediv {
+	color: black;
+	background-color: #A0443F;
+}
+</style>
+</head>
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+					<form class="form-inline" role="form">
+						<div class="date form_datetime form-group">
+							<label>查询时间：</label> 
+							<input id="queryTime" style="width: 80px;"
+								placeholder="请选择日期" class="form-control" size="16" type="text">
+						</div>
+
+						<div class="form-group">
+							<label for="exampleInputEmail2">账款:</label> 
+								<select id="cost_type" class="form-control">
+									<option value="1">应收账款</option>
+									<option value="2">应付账款</option>
+								</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail3">账款分类:</label> 
+								<select id="category" class="form-control">
+									<option value="">请选择..</option>
+									<option value="1">租金</option>
+									<option value="2">物业费</option>
+									<option value="3">退款</option>
+									<option value="4">待缴费</option>
+									<option value="5">押金</option>
+									<option value="6">服务费</option>
+									<option value="7">家居</option>
+									<option value="8">家电</option>
+									<option value="9">装修</option>
+									<option value="10">其他</option>
+									<option value="11">水费</option>
+									<option value="12">电费</option>
+									<option value="13">燃气费</option>
+							</select>
+						</div>
+						<span class="form-group tools"> 
+							<a href="javascript:;" class="fa fa-search yc_seach" table="basehouse_table" id="querySub">查询</a>
+						</span>
+					</form>
+					<br>
+					<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+					<div id="main" style="width: 100%;height:500px;display:inline-block;"></div>
+					<div class="adv-table">
+						<table id="home_sc_table" class="table table-bordered"
+							style="width: 100%">
+							<tr>
+								<td colspan="10">南京 <b id="hometableMonth"></b>月（单位：万元）
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</section>
+		</div>
+	</section>
+
+</body>
+<!-- 引入 ECharts 文件 -->
+<script src="/html/js/echarts.js"></script>
+<script type="text/javascript" src="/html/js/report/finance.js"></script>
+</html>

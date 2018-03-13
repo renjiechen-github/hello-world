@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.workorder.dao.WorkOrderHisDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.workorder.dto.WorkOrderHisDto">
+    <!--
+    @mbg.generated
+    -->
+    <id column="priority" jdbcType="INTEGER" property="priority" />
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="ref_id" jdbcType="INTEGER" property="refId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="created_staff_id" jdbcType="INTEGER" property="createdStaffId" />
+    <result column="created_user_id" jdbcType="INTEGER" property="createdUserId" />
+    <result column="house_id" jdbcType="INTEGER" property="houseId" />
+    <result column="take_house_order_id" jdbcType="INTEGER" property="takeHouseOrderId" />
+    <result column="rental_lease_order_id" jdbcType="INTEGER" property="rentalLeaseOrderId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="user_phone" jdbcType="VARCHAR" property="userPhone" />
+    <result column="staff_id" jdbcType="INTEGER" property="staffId" />
+    <result column="appointment_date" jdbcType="TIMESTAMP" property="appointmentDate" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="stateDate" />
+    <result column="sub_order_state" jdbcType="VARCHAR" property="subOrderState" />
+    <result column="sub_actual_dealer_id" jdbcType="INTEGER" property="subActualDealerId" />
+    <result column="sub_assigned_dealer_id" jdbcType="INTEGER" property="subAssignedDealerId" />
+    <result column="sub_assigned_dealer_role_id" jdbcType="INTEGER" property="subAssignedDealerRoleId" />
+    <result column="sub_comments" jdbcType="VARCHAR" property="subComments" />
+    <result column="paid_money" jdbcType="VARCHAR" property="paidMoney" />
+    <result column="payable_money" jdbcType="VARCHAR" property="payableMoney" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+    @mbg.generated
+    -->
+    priority, id, type, ref_id, name, code, created_date, created_staff_id, created_user_id, house_id, take_house_order_id, rental_lease_order_id, 
+    user_name, user_phone, staff_id, appointment_date, state, state_date, sub_order_state, sub_actual_dealer_id, sub_assigned_dealer_id, sub_assigned_dealer_role_id,
+    sub_comments, paid_money, payable_money
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    <!--
+    @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from work_order_his
+    where priority = #{priority,jdbcType=INTEGER}
+      and id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByCondList" resultType="com.room1000.workorder.dto.WorkOrderHisDto">
+    select 
+    distinct id as "id"
+    from work_order_his
+    <where>
+      <if test="ids != null and ids != ''">
+         and sub_actual_dealer_id in (${ids})
+      </if>
+    </where>
+  </select>
+  
+  <select id="selectByCond" parameterType="com.room1000.workorder.dto.WorkOrderHisDto" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from work_order_his
+    <where>
+      <if test="subActualDealerId != null">
+        and sub_actual_dealer_id = #{subActualDealerId, jdbcType=INTEGER}
+      </if>
+    </where>
+  </select>
+  <select id="selectMaxPriority" parameterType="java.lang.Long" resultType="java.lang.Long">
+    select Max(PRIORITY) max_priority
+    from work_order_his
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    <!--
+    @mbg.generated
+    -->
+    delete from work_order_his
+    where id = #{id,jdbcType=INTEGER}
+    <if test="priority != null">
+      and priority = #{priority,jdbcType=INTEGER}
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.room1000.workorder.dto.WorkOrderHisDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into work_order_his (priority, id, type, 
+      ref_id, name, code, created_date, created_staff_id, created_user_id,
+      house_id, take_house_order_id, rental_lease_order_id, 
+      user_name, user_phone, staff_id, 
+      appointment_date, state, state_date, sub_order_state, 
+      sub_actual_dealer_id, sub_assigned_dealer_id, sub_assigned_dealer_role_id,
+      sub_comments, paid_money, payable_money)
+    values (#{priority,jdbcType=INTEGER}, #{id,jdbcType=INTEGER}, #{type,jdbcType=CHAR}, 
+      #{refId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{createdDate,jdbcType=TIMESTAMP}, #{createdStaffId,jdbcType=INTEGER}, #{createdUserId,jdbcType=INTEGER},
+      #{houseId,jdbcType=INTEGER}, #{takeHouseOrderId,jdbcType=INTEGER}, #{rentalLeaseOrderId,jdbcType=INTEGER}, 
+      #{userName,jdbcType=VARCHAR}, #{userPhone,jdbcType=VARCHAR}, #{staffId,jdbcType=INTEGER}, 
+      #{appointmentDate,jdbcType=TIMESTAMP}, #{state,jdbcType=CHAR}, #{stateDate,jdbcType=TIMESTAMP}, 
+      #{subOrderState,jdbcType=VARCHAR}, #{subActualDealerId,jdbcType=INTEGER},
+      #{subAssignedDealerId,jdbcType=INTEGER}, #{subAssignedDealerRoleId,jdbcType=INTEGER}, #{subComments, jdbcType=VARCHAR},
+      #{paidMoney,jdbcType=VARCHAR}, #{payableMoney,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.workorder.dto.WorkOrderHisDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into work_order_his
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="priority != null">
+        priority,
+      </if>
+      <if test="id != null">
+        id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="refId != null">
+        ref_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="createdDate != null">
+        created_date,
+      </if>
+      <if test="createdStaffId != null">
+        created_staff_id,
+      </if>
+      <if test="createdUserId != null">
+        created_user_id,
+      </if>
+      <if test="houseId != null">
+        house_id,
+      </if>
+      <if test="takeHouseOrderId != null">
+        take_house_order_id,
+      </if>
+      <if test="rentalLeaseOrderId != null">
+        rental_lease_order_id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="userPhone != null">
+        user_phone,
+      </if>
+      <if test="staffId != null">
+        staff_id,
+      </if>
+      <if test="appointmentDate != null">
+        appointment_date,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="stateDate != null">
+        state_date,
+      </if>
+      <if test="subOrderState != null">
+        sub_order_state,
+      </if>
+      <if test="subActualDealerId != null">
+        sub_actual_dealer_id,
+      </if>
+      <if test="subAssignedDealerId != null">
+        sub_assigned_dealer_id,
+      </if>
+      <if test="subAssignedDealerRoleId != null">
+        sub_assigned_dealer_role_id,
+      </if>
+      <if test="subComments != null">
+        sub_comments,
+      </if>
+      <if test="paidMoney != null">
+        paid_money,
+      </if>
+      <if test="payableMoney != null">
+        payable_money,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="priority != null">
+        #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="refId != null">
+        #{refId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null">
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdStaffId != null">
+        #{createdStaffId,jdbcType=INTEGER},
+      </if>
+      <if test="createdUserId != null">
+        #{createdUserId,jdbcType=INTEGER},
+      </if>
+      <if test="houseId != null">
+        #{houseId,jdbcType=INTEGER},
+      </if>
+      <if test="takeHouseOrderId != null">
+        #{takeHouseOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="rentalLeaseOrderId != null">
+        #{rentalLeaseOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userPhone != null">
+        #{userPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="staffId != null">
+        #{staffId,jdbcType=INTEGER},
+      </if>
+      <if test="appointmentDate != null">
+        #{appointmentDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=CHAR},
+      </if>
+      <if test="stateDate != null">
+        #{stateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="subOrderState != null">
+        #{sub_order_state,jdbcType=VARCHAR},
+      </if>
+      <if test="subActualDealerId != null">
+        #{sub_actual_dealer_id,jdbcType=INTEGER},
+      </if>
+      <if test="subAssignedDealerId != null">
+        #{sub_assigned_dealer_id,jdbcType=INTEGER},
+      </if>
+      <if test="subAssignedDealerRoleId != null">
+        #{sub_assigned_dealer_role_id,jdbcType=INTEGER},
+      </if>
+      <if test="subComments != null">
+        #{subComments, jdbcType=VARCHAR},
+      </if>
+      <if test="paidMoney != null">
+        #{paidMoney,jdbcType=VARCHAR}, 
+      </if>
+      <if test="payableMoney != null">
+        #{payableMoney,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.workorder.dto.WorkOrderHisDto">
+    <!--
+    @mbg.generated
+    -->
+    update work_order_his
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=CHAR},
+      </if>
+      <if test="refId != null">
+        ref_id = #{refId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null">
+        created_date = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdStaffId != null">
+        created_staff_id = #{createdStaffId,jdbcType=INTEGER},
+      </if>
+      <if test="createdUserId != null">
+        created_user_id = #{createdUserId,jdbcType=INTEGER},
+      </if>
+      <if test="houseId != null">
+        house_id = #{houseId,jdbcType=INTEGER},
+      </if>
+      <if test="takeHouseOrderId != null">
+        take_house_order_id = #{takeHouseOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="rentalLeaseOrderId != null">
+        rental_lease_order_id = #{rentalLeaseOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userPhone != null">
+        user_phone = #{userPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="staffId != null">
+        staff_id = #{staffId,jdbcType=INTEGER},
+      </if>
+      <if test="appointmentDate != null">
+        appointment_date = #{appointmentDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=CHAR},
+      </if>
+      <if test="stateDate != null">
+        state_date = #{stateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="subOrderState != null">
+        sub_order_state = #{subOrderState,jdbcType=VARCHAR},
+      </if>
+      <if test="subActualDealerId != null">
+        sub_actual_dealer_id = #{subActualDealerId,jdbcType=INTEGER},
+      </if>
+      <if test="subAssignedDealerId != null">
+        sub_assigned_dealer_id = #{subAssignedDealerId,jdbcType=INTEGER},
+      </if>
+      <if test="subAssignedDealerRoleId != null">
+        sub_assigned_dealer_role_id = #{subAssignedDealerRoleId,jdbcType=INTEGER},
+      </if>
+      <if test="subComments != null">
+        sub_comments = #{subComments, jdbcType=VARCHAR},
+      </if>
+      <if test="paidMoney != null">
+        paid_money = #{paidMoney,jdbcType=INTEGER}, 
+      </if>
+      <if test="payableMoney != null">
+        payable_money = #{payableMoney,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where priority = #{priority,jdbcType=VARCHAR}
+      and id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.workorder.dto.WorkOrderHisDto">
+    <!--
+    @mbg.generated
+    -->
+    update work_order_his
+    set type = #{type,jdbcType=CHAR},
+      ref_id = #{refId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      created_staff_id = #{createdStaffId,jdbcType=INTEGER},
+      created_user_id = #{createdUserId,jdbcType=INTEGER},
+      house_id = #{houseId,jdbcType=INTEGER},
+      take_house_order_id = #{takeHouseOrderId,jdbcType=INTEGER},
+      rental_lease_order_id = #{rentalLeaseOrderId,jdbcType=INTEGER},
+      user_name = #{userName,jdbcType=VARCHAR},
+      user_phone = #{userPhone,jdbcType=VARCHAR},
+      staff_id = #{staffId,jdbcType=INTEGER},
+      appointment_date = #{appointmentDate,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=CHAR},
+      state_date = #{stateDate,jdbcType=TIMESTAMP},
+      sub_order_state = #{subOrderState,jdbcType=VARCHAR},
+      sub_actual_dealer_id = #{subActualDealerId,jdbcType=INTEGER},
+      sub_assigned_dealer_id = #{subAssignedDealerId,jdbcType=INTEGER},
+      sub_assigned_dealer_role_id = #{subAssignedDealerRoleId,jdbcType=INTEGER},
+      sub_comments = #{subComments, jdbcType=VARCHAR},
+      paid_money = #{paidMoney,jdbcType=INTEGER}, 
+      payable_money = #{payableMoney,jdbcType=VARCHAR}
+    where priority = #{priority,jdbcType=VARCHAR}
+      and id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

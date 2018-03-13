@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="ThemeBucket">
+        <link rel="shortcut icon" href="#" type="image/png">
+        <title>财务账单明细</title>
+        <style  >
+            .form-horizontal .form-group{
+                margin-right: -15px; 
+                margin-left: -15px; 
+            }
+            .nav > li > a:hover, .nav > li > a:focus{
+                color: white;
+            }
+        </style>
+    </head>
+
+    <body>
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active">
+                <a href="#home1" data-toggle="tab">
+                    审批操作
+                </a>
+            </li>
+            <li class="">
+                <a href="#home" data-toggle="tab">
+                    用户支付明细
+                </a>
+            </li>
+            <li><a href="#ios" data-toggle="tab">财务明细</a></li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="home1">
+                <form id="form1" name="form1" class="form-horizontal" style="padding: 0px 30px 0px 30px;" role="form">
+                    <input class="form-control" readonly="true" id="id" name="id" type="hidden" value="">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">业务时间：</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" readonly="true" dataType="Require" msg="请选择业务时间" required id="pay_time" name="pay_time" type="text" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">交易类型：</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="type" name="type" dataType="Require" msg="请选择交易类型" required >
+                                <option value="" >请选择...</option>
+                                <option value="1" >支付宝公众号</option>
+                                <option value="2" >微信公众号</option>
+                                <option value="3" >支付宝网页支付</option>
+                                <option value="4" >支付宝app支付</option>
+                                <option value="5" >微信app支付</option>
+                                <option value="6" >银行转账</option>
+                                <option value="7" >支付宝转账</option>
+                                <option value="8" >其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">支付金额：</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" dataType="Money2" msg="请填写支付金额" required id="cost" name="cost" type="text" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">优惠金额：</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" dataType="Money2" msg="请填写优惠金额" required id="dis_cost" name="dis_cost" type="text" value="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">账户姓名：</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" dataType="Require" msg="请填写账户姓名" required id="name" name="name" type="text" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">银行名称：</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" dataType="Require" msg="请填写银行名称" required id="bank_name" name="bank_name" type="text" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">银行账户：</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" dataType="Require" msg="请填写银行账户" required id="bank_account" name="bank_account" type="text" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">银行流水号：</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" dataType="Require" msg="请填写银行流水" required id="tro_no" name="tro_no" type="text" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">备注：</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control"　id="remark" name="remark" ></textarea>
+                        </div>
+                    </div>
+                    <div style="text-align: center;" >
+                        <button class="btn btn-info" id="w_1add_bnt" type="button">确定提交</button>
+                    </div>
+                </form>
+            </div>
+            <div class="tab-pane fade " id="home" style="width: 100%;overflow-x: auto;" >
+                <table class="table" style="width: 150%;" >
+                    <thead>
+                        <tr>
+                            <th>账单编号</th>
+                            <th>支付方式</th>
+                            <th>待支付金额</th>
+                            <th>支付状态</th>
+                            <th>支付创建时间</th>
+                            <th>开始支付时间</th>
+                            <th>支付完成时间</th>
+                            <th>支付响应回调时间</th>
+                            <th>响应第三方流水ID</th>
+                            <th>当前用户名称</th>
+                            <th>当前支付时合约的手机号</th>
+                            <th>银行名称</th>
+                            <th>银行账户</th>
+                            <th>交易备注信息</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detial-pay-tbody" >
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="ios">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>金额</th>
+                            <th>备注</th>
+                            <th>财务类别</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detial-tbody" >
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            //alert(common.getWindowsData('billpayEdit').yet_cost);
+            
+            
+            
+            (function () {
+                var calc = {
+                    /*
+                    函数，加法函数，用来得到精确的加法结果  
+                    说明：javascript的加法结果会有误差，在两个浮点数相加的时候会比较明显。这个函数返回较为精确的加法结果。
+                    参数：arg1：第一个加数；arg2第二个加数；d要保留的小数位数（可以不传此参数，如果不传则不处理小数位数）
+                    调用：Calc.Add(arg1,arg2,d)  
+                    返回值：两数相加的结果
+                    */
+                    Add: function (arg1, arg2) {
+                        arg1 = arg1.toString(), arg2 = arg2.toString();
+                        var arg1Arr = arg1.split("."), arg2Arr = arg2.split("."), d1 = arg1Arr.length == 2 ? arg1Arr[1] : "", d2 = arg2Arr.length == 2 ? arg2Arr[1] : "";
+                        var maxLen = Math.max(d1.length, d2.length);
+                        var m = Math.pow(10, maxLen);
+                        var result = Number(((arg1 * m + arg2 * m) / m).toFixed(maxLen));
+                        var d = arguments[2];
+                        d = typeof d === "number"?d:2;
+                        return typeof d === "number" ? Number((result).toFixed(d)) : result;
+                    },
+                    /*
+                    函数：减法函数，用来得到精确的减法结果  
+                    说明：函数返回较为精确的减法结果。 
+                    参数：arg1：第一个加数；arg2第二个加数；d要保留的小数位数（可以不传此参数，如果不传则不处理小数位数
+                    调用：Calc.Sub(arg1,arg2)  
+                    返回值：两数相减的结果
+                    */
+                    Sub: function (arg1, arg2) {
+                        return Calc.Add(arg1, -Number(arg2), arguments[2]);
+                    },
+                    /*
+                    函数：乘法函数，用来得到精确的乘法结果  
+                    说明：函数返回较为精确的乘法结果。 
+                    参数：arg1：第一个乘数；arg2第二个乘数；d要保留的小数位数（可以不传此参数，如果不传则不处理小数位数)
+                    调用：Calc.Mul(arg1,arg2)  
+                    返回值：两数相乘的结果
+                    */
+                    Mul: function (arg1, arg2) {
+                        var r1 = arg1.toString(), r2 = arg2.toString(), m, resultVal, d = arguments[2];
+                        m = (r1.split(".")[1] ? r1.split(".")[1].length : 0) + (r2.split(".")[1] ? r2.split(".")[1].length : 0);
+                        resultVal = Number(r1.replace(".", "")) * Number(r2.replace(".", "")) / Math.pow(10, m);
+                        d = typeof d === "number"?d:2;
+                        return typeof d !== "number" ? Number(resultVal) : Number(resultVal.toFixed(parseInt(d)));
+                    },
+                    /*
+                    函数：除法函数，用来得到精确的除法结果  
+                    说明：函数返回较为精确的除法结果。 
+                    参数：arg1：除数；arg2被除数；d要保留的小数位数（可以不传此参数，如果不传则不处理小数位数)
+                    调用：Calc.Div(arg1,arg2)  
+                    返回值：arg1除于arg2的结果
+                    */
+                    Div: function (arg1, arg2) {
+                        var r1 = arg1.toString(), r2 = arg2.toString(), m, resultVal, d = arguments[2];
+                        m = (r2.split(".")[1] ? r2.split(".")[1].length : 0) - (r1.split(".")[1] ? r1.split(".")[1].length : 0);
+                        resultVal = Number(r1.replace(".", "")) / Number(r2.replace(".", "")) * Math.pow(10, m);
+                        d = typeof d === "number"?d:2;
+                        return typeof d !== "number" ? Number(resultVal) : Number(resultVal.toFixed(parseInt(d)));
+                    }
+                };
+                window.Calc = calc;
+            }());
+            
+            $('#name').val(common.getWindowsData('billpayEdit').username);
+            $('#cost').val(Calc.Sub(Calc.Sub(common.getWindowsData('billpayEdit').cost,common.getWindowsData('billpayEdit').yet_cost),common.getWindowsData('billpayEdit').discounts_cost));
+            
+            var bill_pay_detial = {
+                init: function () {
+                    $("#pay_time").daterangepicker({startDate: moment().startOf('day'),
+                        singleDatePicker: true,
+                        timePicker12Hour: false,
+                        timePicker: false,
+                        format: 'YYYY-MM-DD HH:mm:ss'});
+                    $('#id').val(common.getWindowsData('billpayEdit').id);
+                    common.ajax({
+                        url: common.root + '/financial/getBillLDetailList.do',
+                        data: {
+                            id: common.getWindowsData('billpayEdit').id
+                        },
+                        dataType: 'json',
+                        loadfun: function (a, b) {
+                            if (a) {
+                                if (b.detailList) {
+                                    var html = "";
+                                    for (var i = 0; i < b.detailList.length; i++) {
+                                        html += '<tr>' +
+                                                '    <td>' + b.detailList[i].name + '</td>' +
+                                                '    <td>￥' + b.detailList[i].cost + '</td>' +
+                                                '    <td>' + b.detailList[i].remarks + '</td>' +
+                                                '    <td>' + b.detailList[i].cat_name + '</td>' +
+                                                '</tr>';
+                                    }
+                                    $('#detial-tbody').html(html);
+                                }
+                                if (b.detailPayList) {
+                                    var html = "";
+                                    for (var i = 0; i < b.detailPayList.length; i++) {
+                                        console.log(b.detailPayList[i]);
+                                        html += '<tr>' +
+                                                '    <td>' + b.detailPayList[i].id + '</td>' +
+                                                '    <td>' + (b.detailPayList[i].type == '1' ? '支付宝公众号' : b.detailPayList[i].type == '2' ? '微信公众号' : b.detailPayList[i].type == '3' ? '支付宝网页支付' : b.detailPayList[i].type == '4' ? '支付宝app支付' : b.detailPayList[i].type == '5' ? '微信app支付' : b.detailPayList[i].type == '6' ? '银行转账' : b.detailPayList[i].type == '7' ? '支付宝转账' : "未知") + '</td>' +
+                                                '    <td>' + b.detailPayList[i].cost + '</td>' +
+                                                '    <td>' + (b.detailPayList[i].state == '1' ? '创建支付(用户输入金额后的支付创建状态)' : b.detailPayList[i].state == '2' ? '支付中(用户发起支付时等待响应的状态)' : b.detailPayList[i].state == '3' ? '支付完成（支付响应完成成功）' : b.detailPayList[i].state == '4' ? '支付失败' : "未知") + '</td>' +
+                                                '    <td>' + b.detailPayList[i].create_date_ + '</td>' +
+                                                '    <td>' + b.detailPayList[i].start_time_ + '</td>' +
+                                                '    <td>' + b.detailPayList[i].pay_time_ + '</td>' +
+                                                '    <td>' + b.detailPayList[i].callback_time_ + '</td>' +
+                                                '    <td>' + b.detailPayList[i].tro_no + '</td>' +
+                                                '    <td>' + b.detailPayList[i].name + '</td>' +
+                                                '    <td>' + b.detailPayList[i].mobile + '</td>' +
+                                                '    <td>' + b.detailPayList[i].bank_name + '</td>' +
+                                                '    <td>' + b.detailPayList[i].bank_account + '</td>' +
+                                                '    <td>' + b.detailPayList[i].remark + '</td>' +
+                                                '</tr>';
+                                    }
+                                    $('#detial-pay-tbody').html(html);
+                                }
+                            } else {
+                                alert('页面加载失败');
+                            }
+                        }
+                    });
+                    this.addevent();
+                },
+                issave:0,
+                addevent: function () {
+                    $('#w_1add_bnt').on({
+                        click:function(){
+                            if(bill_pay_detial.issave == 1){
+                                common.alert({
+                                    msg:'不要重复支付'
+                                }); 
+                     
+            return ;
+                            }
+                            bill_pay_detial.issave = 1;
+                            if (!Validator.Validate('form1')) {
+                                bill_pay_detial.issave = 0;
+                                return;
+                            }
+                            common.ajax({
+                                url:common.root + '/financial/saveBill.do',
+                                data: $('#form1').serialize(),
+                                dataType: 'json',
+                                loadfun: function (a, b) {
+                                    bill_pay_detial.issave = 0;
+                                    if(a){
+                                        if(b.state == 1){
+                                            common.alert({
+                                                msg:'保存成功',
+                                                fun:function(){
+                                                    common.closeWindow('billpayEdit', 1);
+                                                    table.refresh('example');
+                                                }
+                                            }); 
+                                        }else if(b.state == -4){
+                                            common.alert({
+                                                msg:'当前账单状态错误，请重新刷新列表页后再提交。'
+                                            }); 
+                                        }else if(b.state == -1){
+                                            common.alert({
+                                                msg:'获取数据失败'
+                                            }); 
+                                        }else if(b.state == -2){
+                                            common.alert({
+                                                msg:'填写的金额大于可支付金额'
+                                            }); 
+                                        }else if(b.state == -3){
+                                            common.alert({
+                                                msg:'优惠后的金额是否大于可支付金额'
+                                            }); 
+                                        }else{
+                                           common.alert({
+                                                msg:'操作失败'
+                                            }); 
+                                        }
+                                    }else{
+                                        common.alert({
+                                            msg:'保存失败'
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                },
+                loadTable: function () {
+
+                }
+            };
+            $(function () {
+                bill_pay_detial.init();
+            });
+        </script>
+    </body>
+</html>
+

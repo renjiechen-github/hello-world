@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<style type="text/css">
+.bzh {
+	background-color: red !important;
+	color: white !important;
+}
+
+.bzh td {
+	color: white !important;
+}
+</style>
+<title>团队任务管理</title>
+</head>
+<body>
+	<section class="panel">
+		<section class="panel panel-info panel-seach">
+			<div class="panel-body">
+				<form class="form-inline" role="form">
+
+					<div class="form-group">
+						<label for="order_type" class="control-label" style="padding-top: 0.5rem;">订单类型:</label> 
+						<select class="form-control" id="order_type" name="order_type">
+							<option value="">请选择...</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="order_state" class="control-label" style="padding-top: 0.5rem;">订单状态:</label> 
+						<select class="form-control" id="order_state" name="order_state">
+							<option value="">请选择...</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="keyword" class="control-label" style="padding-top: 0.5rem; ">模糊查询:</label> 
+						<input type="text" class="form-control suitable" id="keyword" style="width: 250px;" placeholder="用户名、用户手机、订单编号">
+					</div><br />
+					<div class="form-group">
+						<label for="exampleInputEmail2">查询时间:</label> 
+						<input id="createtime" style="width: 300px;" type="text" readonly="readonly" class="form-control span4" />
+					</div>
+					<span class="form-group tools">
+						<a href="javascript:;" class="btn-block fa fa-search yc_seach" style="margin-top: 0.5rem" id="search" table="workOrderTable">查询</a> 
+					</span>
+				</form>
+			</div>
+		</section>
+		<div class="panel-body">
+			<div class="adv-table">
+				<table id="workOrderTable" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+							<th>编码</th>
+							<th>订单名称</th>
+							<th>订单类型</th>
+							<th>创建时间</th>
+							<th>用户名称</th>
+							<th>手机号码</th>
+							<th>当前状态</th>
+							<th>处理人/角色</th>
+							<th>总时长（小时）</th>
+							<th>当前步骤时长（小时）</th>
+							<th></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+</body>
+<script type="text/javascript" src="/html/js/order_flow/order_newAction/team_order_list.js"></script>
+</html>

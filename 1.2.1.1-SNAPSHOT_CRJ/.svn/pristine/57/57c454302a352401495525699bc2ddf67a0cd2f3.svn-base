@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<link rel="stylesheet" type="text/css" href="/html/adminX/js/jstree/themes/default/style.css" />
+<link rel="stylesheet" type="text/css" href="/html/adminX/css/zTree/zTreeStyle.css" />
+<title>新增</title>
+</head>
+<body>
+	<section class="panel">
+		<ul id="myTab" class="nav nav-tabs">
+			<li class="active"><a href="#addIndex" data-toggle="tab">基本信息</a></li>
+			<li><a href="#addrelation" data-toggle="tab">权限数据</a></li>
+			<input type="hidden" id="powerIds" name="powerIds">
+		<button class="btn btn-info" id="user_add_bnt" type="button" style="float: right;">保存</button>
+		</ul>
+	  		<!--基本信息-->
+	  			<div id="myTabContent" class="tab-content">
+	  			<div class="tab-pane fade in active" id="addIndex">
+	  			<div class="form-horizontal adminex-form">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>职位：</label>
+						<div class="col-sm-8">
+							<input id="role_name" maxlength="10" type="text"
+								dataType="Require" class="form-control" msg="请填写名称！"
+								placeholder="XXX" required />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>职能：</label>
+						<div class="col-sm-8">
+							<textarea rows="3" cols="50" id="role_decs"  type="text"  name="role_decs" dataType="Require"  class="form-control" placeholder="职能"  msg= 请输入正确的职能  required ></textarea>
+						</div>
+							<div class="col-sm-2"></div>
+					</div>
+						</div>
+				</div>
+				<!--小区户型关系 -->
+				<div class="tab-pane fade in " id="addrelation">
+					<form class="form-inline" role="form" style="float: right;">
+						 <div class="form-group">
+	                      <label for="exampleInputEmail2">名称:</label>
+	                      <input type="email" class="form-control" id="menuname" name="menuname" placeholder="模糊查询菜单名称,只能查找菜单已经打开的子菜单">
+	                 	 </div>
+			       		<span class="form-group tools">
+			               	<a href="javascript:;" class="fa fa-search " id="searchmenu"  >查询</a>
+			            </span>
+	           	 </form>
+				<div class="adv-table">
+			      	<div id="flatTree3" class="tree tree-plus-minus tree-solid-line tree-unselectable">
+			      	</div>
+			      </div>
+				</div>
+			</div>
+	</section>
+</body>
+<script src="/html/adminX/js/jstree/jstree.js"></script>
+<script type="text/javascript" src="/html/adminX/js/dropzone/dropzone.js"></script>
+<script type="text/javascript" src="/html/js/sys/role/role_add.js"></script>
+</html>

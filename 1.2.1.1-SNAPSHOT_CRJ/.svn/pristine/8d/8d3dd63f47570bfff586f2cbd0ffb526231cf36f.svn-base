@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="chenrj">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>费用导入</title>
+  <style type="text/css">
+  	.bzh{
+  		background-color: #e68d8d !important;
+  	}
+  	.bzh td{
+  		background-color: #e68d8d !important;
+  		color: #fff;
+  	}
+  	.panel-body .form-group{
+  		margin-top: 5px;
+  	}
+  </style>
+  <script>
+    $(function() {
+        $("#__return_bnt__").click(function(){
+            alert(11)
+            // $(this).button('reset');
+            // $(this).dequeue(); 
+            });
+        });
+</script>
+</head>
+
+<body>
+       <section class="panel">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+		        		<div class="form-group">
+							<label for="exampleInputEmail2">创建时间:</label> <input type="text"
+								style="width: 275px" name="handleTime" readonly="readonly"
+								id="handleTime" class="form-control"
+								class="span4" />
+						</div>
+	                    <div class="form-group">
+	                        <label class="" for="exampleInputEmail2">操作人</label>
+	                        <input type="text" class="form-control" size="11" id="handler" name="handler" placeholder="用户名">
+	                        <label class="" for="exampleInputEmail2">手机号码</label>
+	                        <input type="text" class="form-control" size="11" id="handlerPhone" name="handlerPhone" placeholder="手机号码">
+	                        <label class="" for="exampleInputEmail2">导入编号</label>
+	                        <input type="text" class="form-control" size="11" id="handleId" name="handleId" placeholder="导入编号">
+	                    </div>
+	                    <div class="form-group ">
+	                    	<div class="tools" >
+								<a href="javascript:;" class="fa fa-search yc_seach" table="costImportList_table" > 查询</a>
+	                    	</div>
+			            </div>
+			            
+			            <div class="form-group " style="margin-left: 16%;font-size: 25px;">
+	                    	<div class="tools" >
+								<a href="javascript:costImportList.import();" class="fa fa-upload" table="costImport_table" style="color:write;background-color: #e59501;"> 导入</a>
+	                    	</div>
+			            </div>
+	                </form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="costImportList_table" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>	
+			            	<th></th>
+			             	<th></th>
+			                <th>导入编号</th>
+			                <th>导入类型</th>
+			             	<th>操作时间</th>
+			                <th>操作人</th>
+			                <th>手机号码</th>
+			                <th>成功条数</th>
+			                <th>失败条数</th>
+			                <th>原始文件</th>
+			                <th>导入结果</th>
+			            </tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+   	</section>
+   	<script type="text/javascript" src="/html/js/costImport/costImportList.js" ></script>
+</body>
+</html>

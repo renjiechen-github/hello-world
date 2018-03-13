@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ycdc.appserver.bus.dao.user.IUserDao">
+
+	<select id="checkLogin" resultType="com.ycdc.appserver.model.user.User"
+		parameterType="com.ycdc.appserver.model.user.User">
+		select a.id, a.mobile, a.state, a.name, a.passwd, a.headerImage,
+		case when (length(a.`g_id`) = 0 or a.g_id is null) then -1 else a.g_id end g_id,
+		group_concat(distinct b.`areaid`) areaid,
+		group_concat(distinct fn_getarearname(b.`areaid`)) areaname
+		from yc_account_tab a left join cf_team_member_area tma on tma.user_id = a.id left join yc_group_tab b on tma.area_id = b.id
+		where a.mobile = #{mobile} and a.passwd = #{pwd} and a.is_delete = 1
+		<!--and b.status = 1 -->
+		group by a.id
+		order by b.areaid
+	</select>
+	<select id="getUserRoles" resultType="com.ycdc.appserver.model.user.User"
+		parameterType="com.ycdc.appserver.model.user.User">
+		SELECT GROUP_CONCAT(DISTINCT b.`name`) rolesname, GROUP_CONCAT(DISTINCT
+		b.`id`) rolesId
+		FROM yc_account_role_tab a, yc_role_tab b
+		WHERE a.`role_id` = b.`id`
+		AND a.`state` = 1
+		AND a.`user_id` = #{id}
+	</select>
+	<select id="getUserOrgIds" resultType="com.ycdc.appserver.model.user.User"
+		parameterType="com.ycdc.appserver.model.user.User">
+		select group_concat(a.`org_id`) orgIds, group_concat(a.`org_name`) orgnames
+		from yc_organization_tab a, yc_account_org_tab b
+		where a.`org_id` = b.`org_id`
+		and b.`state` = 1
+		and a.`state` = 1
+		and b.`user_id` = #{id}
+	</select>
+	<select id="loadUserList" resultType="map">
+		select * from (
+		select distinct
+		a.id,a.certificateno,a.username,date_format(registertime,'%Y-%m-%d
+		%T') registertime,photourl, date_format(birthday,'%Y-%m-%d')
+		birthday,sex,a.desc_text,email,wechat,qq,mobile
+		from yc_userinfo_tab a, yc_agreement_tab b, yc_agreement_tab c,
+		yc_group_tab d, yc_house_tab e,cf_team_member_area tma
+		<if test="teamIds != null and teamIds != ''">
+			,cf_team_rel tr
+		</if>
+		where a.`is_delete` = 1
+		and b.`type` = 2
+		and a.`id` = b.`user_id`
+		and c.`isdelete` = 1
+		and b.`isdelete` = 1
+		and c.`type` = 1
+		and b.`father_id` = c.`id`
+		and e.`id` = c.`house_id`
+		and d.id = e.`group_id`
+		and tma.`area_id` = d.`id`
+		<if test="user_id != null and user_id != ''">
+			and tma.`user_id` = #{user_id}
+		</if>
+		<if test="teamIds != null and teamIds != ''">
+			and tma.`user_id` = tr.user_id
+			and tr.team_id in (${teamIds})
+		</if>
+		and b.status = 2
+		<if test="keyWord != null and keyWord != '' ">
+			and (username like concat('%',#{keyWord},'%') or mobile like
+			concat('%',#{keyWord},'%'))
+		</if>
+		order by a.username) a
+		limit #{startPage} , #{pageSize}
+	</select>
+	<update id="updateUserRegistrationId" parameterType="com.ycdc.appserver.model.user.User">
+		UPDATE yc_account_tab
+		SET registrationid = #{registrationID}
+		WHERE id = #{id}
+	</update>
+	<update id="upUserSexAndBirth" parameterType="com.ycdc.appserver.model.user.User">
+		update yc_userinfo_tab
+		set sex=#{sex},birthday=#{birthday}
+		where id=#{id};
+	</update>
+	<select id="getUserId" parameterType="java.lang.String" resultType="com.ycdc.appserver.model.user.User">
+	    select id,username as name,mobile from yc_userinfo_tab 
+	    <where>
+	      <if test="mobile!=null and mobile!=''">
+	      mobile=#{mobile} 
+	      </if>
+	      <if test="id!=null and id!=''">
+	      and id=#{id}
+	      </if>
+	    </where>
+	</select>
+</mapper>

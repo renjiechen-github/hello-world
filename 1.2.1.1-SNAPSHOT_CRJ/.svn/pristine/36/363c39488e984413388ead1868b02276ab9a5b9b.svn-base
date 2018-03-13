@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script>
+	$('.layui-layer-close1').click(function() {
+		costImportPreviewResult.closeWindow();
+	});
+</script>
+</head>
+<body>
+	<div class="panel panel-default title">
+		<div class="panel-body lader">
+			<span>1.上传文件</span> <span>></span> <span
+				style="color: red; font-weight: bold;">2.结果预览</span> <span>></span>
+			<span>3.导入完成</span>
+		</div>
+	</div>
+	<div class="panel panel-default result">
+		<img alt="" src="">
+		<div class="panel-body lader" id="result" style="text-align: center;"></div>
+		<div class="panel-body errorMsg" style="text-align: center;display:none;">
+			<label style="color:red;font-weight:bold;">异常数据</label>
+		</div>
+		<div class="panel-body lader" id="repeatResult" style="display:none;">
+			<table id="repeatResult_table"
+				class="display tablehover table table-bordered dataTable"
+				cellspacing="0" width="100%">
+				<thead>
+					<tr>
+						<th>辅助账房间</th>
+						<th>年</th>
+						<th>期</th>
+						<th>合同号</th>
+						<th>系统号</th>
+						<th>备注</th>
+					</tr>
+				</thead>
+				<tbody role="alert" aria-live="polite" aria-relevant="all" id="body">
+					
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="panel-body"
+		style="padding-top: 50px; padding-right: 5px; text-align: center; width: 30%"
+		id="btn_import">
+		<button type="button" class="btn btn-default btn-lg"
+			onclick="costImportPreviewResult.import();">开始导入</button>
+	</div>
+</body>
+<script type="text/javascript"
+	src="/html/js/costImport/costImportPreviewResult.js"></script>
+</html>

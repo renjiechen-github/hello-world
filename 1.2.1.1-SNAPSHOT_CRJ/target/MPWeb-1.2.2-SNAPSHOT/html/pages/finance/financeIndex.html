@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+  <link href="/html/css/finance/financeIndex.min.css" rel="stylesheet" />
+  <title>财务支出</title>
+
+</head>
+
+<body >
+   <div class="row financeIndex"> 
+       <div class="col-md-6">
+           <!--statistics start-->
+           <div class="row state-overview">
+               <div class="col-md-6 col-xs-12 col-sm-6">
+                   <div class="panel purple">
+                       <div class="row"> 
+							<div class="col-md-6 text-center ">
+								<div class="name" >待支出</div>
+                            </div>
+                            <div class="col-md-6">
+                            	<div class="row">
+                            		<div class="col-md-5 ">
+                            			<div class="value" >笔数</div>
+                            		</div>
+                            		<div class="col-md-7 ">
+                            			<div class="value dzcbsvalue">0</div>
+                            		</div>
+                            	</div>
+                            	<div class="row">
+                            		<div class="col-md-5 ">
+                            			<div class="value" >金额</div>
+                            		</div>
+                            		<div class="col-md-7 ">
+                            			<div class="value dzcjesvalue">0</div>
+                            		</div>
+                            	</div>
+                            </div>
+						</div>
+                   </div>
+               </div>
+               <div class="col-md-6 col-xs-12 col-sm-6">
+                   <div class="panel red">
+                       <div class="row vertical-middle-sm">
+							<div class="col-md-6  text-center  ">
+								<div class="name" >待收入</div>
+                            </div>
+                            <div class="col-md-6">
+                            	<div class="row">
+                            		<div class="col-md-5 ">
+                            			<div class="value" >笔数</div>
+                            		</div>
+                            		<div class="col-md-7 ">
+                            			<div class="value dsrbsvalue">0</div>
+                            		</div>
+                            	</div>
+                            	<div class="row">
+                            		<div class="col-md-5 ">
+                            			<div class="value" >金额</div>
+                            		</div>
+                            		<div class="col-md-7 ">
+                            			<div class="value dsrjevalue">0</div>
+                            		</div>
+                            	</div>
+                            </div>
+						</div>
+                   </div>
+               </div>
+           </div>
+           <div class="row state-overview">
+               <div class="col-md-6 col-xs-12 col-sm-6">
+                   <div class="panel blue">
+                       <div class="row vertical-middle-sm">
+							<div class="col-md-6  text-center  ">
+								<div class="name" >实际支出</div>
+                            </div>
+                            <div class="col-md-6">
+                            	<div class="row">
+                            		<div class="col-md-5 ">
+                            			<div class="value" >笔数</div>
+                            		</div>
+                            		<div class="col-md-7 ">
+                            			<div class="value sjzcbsvalue">0</div>
+                            		</div>
+                            	</div>
+                            	<div class="row">
+                            		<div class="col-md-5 ">
+                            			<div class="value" >金额</div>
+                            		</div>
+                            		<div class="col-md-7 ">
+                            			<div class="value sjzcjevalue">0</div>
+                            		</div>
+                            	</div>
+                            </div>
+						</div>
+                   </div>
+               </div>
+               <div class="col-md-6 col-xs-12 col-sm-6">
+                   <div class="panel green">
+                       <div class="row vertical-middle-sm">
+							<div class="col-md-6  text-center  ">
+								<div class="name" >实际收入</div>
+                            </div>
+                            <div class="col-md-6">
+                            	<div class="row">
+                            		<div class="col-md-5 ">
+                            			<div class="value" >笔数</div>
+                            		</div>
+                            		<div class="col-md-7 ">
+                            			<div class="value sjsrbsvalue">0</div>
+                            		</div>
+                            	</div>
+                            	<div class="row">
+                            		<div class="col-md-5 ">
+                            			<div class="value" >金额</div>
+                            		</div>
+                            		<div class="col-md-7 ">
+                            			<div class="value sjsrjevalue">0</div>
+                            		</div>
+                            	</div>
+                            </div>
+						</div>
+                   </div>
+               </div>
+           </div>
+           <!--statistics end-->
+       </div>
+       <div class="col-md-6">
+           <!--more statistics box start-->
+           <div class="panel deep-purple-box">
+               <div class="panel-body">
+               		<header class="panel-heading ">
+                        成本分析图
+                    </header>
+                   <div class="row">
+                       <div class="col-md-7 col-sm-7 col-xs-7">
+                           <div id="graph-donut" class="revenue-graph"></div>
+                       </div>
+                       <div class="col-md-5 col-sm-5 col-xs-5">
+                           <ul class="bar-legend">
+                               <li><span class="blue"></span>待收入</li>
+                               <li><span class="green"></span>待支出</li>
+                               <li><span class="purple"></span>实际收入</li>
+                               <li><span class="red"></span>实际支出</li>
+                           </ul>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <!--more statistics box end-->
+       </div>
+   </div>
+   
+   <div class="row financeIndex">
+      <div class="col-md-8">
+          <div class="panel">
+              <div class="panel-body">
+                  <div class="row revenue-states">
+                      <div class="col-md-6 col-sm-6 col-xs-12">
+                          <h4>收入与支出折线图</h4>
+                      </div>
+                      <div class="col-md-6 col-sm-6 col-xs-12">
+                          <ul class="revenue-nav">
+                          	  <li class="active"><a href="#">日</a></li>
+                              <!-- <li><a href="#">月份</a></li> -->
+                          </ul>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-12">
+                          <div class="clearfix">
+                              <div id="main-chart-legend" class="pull-right">
+                              </div>
+                          </div>
+
+                          <div id="main-chart">
+                              <div id="main-chart-container" style="height: 270px;" class="main-chart">
+                              </div>
+                          </div>
+                          <!-- <ul class="revenue-short-info">
+                              <li>
+                                  <h1 class="red">15%</h1>
+                                  <p>Server Load</p>
+                              </li>
+                              <li>
+                                  <h1 class="purple">30%</h1>
+                                  <p>Disk Space</p>
+                              </li>
+                              <li>
+                                  <h1 class="green">84%</h1>
+                                  <p>Transferred</p>
+                              </li>
+                              <li>
+                                  <h1 class="blue">28%</h1>
+                                  <p>Temperature</p>
+                              </li>
+                          </ul> -->
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="col-md-4">
+          <div class="panel">
+              <div class="panel-body">
+                  <div class="calendar-block ">
+                      <div class="cal1">
+
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <script type="text/javascript" src="/html/js/finance/finance.js" ></script>
+</body>
+</html>

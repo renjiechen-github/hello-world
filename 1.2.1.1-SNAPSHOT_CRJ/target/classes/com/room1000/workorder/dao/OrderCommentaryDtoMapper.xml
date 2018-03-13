@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.workorder.dao.OrderCommentaryDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.workorder.dto.OrderCommentaryDto">
+    <!-- @mbg.generated -->
+    <id column="work_order_id" jdbcType="INTEGER" property="workOrderId" />
+    <id column="type" jdbcType="CHAR" property="type" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="comments" jdbcType="VARCHAR" property="comments" />
+    <result column="commentary_person_id" jdbcType="INTEGER" property="commentaryPersonId" />
+    <result column="comment_date" jdbcType="TIMESTAMP" property="commentDate" />
+    <result column="type_name" jdbcType="VARCHAR" property="typeName" />
+    <result column="image_url" jdbcType="VARCHAR" property="imageUrl" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!-- @mbg.generated -->
+    work_order_id, type, score, comments, commentary_person_id, comment_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    <!-- @mbg.generated -->
+    select
+    <include refid="Base_Column_List" />
+    from order_commentary
+    where work_order_id = #{workOrderId,jdbcType=INTEGER}
+    and type = #{type,jdbcType=CHAR}
+  </select>
+  <select id="selectByWorkOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    a.work_order_id, a.type, a.score, a.comments, a.commentary_person_id, a.comment_date,
+    b.type_name, a.image_url
+    from order_commentary a
+    left join
+    work_order c on a.work_order_id = c.id
+    left join order_commentary_type b on a.type = b.type and b.order_type = c.type
+    where work_order_id = #{workOrderId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByReqCond" parameterType="com.room1000.workorder.dto.request.QryOrderCommentaryPagerListRequest"
+    resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from order_commentary
+    <where>
+      <if test="workOrderId != null">
+        and work_order_id = #{workOrderId, jdbcType=INTEGER}
+      </if>
+      <if test="type != null">
+        and type = #{type, jdbcType=CHAR}
+      </if>
+      <if test="score != null">
+        and score = #{score, jdbcType=INTEGER}
+      </if>
+      <if test="commentaryPersonId != null">
+        and commentary_person_id = #{commentaryPersonId, jdbcType=INTEGER}
+      </if>
+      <if test="keywords != null">
+        and comments like concat('%', #{keywords, jdbcType=VARCHAR}, '%')
+      </if>
+      <if test="commentDateStart != null">
+        and comment_date &gt;= #{commentDateStart, jdbcType=TIMESTAMP}
+      </if>
+      <if test="commentDateEnd != null">
+        and comment_date &lt;= #{commentDateEnd, jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    <!-- @mbg.generated -->
+    delete from order_commentary
+    where work_order_id = #{workOrderId,jdbcType=INTEGER}
+    and type = #{type,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByCond" parameterType="com.room1000.workorder.dto.OrderCommentaryDto">
+    delete from order_commentary
+    <where>
+      <if test="workOrderId != null">
+        and work_order_id = #{workOrderId,jdbcType=INTEGER}
+      </if>
+      <if test="type != null">
+        and type = #{type,jdbcType=CHAR}
+      </if>
+    </where>
+  </delete>
+  <insert id="insert" parameterType="com.room1000.workorder.dto.OrderCommentaryDto">
+    <!-- @mbg.generated -->
+    insert into order_commentary (work_order_id, type, score,
+    comments, commentary_person_id, comment_date, image_url)
+    values (#{workOrderId,jdbcType=INTEGER}, #{type,jdbcType=CHAR},
+    #{score,jdbcType=INTEGER},
+    #{comments,jdbcType=VARCHAR}, #{commentaryPersonId,jdbcType=INTEGER}, #{commentDate,jdbcType=TIMESTAMP}, #{imageUrl,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.workorder.dto.OrderCommentaryDto">
+    <!-- @mbg.generated -->
+    insert into order_commentary
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="workOrderId != null">
+        work_order_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="comments != null">
+        comments,
+      </if>
+      <if test="commentaryPersonId != null">
+        commentary_person_id,
+      </if>
+      <if test="commentDate != null">
+        comment_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="workOrderId != null">
+        #{workOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="comments != null">
+        #{comments,jdbcType=VARCHAR},
+      </if>
+      <if test="commentaryPersonId != null">
+        #{commentaryPersonId,jdbcType=INTEGER},
+      </if>
+      <if test="commentDate != null">
+        #{commentDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.workorder.dto.OrderCommentaryDto">
+    <!-- @mbg.generated -->
+    update order_commentary
+    <set>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="comments != null">
+        comments = #{comments,jdbcType=VARCHAR},
+      </if>
+      <if test="commentaryPersonId != null">
+        commentary_person_id = #{commentaryPersonId,jdbcType=INTEGER},
+      </if>
+      <if test="commentDate != null">
+        comment_date = #{commentDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where work_order_id = #{workOrderId,jdbcType=INTEGER}
+    and type = #{type,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.workorder.dto.OrderCommentaryDto">
+    <!-- @mbg.generated -->
+    update order_commentary
+    set score = #{score,jdbcType=INTEGER},
+    comments = #{comments,jdbcType=VARCHAR},
+    commentary_person_id = #{commentaryPersonId,jdbcType=INTEGER},
+    comment_date = #{commentDate,jdbcType=TIMESTAMP}
+    where work_order_id = #{workOrderId,jdbcType=INTEGER}
+    and type = #{type,jdbcType=CHAR}
+  </update>
+</mapper>

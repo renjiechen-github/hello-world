@@ -1,0 +1,366 @@
+package pccom.web.action.financial;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import pccom.web.action.BaseController;
+import pccom.web.server.financial.FinancialService;
+
+/**
+ * 获取图片验证码操作
+ *
+ * @author 雷杨
+ *
+ */
+@Controller
+public class FinancialController extends BaseController {
+
+    @Autowired
+    public FinancialService financialService;
+
+    /**
+     * 获取支出明细信息
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/getList.do")
+    public void getList(HttpServletRequest request, HttpServletResponse response) {
+        financialService.getList(request, response);
+        //this.writeJsonData(financialService.getList(request,response), response);
+    }
+
+    /**
+     * 获取支付信息的
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/getReceivableList.do")
+    public void getReceivableList(HttpServletRequest request, HttpServletResponse response) {
+        financialService.getReceivableList(request, response);
+    }
+
+    /**
+     * 改变状态信息
+     *
+     * @author 雷杨
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/changePayableState.do")
+    public void changePayableState(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.changePayableState(request, response), response);
+    }
+
+    /**
+     * 改变状态信息
+     *
+     * @author 雷杨
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/changeReceivableState.do")
+    public void changeReceivableState(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.changeReceivableState(request, response), response);
+    }
+
+    /**
+     * 获取项目列表
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/project/getProjectList.do")
+    public void getProjectList(HttpServletRequest request, HttpServletResponse response) {
+        //new Payable().execute();    
+        logger.debug("???1?????????????");
+        //financialService.getProjectList(request,response);
+        financialService.getProjectList1(request, response);
+        //this.writeJsonData(financialService.getProjectList(request,response), response);
+    }
+
+    /**
+     * 根据收房合约获取下级菜单
+     *
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/project/getItemProjectList.do")
+    public void getItemProjectList(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.getItemProjectList(request, response), response);
+    }
+
+    /**
+     * 项目保存
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/project/save.do")
+    public void projectSave(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.projectSave(request, response), response);
+    }
+
+    /**
+     * 获取单条信息
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/project/getProjectMap.do")
+    public void getProjectMap(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.getProjectMap(request, response), response);
+    }
+
+    /**
+     * 获取单条信息
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/qd/getQDList.do")
+    public void getQDList(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.getQDList(request, response), response);
+    }
+
+    /**
+     * 项目删除
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/project/deleteProject.do")
+    public void deleteProject(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.deleteProject(request, response), response);
+    }
+
+    /**
+     * 查询财务类目
+     *
+     * @author 雷杨
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/type/getTypeList.do")
+    public void getTypeList(HttpServletRequest request, HttpServletResponse response) {
+        financialService.getTypeList(request, response);
+        //this.writeJsonData(financialService.getTypeList(request,response), response);
+    }
+    
+    /**
+     * 查询财务类目
+     *
+     * @author 雷杨
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/type/getTypeListInfo.do")
+    public void getTypeListInfo(HttpServletRequest request, HttpServletResponse response) {
+    	this.writeJsonData(financialService.getTypeListInfo(request, response), response);  
+    } 
+
+    /**
+     * 项目保存
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/type/save.do")
+    public void typeSave(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.typeSave(request, response), response);
+    }
+
+    /**
+     * 获取单条信息
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/type/getTypeMap.do")
+    public void getTypeMap(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.getTypeMap(request, response), response);
+    }
+
+    /**
+     * 项目删除
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/type/deleteType.do")
+    public void deletetype(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.deletetype(request, response), response);
+    }
+
+    /**
+     * 加载财务中心数据信息
+     *
+     * @author 雷杨
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/loadFinanceData.do")
+    public void loadFinanceData(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.loadFinanceData(request, response), response);
+    }
+
+    /**
+     * 加载每天的金额情况
+     *
+     * @author 雷杨
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/loadCost.do")
+    public void loadCost(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.loadCost(request, response), response);
+    }
+
+    /**
+     * 收入与支出折线图
+     *
+     * @author 雷杨
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/srzcZxt.do")
+    public void srzcZxt(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.srzcZxt(request, response), response);
+    }
+
+    /**
+     * 发起出账支付流程
+     *
+     * @author 雷杨
+     */
+    @RequestMapping(value = "financial/sendPayTask.do")
+    public void sendPayTask(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.sendPayTask(request, response), response);
+    }
+
+    /**
+     * 发起收账支付流程
+     *
+     * @author 雷杨
+     */
+    @RequestMapping(value = "financial/sendRecTask.do")
+    public void sendRecTask(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.sendRecTask(request, response), response);
+    }
+
+    /**
+     * 选择合约信息
+     */
+    @RequestMapping(value = "financial/getAgrList.do")
+    public void getAgrList(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.getAgrList(request, response), response);
+    }
+
+    /**
+     * 获取财务项目名称
+     */
+    @RequestMapping(value = "financial/getCorrelation.do")
+    public void getCorrelation(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.getCorrelation(request, response), response);
+    }
+
+    /**
+     * 收入保存
+     */
+    @RequestMapping(value = "financial/income/save.do")
+    public void incomeSave(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.incomeSave(request, response), response);
+    }
+
+    /**
+     * 支出保存
+     */
+    @RequestMapping(value = "financial/expend/save.do")
+    public void expendSave(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.expendSave(request, response), response);
+    }
+
+    /**
+     *
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/mxSave.do")
+    public void mxSave(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.mxSave(request, response), response);
+    }
+
+    /**
+     * 获取明细对应的卡券信息
+     */
+    @RequestMapping(value = "financial/selectCoupon.do")
+    public void selectCoupon(HttpServletRequest request, HttpServletResponse response) {
+        this.writeJsonData(financialService.selectCoupon(request, response), response);
+    }
+
+    /**
+     * 获取账单信息的
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/getBillList.do")
+    public void getBillList(HttpServletRequest request, HttpServletResponse response) {
+        financialService.getBillList(request, response);
+////        financialService.cfBill();  
+//        financialService.createSDMBill("2018-01", "");
+//        Constants.is_test= false;   
+//        JdJob jdJob = SpringHelper.getApplicationContext().getBean("jdJob", JdJob.class);
+//        jdJob.executeSyn();
+
+//        Map<String, String> param = new HashMap<String,String>();
+//        param.put("messag_type", "2");
+//        AppBillBean appBillBean = new AppBillBean();
+//        appBillBean.setKey(Constants.YCQWJ_API);
+//        appBillBean.setId("6273");
+//        appBillBean.setContent("您的账单已生成，请注意查收");
+//        appBillBean.setExreas_param(JSONObject.toJSONString(param));
+//        try {
+//            logger.debug("是否发生成功：" + PlushRequest.appBill(appBillBean));
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+
+            
+
+//        try {
+//            WeiXinRequest.sendBillSuc("http://www.baidu.com", "28065", Constants.YCQWJ_API, "您的账单已生成",
+//                    "12", "32", "");
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+
+    }
+
+    /**
+     * 获取账单信息财务明细与支付明细列表
+     *
+     * @author 雷杨
+     * @param response
+     */
+    @RequestMapping(value = "financial/getBillLDetailList.do")
+    public void getBillLDetailList(HttpServletRequest request, HttpServletResponse response
+    ) {
+        this.writeJsonData(financialService.getBillLDetailList(request, response), response);
+    }
+
+    /**
+     *
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "financial/saveBill.do")
+    public void saveBill(HttpServletRequest request, HttpServletResponse response
+    ) {
+        this.writeJsonData(financialService.saveBill(request, response), response);
+    }
+
+}

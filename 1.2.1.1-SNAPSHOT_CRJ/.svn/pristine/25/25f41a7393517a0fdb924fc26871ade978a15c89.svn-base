@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<style type="text/css">
+.paddingClass {
+	padding: 1px 10px !important;
+}
+
+.ulClass {
+	min-width: 10px;
+}
+</style>
+<title>网格管理</title>
+</head>
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+					<form class="form-inline" role="form">
+						<span class="form-group tools"> <a
+							href="javascript:void(0);" class="fa fa-plus bnt_add">新增</a></span>
+						<div class="form-group">
+							<label for="exampleInputEmail2">区域:</label> <select
+								class="form-control" id="areaid" name="areaid">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">关键字:</label> 
+							<input type="text" class="form-control" id="keyWord" placeholder="管家姓名/或网格名称">
+						</div>
+						<span class="form-group tools"><a 	href="javascript:;" class="fa fa-search yc_seach" id="search" table="grid_table">查询</a> </span>
+					</form>
+				</div>
+			</section>
+			<div class="adv-table">
+				<table id="grid_table"
+					class="display tablehover table table-bordered dataTable"
+					cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+							<th>网格名称</th>
+							<th>网格对应管家</th>
+							<th>区域</th>
+							<th></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+	<script type="text/javascript" src="/html/js/sys/t_grid/t_gridList.js"></script>
+</body>
+
+</html>

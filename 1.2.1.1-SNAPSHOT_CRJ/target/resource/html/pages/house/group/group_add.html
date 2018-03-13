@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>新增</title>
+</head>
+
+<body>
+	<section class="panel">
+		<ul id="myTab" class="nav nav-tabs">
+			<li class="active"><a href="#addIndex" data-toggle="tab">基本信息</a>
+			</li>
+			<!-- <li><a href="#addElse" data-toggle="tab">定位坐标</a>
+			</li> -->
+			<li><a href="#addrelation" data-toggle="tab">户型关系</a>
+			</li>
+		</ul>
+		<form id="form2" class="form-horizontal adminex-form " role="form">
+			<div id="myTabContent" class="tab-content">
+				<!-- 基本信息-->
+				<div class="tab-pane fade in active" id="addIndex">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"></label>
+						<div class="col-sm-6"></div>
+						<div class="col-sm-4"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>所属区域：</label>
+						<div class="col-sm-3">
+							<select dataType="Require" msg="请选择区域！"
+								class="form-control m-bot15" id="area_select" name="area_select">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<label class="col-sm-2  control-label">所属商圈：</label>
+						<div class="col-sm-3">
+							<select class="form-control m-bot15" id="areaid" name="areaid">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>小区名称：</label>
+						<div class="col-sm-8">
+							<input id="groupName" maxlength="40" type="text"
+								dataType="Require" class="form-control" msg="请填写小区名称！"
+								placeholder="XXX小区" required />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b> 小区类型：</label>
+						<div class="col-sm-3">
+							<select id="groupType" dataType="Require" msg="请选择小区类型！"
+								class="form-control m-bot15">
+							</select>
+						</div>
+						<label class="col-sm-2  control-label"><b style="color: red">*</b> 建造日期：</label>
+						<div class="col-sm-3">
+							<input type="text" name="groupDate" readonly="readonly" dataType="Require" msg="请选择建造时间！"
+								id="groupDate" class="form-control"
+								placeholder="2013-01-02 01:00 " />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">开发商：</label>
+						<div class="col-sm-3">
+							<input id="groupDeveloper" type="text" class="form-control"
+								pattern="^([\u4e00-\u9fa5A-Za-z0-9]{0,})$" maxlength='40' />
+						</div>
+						<label class="col-sm-2  control-label">物业公司：</label>
+						<div class="col-sm-3">
+							<input id="groupProperty" type="text" class="form-control"
+								pattern="^([\u4e00-\u9fa5A-Za-z0-9]{0,})$" maxlength='40' />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>交通说明：</label>
+						<div class="col-sm-3">
+							<input id="groupTraffic" type="text" class="form-control"
+								dataType="Require" msg="请填写交通状况" maxlength="50" required />
+						</div>
+
+						<label class="col-sm-2  control-label">绿化率：</label>
+						<div class="col-sm-3">
+							<input id="greenRate" type="text"   class="form-control"
+								maxlength='5' />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2  control-label">总户数：</label>
+						<div class="col-sm-3">
+							<input id="houseCount" type="text"  class="form-control"
+								maxlength='6' />
+						</div>
+						<label class="col-sm-2 col-sm-2 control-label"><b style="color: red">*</b>面积：</label>
+						<div class="col-sm-3">
+							<input id="groupArea" type="text" class="form-control" dataType="Money" msg="请正确填写小区面积" maxlength='7' />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2  control-label">停车位：</label>
+						<div class="col-sm-3">
+							<input id="parkCount" type="text"  class="form-control"
+								maxlength='6' />
+						</div>
+						<label class="col-sm-2  control-label">容积率：</label>
+						<div class="col-sm-3">
+							<input id="plotRatio" type="text"  class="form-control"
+								maxlength='5' />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">小区描述：</label>
+						<div class="col-sm-8">
+							<textarea id="groupDesc" rows="6" maxlength="150"
+								class="form-control" placeholder="请说明小区相关信息"></textarea>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-2  control-label">图片上传：</label>
+						<div class="col-sm-8">
+							<div class="dropzone" id="myAwesomeDropzone"></div>
+							<div class="row"></div>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>房源地址：</label>
+						<div class="col-sm-8">
+							<input id="groupAddress" type="text" class="form-control"
+								dataType="Require" msg="地图坐标不得为空" required maxlength="50" />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>地图坐标：</label>
+						<div class="col-sm-8">
+							<input id="groupCoordinate" type="text" class="form-control"
+								dataType="Require" readonly />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">地图坐标：</label>
+						<div class="col-sm-10">
+							<div id="groupMap"
+								style="width: 600px;height: 300px;overflow: hidden;margin:0;font-family:"微软雅黑";"></div>
+						</div>
+					</div>
+					
+				</div>
+
+			<!-- 	<!-- 定位坐标 
+				<div class="tab-pane fade in " id="addElse">
+					
+				</div>-->
+				<!--小区户型关系 -->
+				<div class="tab-pane fade in " id="addrelation">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"></label>
+						<div class="col-sm-6"></div>
+						<div class="col-sm-4"></div>
+					</div>
+					<!-- < fa-trash-o>
+					 fa-plus -->
+					<div id="selectspec">
+						<div class="row">
+							<label class="col-sm-2  control-label"><a
+								onclick="group_add.addroom(this);"><i class="fa fa-plus"></i>添加..</a>
+							</label>
+						</div>
+						<div>
+							<div class="row">
+								<label class="col-sm-2  control-label"><b style="color: red">*</b>户型 (室)</label>
+								<div class="col-sm-1">
+									<input name="spec"  dataType="Integer2"
+										msg="请正确填写卧室数量"
+										type="text" class="form-control" maxlength="4">
+								</div>
+								<label class="col-sm-1  control-label"><b style="color: red">*</b>厅：</label>
+								<div class="col-sm-1">
+									 <input name="spec1" type="text"  dataType="Integer2"
+										msg="请正确填写客厅数量" class="form-control" maxlength="4">
+								</div>
+								<label class="col-sm-1  control-label"><b style="color: red">*</b>面积：</label>
+								<div class="col-sm-1">
+									<input name="specarea" type="text"  dataType="Money"
+										msg="请正确填写面积" class="form-control" maxlength="6">
+								</div>
+								<label class="col-sm-1  control-label"><b style="color: red">*</b>价格：</label>
+								<div class="col-sm-1">
+									<input name="cost"  dataType="Money"
+										msg="请正确填写价格" type="text" class="form-control" maxlength="6" >
+								</div>
+								<!-- <label class="col-sm-1  control-label"><b style="color: red">*</b>房源量：</label>
+								<div class="col-sm-1">
+									<input name="count" dataType="Require" dataType="Integer"
+										msg="请正确填写数量" type="number" class="form-control"
+										maxlength="10">
+								</div> -->
+								<div class="col-sm-3">
+									<!-- <a  onclick="group_add.addroom(this);"><i class="fa fa-plus"></i>添加..</a> -->
+								</div>
+							</div>
+							<div class="row">
+								<label class="col-sm-2  control-label">图片</label>
+								<div class="col-sm-8">
+									<div class="dropzone rebuild" id="pic0"></div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-9"></div>
+								<div class="col-sm-1">
+									<a onclick="group_add.deleteroom(this);"><i
+										class="fa fa-trash-o"></i>删除..</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+						<label class="col-sm-2  control-label"></label>
+						<div class="col-sm-8"></div>
+						<div class="col-sm-2"></div>
+					</div>
+					
+					<div class="form-group">
+				<label class="col-sm-2  control-label"></label>
+				<div class="col-sm-6"></div>
+				<div class="col-sm-4"></div>
+			</div>
+			<div class="text-center">
+				<button class="btn btn-info" id="group_add_bnt" type="button">保存</button>
+			</div>
+		</form>
+	</section>
+</body>
+<script type="text/javascript"
+	src="/html/adminX/js/dropzone/dropzone.js"></script>
+<script type="text/javascript" src="/html/js/house/group/group_add.js"></script>
+</html>

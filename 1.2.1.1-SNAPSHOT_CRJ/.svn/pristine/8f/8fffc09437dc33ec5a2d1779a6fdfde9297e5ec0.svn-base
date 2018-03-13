@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>委托合约</title>
+    <link rel="stylesheet" type="text/css" href="../../css/market/wt_contract.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/normalize.min.css"/>
+</head>
+
+<body>
+<div class="divCenter"><div class="bgDiv"><div class="cirleDiv">张三</div></div></div>
+<div id="banner" style="padding-top: 30px">
+	<div class="inpy" >
+		<div class="button-group">
+			<select id="status" name="status">
+				<option value="">状态</option>
+			</select>
+		</div>
+		<div class="inputdiv">
+			<input type="text" id="keyword" />
+		</div>
+		<div class="buttondiv">
+			<button id="sreachBut" type="button" placeholder="模糊查询名称，编码，地址，业主姓名" class="button">搜索</button>
+		</div>
+		<div class="rightdiv" id="rightdiv">
+			<div id="myinfo" class="myinfo">
+				<img src="../../images/market/7.png" alt="" />
+			</div>						
+		</div>
+	</div>
+	<div class="hide" id='hide1'>
+		<div class="hide2">
+			<div class="divflex"></div>
+		    <select id="areaid" name="areaid">
+					<option value="">区域不限</option>
+			</select>
+			<em>|</em>
+			<select id="contractManage" name="contractManage">
+					<option value="">管家</option>
+			</select>
+			<div class="divflex1"></div>
+		</div>
+	</div>
+</div>
+<div class="body">
+<!-- 	<a href="#" onclick="house_list.openDialog(this);return false;">
+		<div class="div">
+			<div class="con space">
+				<div class="info"><p>天正天御溪岸1栋824</p></div>
+				<div class="state1"><p class="housecolor0">待提交</p></div>
+			</div>								
+			<div class="detail">
+				<p>16FP025JN0180216FP02&nbsp;<span class="color1">(江宁区)</span></p>
+				<p class="color1">4室2厅2卫&nbsp;&nbsp;&nbsp;70㎡&nbsp;&nbsp;<em>|</em>&nbsp;&nbsp;<span>徐小凤(业主)</span></p>
+			</div>
+			<div class="con">
+				<div class="info1"><img src="../../images/market/person.png" alt="" /></div>
+				<div class="state"><p>姚远</p></div>
+			</div>
+			<hr>
+		</div>
+	</a>
+	<a href="#" onclick="house_list.openDialog(this);return false;">
+		<div class="div">
+			<div class="con space">
+				<div class="info"><p>天正天御溪岸1栋824</p></div>
+				<div class="state1"><p class="housecolor0">待提交</p></div>
+			</div>								
+			<div class="detail">
+				<p>16FP025JN0180216FP02&nbsp;<span class="color1">(江宁区)</span></p>
+				<p class="color1">4室2厅2卫&nbsp;&nbsp;&nbsp;70㎡&nbsp;&nbsp;<em>|</em>&nbsp;&nbsp;<span>徐小凤(业主)</span></p>
+			</div>
+			<div class="con">
+				<div class="info1"><img src="../../images/market/person.png" alt="" /></div>
+				<div class="state"><p>姚远</p></div>
+			</div>
+			<hr>
+		</div>
+	</a>  -->	
+</div>
+    
+<script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="../../js/common.client.js"></script>
+<script type="text/javascript" src="../../js/house_agreement/house_agreement_list.js"></script>
+</body>
+</html>

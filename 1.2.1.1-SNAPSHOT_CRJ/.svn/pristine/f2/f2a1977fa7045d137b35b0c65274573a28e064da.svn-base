@@ -1,0 +1,99 @@
+var costImportList = {
+		// 页面初始化操作
+	    init: function () {
+	    	// 时间按钮选择事件
+	        var nowTemp = new Date();
+	        var begin_time = nowTemp.getFullYear() + '-'
+            + (nowTemp.getMonth()+1 ) + '-01';
+	        var end_Time = nowTemp.getFullYear() + '-'
+            + (nowTemp.getMonth()+1 ) + '-'+(nowTemp.getDate() < 10 ? "0" + nowTemp.getDate() : nowTemp.getDate());
+	        $('#handleTime').daterangepicker(
+	                {
+	                    startDate: begin_time,
+	                    endDate: end_Time,
+	                    timePicker12Hour: false,
+	                    separator: '~',
+	                    format: 'YYYY-MM-DD'
+	                }, function (start, end, label) {
+	            console.log(start.toISOString(), end.toISOString(), label);
+	        });
+	        $("#handleTime").val(begin_time + "~" + end_Time);
+	        costImportList.creatTable();
+	    },
+	    import:function(){
+	    	//打开对于的窗口
+	        common.openWindow({
+	            type: 3,
+	            name:'costImportPreview', 
+	            title: '费用导入预览',
+	            url: '/html/pages/costImport/costImportPreview.html' 
+	        });
+	    },
+	    closeWindow:function(){
+//	    	 common.closeWindow('costImport', 3);
+	    },
+	    creatTable:function(){
+	    	table.init({
+	    		id:'#costImportList_table',
+	    		url:common.root + '/costImport/queryCostImport.do',
+	    		columns: [
+	    			"handleId",//操作id
+	    			"type",//导入类型
+	    			"handleTime",//操作时间
+	    			"handler",//操作人
+	    			"handlerPhone",//操作人phone
+	    			"successNum",//成功条数
+	    			"failedNum",//失败条数
+	    			"filePath",//原始文件
+	    			""
+	    		],
+	    		isexp: false,
+	    		param:function(){
+	    			var params = new Array();
+	    			params.push({"name":"handler","value":$("#handler").val()});
+	    			params.push({"name":"handlerPhone","value":$("#handlerPhone").val()});
+	    			params.push({"name":"handleId","value":$("#handleId").val()});
+	    			params.push({"name":"handleTime","value":$("#handleTime").val()});
+	    			return  params;
+	    		},
+	    		createRow: function (rowindex, colindex, name, value, data) {
+	    			if(colindex==7){
+	    				return "<a href='"+data.filePath+"' title='下载原始文件' style='cursor: pointer;'>下载</a>";
+	    			}else if(colindex==8){
+	    				return "<a href='"+common.root+"/costImport/downLoadCostImportResult.do?handleId="+data.handleId+"' style='cursor: pointer;'>下载</a>";
+	    			}
+	    		}
+	    	});
+	    },
+	    downLoadResult:function(obj, flag){
+	    	var rowData = table.getRowData('costImportList_table', obj);
+	    	var handleId = rowData.handleId;
+	    	alert(handleId)
+	    	common.ajax({
+				url:common.root+'/costImport/downLoadCostImportResult.do',
+	 			 data:{
+	 				handleId:handleId,
+	 			 },
+	 			 dataType:'json',
+	 			 loadfun:function(isSccess,data){
+	 			 }
+			});
+//	    	alert(111)
+//	    	var handleId = 2018030700002;
+//	    	$.ajax({
+//	            type:"post",
+//	            url:common.root+'/costImport/downLoadCostImportResult.do',
+//	            async:false,
+//	            contentType: false,    //这个一定要写
+//	            processData: false, //这个也一定要写，不然会报错
+//	            data:handleId,
+//	            dataType:'text',    //返回类型，有json，text，HTML。这里并没有jsonp格式，所以别妄想能用jsonp做跨域了。
+//	            success:function(data){
+//	            },
+//	            error:function(XMLHttpRequest, textStatus, errorThrown, data){
+//	                alert(errorThrown);
+//	            }            
+//	        });
+	    }
+}
+costImportList.init();

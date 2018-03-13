@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+  <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+  
+    <property name="beginningDelimiter" value="`" />
+    <property name="endingDelimiter" value="`" />
+    <property name="author" value="jinyanan" />
+    <property name="javaFormatter" value="com.room1000.core.mybatis.SortImportTypesJavaFormatter" />
+
+    <plugin type="com.room1000.core.mybatis.plugins.MapperPlugin">
+      <property name="mappers" value="tk.mybatis.mapper.common.Mapper" />
+    </plugin>
+    
+    <plugin type="com.room1000.core.mybatis.plugins.SerializablePlugin" />
+    <plugin type="com.room1000.core.mybatis.plugins.ImportsPlugin" />
+    <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
+
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.90.202:3306/room1000" userId="root"
+      password="ycqwj">
+    </jdbcConnection>
+    
+    <javaTypeResolver type="com.room1000.core.mybatis.ChangeColType2LongJavaTypeResolver">
+      <property name="forceBigDecimals" value="false" />
+    </javaTypeResolver>
+
+    <javaModelGenerator targetPackage="com.room1000.suborder.payorder.dto" targetProject="src/main/java" />
+
+    <sqlMapGenerator targetPackage="com.room1000.suborder.payorder.dao" targetProject="src/main/java" />
+
+    <javaClientGenerator targetPackage="com.room1000.suborder.payorder.dao" targetProject="src/main/java"
+      type="XMLMAPPER" />
+
+    <table tableName="pay_order_type" domainObjectName="PayOrderTypeDto">
+    </table>
+    <table tableName="pay_order" domainObjectName="PayOrderDto">
+      <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+    </table>
+    <table tableName="pay_order_value" domainObjectName="PayOrderValueDto">
+      <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+    </table>
+    <table tableName="pay_order_value_his" domainObjectName="PayOrderValueHisDto">
+    </table>
+    <table tableName="pay_order_his" domainObjectName="PayOrderHisDto">
+    </table>
+  </context>
+</generatorConfiguration>

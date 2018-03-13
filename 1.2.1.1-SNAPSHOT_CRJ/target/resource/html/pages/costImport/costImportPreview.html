@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<script>
+	$('#__return_bnt__').click(function() {
+		costImportList.closeWindow();
+	});
+</script>
+<style>
+.title {
+	width: 50%;
+	float: none;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #e0e0e0;
+}
+
+.lader {
+	text-align: left;
+}
+
+.fileInput {
+	width: 100%;
+	float: left;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#fileName {
+	overflow: hidden; /*溢出隐藏*/
+	text-overflow: ellipsis; /*以省略号...显示*/
+	white-space: nowrap; /*强制不换行*/
+}
+</style>
+<body>
+	<div class="panel panel-default fileInput">
+	
+	<div class="panel panel-default title">
+		<div class="panel-body lader">
+			<span>1.上传文件</span> <span>></span> <span>2.结果预览</span> <span>></span>
+			<span>3.导入完成</span>
+		</div>
+	</div>
+		<div class="form-group form-group-lg"  >
+			<label class="col-sm-1 control-label no-padding-left"
+				style="font-size: 1em; font-family: Microsoft YaHei;">文件选择</label>
+			<div class="col-sm-2">
+				<input class="col-xs-12 col-sm-8" type="text" id="fileName"
+					placeholder="请选择要导入的Excel文件" readonly="readonly" />
+			</div>
+			<div class="col-sm-1" style="margin-left: -83px;">
+			<label for="inputfile" class="btn btn-default">...</label> <input
+				type="file" id="inputfile" style="display: none"
+				onchange="costImportPreview.changeFileName();">
+			</div>
+			<div class="panel-body"
+				style="padding-top: 50px; padding-right: 5px;">
+				<label 
+					style="font-size: 12px; font-family: Microsoft YaHei; vertical-align: middle; display: inline-block;margin-top: 8px;">如不了解文件格式，请点击<a href="http://test.room10000.com:9003/data/costImport/templet/导入模板.xls">下载</a>标准模板</label>
+			</div>
+			<div class="panel-body"
+				style="padding-top: 50px; padding-right: 5px; text-align: center; width: 30%">
+				<button type="button" class="btn btn-default btn-lg" onclick="costImportPreview.checkExcelInfo();">预览</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="/html/js/costImport/costImportPreview.js"></script>
+</html>

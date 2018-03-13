@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>代缴费</title>
+  <style type="text/css">
+  	.bzh{
+  		background-color: #e68d8d !important;
+  	}
+  	.bzh td{
+  		background-color: #e68d8d !important;
+  		color: #fff;
+  	}
+  	.panel-body .form-group{
+  		margin-top: 5px;
+  	}
+  </style>
+</head>
+
+<body>
+	<section class="panel">
+		<form id="form2" class="form-horizontal adminex-form " role="form">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">新增代缴费优惠</h3>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>手机号码：</label>
+						<div class="col-sm-3">
+							<input type="text" id="phone" name="phone" dataType="Number" Require="true" title="请填写签约人手机号码" msg="请填写签约人手机号码"  maxlength="11">
+						</div>
+						
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>合约编号：</label>
+						<div class="col-sm-3">
+							<input type="text" id="code" name="code" Require="true" title="请填写合约编号" msg="请填写合约编号"  maxlength="30">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>优惠金额：</label>
+						<div class="col-sm-3">
+							<input type="text" id="cost" name="cost" Require="true" title="请填写优惠金额" msg="请填写优惠金额"  maxlength="8">
+						</div>
+						
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>可使用次数：</label>
+						<div class="col-sm-3">
+							<input type="text" id="num" name="num" Require="true" title="请填写优惠的可使用次数,0-99" msg="请填写优惠的可使用次数,0-99"  maxlength="2">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="text-center savebnt" style="padding-bottom: 10px;padding-top: 5px;" >
+		         <button class="btn btn-info" id="type_add_bnt" type="button" onclick="addPayDiscount.save();" >确定提交</button>
+	        </div>
+		</form>
+	</section>
+	<script type="text/javascript" src="/html/js/payDiscount/payDiscountAdd.js" ></script>
+</body>
+</html>

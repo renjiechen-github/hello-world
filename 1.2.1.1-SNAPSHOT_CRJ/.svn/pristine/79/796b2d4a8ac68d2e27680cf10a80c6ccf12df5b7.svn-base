@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.suborder.cancelleaseorder.dao.CancelLeaseOrderHisDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.suborder.cancelleaseorder.dto.CancelLeaseOrderHisDto">
+    <!-- @mbg.generated -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <id column="priority" jdbcType="INTEGER" property="priority" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="work_order_id" jdbcType="INTEGER" property="workOrderId" />
+    <result column="rental_lease_order_id" jdbcType="INTEGER" property="rentalLeaseOrderId" />
+    <result column="butler_id" jdbcType="INTEGER" property="butlerId" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="cancel_lease_date" jdbcType="TIMESTAMP" property="cancelLeaseDate" />
+    <result column="channel" jdbcType="CHAR" property="channel" />
+    <result column="node_name" jdbcType="VARCHAR" property="nodeName" />
+    <result column="actual_dealer_id" jdbcType="INTEGER" property="actualDealerId" />
+    <result column="assigned_dealer_id" jdbcType="INTEGER" property="assignedDealerId" />
+    <result column="assigned_dealer_role_id" jdbcType="INTEGER" property="assignedDealerRoleId" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="attr_catg_id" jdbcType="INTEGER" property="attrCatgId" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="stateDate" />
+    <result column="comments" jdbcType="VARCHAR" property="comments" />
+    <result column="rental_lease_order_name" jdbcType="VARCHAR" property="rentalLeaseOrderName" />
+    <result column="state_name" jdbcType="VARCHAR" property="stateName" />
+    <result column="update_person_id" jdbcType="INTEGER" property="updatePersonId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="actual_dealer_name" jdbcType="VARCHAR" property="actualDealerName" />
+    <result column="assigned_dealer_name" jdbcType="VARCHAR" property="assignedDealerName" />
+    <result column="assigned_dealer_role_name" jdbcType="VARCHAR" property="assignedDealerRoleName" />
+    <result column="update_person_name" jdbcType="VARCHAR" property="updatePersonName" />
+    <result column="actual_dealer_phone" jdbcType="VARCHAR" property="actualDealerPhone" />
+    <collection property="subOrderValueList" ofType="com.room1000.suborder.cancelleaseorder.dto.CancelLeaseOrderValueHisDto">
+      <id column="value_id" jdbcType="INTEGER" property="id" />
+      <id column="value_priority" jdbcType="INTEGER" property="priority" />
+      <result column="value_sub_order_id" jdbcType="INTEGER" property="subOrderId" />
+      <result column="value_attr_id" jdbcType="INTEGER" property="attrId" />
+      <result column="value_attr_path" jdbcType="VARCHAR" property="attrPath" />
+      <result column="value_text_input" jdbcType="VARCHAR" property="textInput" />
+      <result column="value_attr_value_id" jdbcType="INTEGER" property="attrValueId" />
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!-- @mbg.generated -->
+    id, priority, code, work_order_id, rental_lease_order_id, butler_id, created_date, cancel_lease_date, channel,
+    node_name, actual_dealer_id, assigned_dealer_id, assigned_dealer_role_id, state, state_date, comments,
+    update_person_id, update_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    <!-- @mbg.generated -->
+    select
+    <include refid="Base_Column_List" />
+    from cancel_lease_order_his
+    where id = #{id,jdbcType=INTEGER}
+    and priority = #{priority,jdbcType=INTEGER}
+  </select>
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select distinct a.update_date,
+    a.`id`,a.`priority`,a.`code`,a.`work_order_id`,a.`rental_lease_order_id`,a.`butler_id`,a.`created_date`,a.`cancel_lease_date`,a.`channel`,a.`node_name`,a.`actual_dealer_id`,a.`assigned_dealer_id`,a.`assigned_dealer_role_id`,a.`type`,a.`attr_catg_id`,a.`state`,a.`state_date`,a.`update_person_id`,a.`comments`,
+    b.name rental_lease_order_name,
+    c.state_name,
+    d.type_name,
+    e.channel_name,
+    f.name actual_dealer_name,
+    f.mobile actual_dealer_phone,
+    g.name assigned_dealer_name,
+    h.name update_person_name,
+    i.role_name assigned_dealer_role_name,
+    j.id value_id,
+    j.priority value_priority,
+    j.sub_order_id value_sub_order_id,
+    j.attr_id value_attr_id,
+    j.attr_path value_attr_path,
+    j.text_input value_text_input,
+    j.attr_value_id
+    value_attr_value_id
+    from cancel_lease_order_his a
+    left join yc_agreement_tab b on a.rental_lease_order_id = b.id
+    left join sub_order_state c on a.state = c.state
+    left join cancel_lease_order_type d on a.type = d.type
+    left join channel e
+    on a.channel = e.channel
+    left join yc_account_tab f on a.actual_dealer_id = f.id
+    left join yc_account_tab g on
+    a.assigned_dealer_id = g.id
+    left join yc_account_tab h on a.update_person_id = h.id
+    left join yc_role_new_tab i on
+    a.assigned_dealer_role_id = i.role_id
+    left join cancel_lease_order_value_his j on j.priority = a.priority and
+    j.sub_order_id = a.id
+    where a.id = #{id,jdbcType=INTEGER}
+    and (a.update_person_id is not null or a.priority = (select cloh1.priority 
+    														from (select max(distinct cloh.update_date),cloh.priority 
+    																from cancel_lease_order_his cloh 
+    																where cloh.state = "A" 
+    																and cloh.id = #{id,jdbcType=INTEGER}) cloh1))
+    order by a.priority
+  </select>
+  <select id="selectMaxPriority" parameterType="java.lang.Long" resultType="java.lang.Long">
+    select Max(PRIORITY) max_priority
+    from
+    cancel_lease_order_his
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    <!-- @mbg.generated -->
+    delete from cancel_lease_order_his
+    where id = #{id,jdbcType=INTEGER}
+    <if test="priority != null">
+      and priority = #{priority,jdbcType=INTEGER}
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.room1000.suborder.cancelleaseorder.dto.CancelLeaseOrderHisDto">
+    <!-- @mbg.generated -->
+    insert into cancel_lease_order_his (id, priority, code, work_order_id,
+    rental_lease_order_id, butler_id, created_date, cancel_lease_date,
+    channel, node_name, actual_dealer_id, assigned_dealer_id, assigned_dealer_role_id, type,
+    attr_catg_id, state, state_date,
+    comments, update_person_id, update_date)
+    values (#{id,jdbcType=INTEGER}, #{priority,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR},
+    #{workOrderId,jdbcType=INTEGER},
+    #{rentalLeaseOrderId,jdbcType=INTEGER}, #{butlerId,jdbcType=INTEGER}, #{createdDate,jdbcType=TIMESTAMP}, #{cancelLeaseDate,jdbcType=TIMESTAMP},
+    #{channel,jdbcType=CHAR}, #{nodeName,jdbcType=VARCHAR}, #{actualDealerId,jdbcType=INTEGER},
+    #{assignedDealerId,jdbcType=INTEGER}, #{assignedDealerRoleId,jdbcType=INTEGER},
+    #{type,jdbcType=CHAR}, #{attrCatgId,jdbcType=INTEGER}, #{state,jdbcType=CHAR}, #{stateDate,jdbcType=TIMESTAMP},
+    #{comments,jdbcType=VARCHAR}, #{updatePersonId,jdbcType=INTEGER}, #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.suborder.cancelleaseorder.dto.CancelLeaseOrderHisDto">
+    <!-- @mbg.generated -->
+    insert into cancel_lease_order_his
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="priority != null">
+        priority,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="workOrderId != null">
+        work_order_id,
+      </if>
+      <if test="rentalLeaseOrderId != null">
+        rental_lease_order_id,
+      </if>
+      <if test="butlerId != null">
+        butler_id,
+      </if>
+      <if test="createdDate != null">
+        created_date,
+      </if>
+      <if test="cancelLeaseDate != null">
+        cancel_lease_date,
+      </if>
+      <if test="channel != null">
+        channel,
+      </if>
+      <if test="nodeName != null">
+        node_name,
+      </if>
+      <if test="actualDealerId != null">
+        actual_dealer_id,
+      </if>
+      <if test="assignedDealerId != null">
+        assigned_dealer_id,
+      </if>
+      <if test="assignedDealerRoleId != null">
+        assigned_dealer_role_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="attrCatgId != null">
+        attr_catg_id,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="stateDate != null">
+        state_date,
+      </if>
+      <if test="comments != null">
+        comments,
+      </if>
+      <if test="updatePersonId != null">
+        update_person_id
+      </if>
+      <if test="updateDate != null">
+        update_date
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="priority != null">
+        #{priority,jdbcType=INTEGER},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="workOrderId != null">
+        #{workOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="rentalLeaseOrderId != null">
+        #{rentalLeaseOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="butlerId != null">
+        #{butlerId,jdbcType=INTEGER},
+      </if>
+      <if test="createdDate != null">
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cancelLeaseDate != null">
+        #{cancelLeaseDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="channel != null">
+        #{channel,jdbcType=CHAR},
+      </if>
+      <if test="nodeName != null">
+        #{nodeName,jdbcType=VARCHAR},
+      </if>
+      <if test="actualDealerId != null">
+        #{actualDealerId,jdbcType=INTEGER},
+      </if>
+      <if test="assignedDealerId != null">
+        #{assignedDealerId,jdbcType=INTEGER},
+      </if>
+      <if test="assignedDealerRoleId != null">
+        #{assignedDealerRoleId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="attrCatgId != null">
+        #{attrCatgId,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=CHAR},
+      </if>
+      <if test="stateDate != null">
+        #{stateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="comments != null">
+        #{comments,jdbcType=VARCHAR},
+      </if>
+      <if test="updatePersonId != null">
+        #{update_person_id,jdbcType=INTEGER},
+      </if>
+      <if test="updateDate != null">
+        #{update_date,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.suborder.cancelleaseorder.dto.CancelLeaseOrderHisDto">
+    <!-- @mbg.generated -->
+    update cancel_lease_order_his
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="workOrderId != null">
+        work_order_id = #{workOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="rentalLeaseOrderId != null">
+        rental_lease_order_id = #{rentalLeaseOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="butlerId != null">
+        butler_id = #{butlerId,jdbcType=INTEGER},
+      </if>
+      <if test="createdDate != null">
+        created_date = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cancelLeaseDate != null">
+        cancel_lease_date = #{cancelLeaseDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="channel != null">
+        channel = #{channel,jdbcType=CHAR},
+      </if>
+      <if test="nodeName != null">
+        current_dealer_id = #{nodeName,jdbcType=VARCHAR},
+      </if>
+      <if test="actualDealerId != null">
+        actual_dealer_id = #{actualDealerId,jdbcType=INTEGER},
+      </if>
+      <if test="assignedDealerId != null">
+        assigned_dealer_id = #{assignedDealerId,jdbcType=INTEGER},
+      </if>
+      <if test="assignedDealerRoleId != null">
+        assigned_dealer_role_id = #{assignedDealerRoleId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=CHAR},
+      </if>
+      <if test="attrCatgId != null">
+        attr_catg_id = #{attrCatgId,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=CHAR},
+      </if>
+      <if test="stateDate != null">
+        state_date = #{stateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="comments != null">
+        comments = #{comments,jdbcType=VARCHAR},
+      </if>
+      <if test="updatePersonId != null">
+        update_person_id = #{updatePersonId,jdbcType=INTEGER},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    and priority = #{priority,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.suborder.cancelleaseorder.dto.CancelLeaseOrderHisDto">
+    <!-- @mbg.generated -->
+    update cancel_lease_order_his
+    set code = #{code,jdbcType=VARCHAR},
+    work_order_id = #{workOrderId,jdbcType=INTEGER},
+    rental_lease_order_id = #{rentalLeaseOrderId,jdbcType=INTEGER},
+    butler_id = #{butlerId,jdbcType=INTEGER},
+    created_date = #{createdDate,jdbcType=TIMESTAMP},
+    cancel_lease_date = #{cancelLeaseDate,jdbcType=TIMESTAMP},
+    channel = #{channel,jdbcType=CHAR},
+    node_name = #{nodeName,jdbcType=VARCHAR},
+    actual_dealer_id = #{actualDealerId,jdbcType=INTEGER},
+    assigned_dealer_id = #{assignedDealerId,jdbcType=INTEGER},
+    assigned_dealer_role_id = #{assignedDealerRoleId,jdbcType=INTEGER},
+    type = #{type,jdbcType=CHAR},
+    attr_catg_id = #{attrCatgId,jdbcType=INTEGER},
+    state = #{state,jdbcType=CHAR},
+    state_date = #{stateDate,jdbcType=TIMESTAMP},
+    comments = #{comments,jdbcType=VARCHAR},
+    update_person_id = #{updatePersonId,jdbcType=INTEGER},
+    update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+    and priority = #{priority,jdbcType=INTEGER}
+  </update>
+</mapper>

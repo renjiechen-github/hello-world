@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.cascading.dao.CascadingDao">
+
+  <!-- 根据区域的ID，查询所属小区 -->
+  <select id="groupList" resultType="map">
+    select id as "id",
+    group_name as "group_name"
+    from yc_group_tab a
+    where a.areaid=#{areaId}
+  </select>
+
+  <!-- 根据区域的ID，查询所属管家 -->
+  <select id="butlerList" resultType="map">
+		select distinct g.id as "id",
+		g.name as "name"
+		<if test="rankId != null and rankId != ''">
+			,e.id as "area_id",
+			e.area_name as "area_name",
+			c.id as "group_id",
+			c.group_name as "group_name"
+		</if>
+		from yc_houserank_tab a
+		left join yc_house_tab b on a.house_id=b.id
+		left join yc_group_tab c on b.group_id=c.id
+		left join cf_team_member_area d on c.id=d.area_id
+		left join yc_area_tab e on c.areaid=e.id
+		left join cf_team f on d.team_id=f.id
+		left join yc_account_tab g on g.id=d.user_id
+		left join yc_account_role_tab h on g.id=h.user_id
+		left join yc_data_permission i on i.role_id=h.role_id
+		where i.type_id=1 and i.sub_type_id='D' and i.assign_permission=1
+		and h.role_id=22
+		<if test="rankId != null and rankId != ''">
+			and a.id=#{rankId}
+		</if>
+		<if test="areaId != null and areaId != ''">
+			and e.id=#{areaId}
+		</if>
+		<if test="groupId != null and groupId != ''">
+			and c.id=#{groupId}
+		</if>
+		order by f.team_level desc
+  </select>
+  
+  <select id="getUserAll" resultType="map">
+  	select distinct 
+  	a.id as "id",
+  	a.name as "name"
+  	from yc_account_tab a
+  	where a.is_delete=1 and a.state=1 and a.name is not null and a.name != ''
+  </select>
+  
+  <select id="getUserListByAuthority" resultType="map">
+		select distinct 
+		d.id as "id",
+		d.name as "name"
+		from cf_team_member_area a
+		left join yc_group_tab b on a.area_id=b.id
+		left join cf_team c on a.team_id=c.id
+		left join yc_account_tab d on d.id=a.user_id
+		left join yc_account_role_tab e on d.id=e.user_id
+		left join yc_data_permission f on f.role_id=e.role_id
+		where f.type_id=1 and f.assign_permission=1 and d.name is not null and d.name != ''
+		<if test="type != null and type != ''">
+			and f.sub_type_id=#{type}
+		</if> 
+		<if test="roleId != null and roleId != ''">
+			and e.role_id in (${roleId})
+		</if>
+		order by c.team_level desc
+  </select>
+
+  <!-- 根据任务编码，查询被推荐人信息 -->
+  <select id="recommendInfo" resultType="map">
+    select
+    b.id as "id"
+    from yc_recommend_relation a,yc_recommend_info b
+    where a.recommend_id=b.id and a.relation_id=#{code}
+  </select>
+
+  <!-- 根据houserank id，获取管家名称 -->
+  <select id="getbutlerInfo" resultType="map">
+    select
+    distinct
+    d.id as "id",
+    d.name as "butler_name",
+    c.id as "group_id",
+    c.group_name as "group_name",
+    e.area_name as "area_name",
+    c.areaid as "area_id",
+    f.if_charge as "ifCharge",
+    i.team_level as "teamLevel"
+    from yc_houserank_tab a, yc_house_tab b,yc_group_tab c,yc_account_tab d,
+    yc_area_tab e,cf_team_member_area tma,cf_team_rel f,yc_account_role_tab h,cf_team i
+    where a.house_id=b.id and b.group_id=c.id and c.areaid=e.id and tma.area_id=c.id 
+    and tma.user_id=d.id and tma.user_id=f.user_id and tma.team_id=f.team_id
+    and h.user_id=d.id and tma.team_id=i.id and a.id=#{id} and h.role_id=22
+  </select>
+
+  <select id="getCallBackInfo" resultType="map">
+    select
+    a.key as "key",
+    a.name as "name",
+    a.value as "value"
+    from yc_systemparameter_tab a
+    where (a.key='CALL_BACK_URL' or a.key='BIND_NBR');
+  </select>
+
+</mapper>

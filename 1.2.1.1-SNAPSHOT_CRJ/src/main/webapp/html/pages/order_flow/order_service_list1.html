@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+  <title>服务订单管理</title>
+</head>
+<body>
+       <section class="panel">
+       
+       <div class="row state-overview">
+						<div class="col-md-4 col-xs-12 col-md-4">
+							<div class="panel red" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-gavel"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="count0">230</span>
+									</div>
+									<div class="title">订单总计</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-4 col-xs-12 col-md-4">
+							<div class="panel blue" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-tags"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr0">230</span>
+									</div>
+									<div class="title">预约看房</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4 col-xs-12 col-md-4">
+							<div class="panel green" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-tags"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr1">230</span>
+									</div>
+									<div class="title">维修订单</div>
+								</div>
+							</div>
+						</div>
+					</div>
+       
+					<div class="row state-overview">
+						<div class="col-md-3 col-xs-12 col-md-3">
+							<div class="panel blue" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-gavel"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr2">230</span>
+									</div>
+									<div class="title">保洁订单</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-3 col-xs-12 col-md-3">
+							<div class="panel green" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-tags"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr3">230</span>
+									</div>
+									<div class="title">投诉订单</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 col-xs-12 col-md-3">
+							<div class="panel blue" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-tags"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr4">230</span>
+									</div>
+									<div class="title">其他订单</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 col-xs-12 col-md-3">
+							<div class="panel green" style="height:120px">
+								<div class="symbol">
+									<i class="fa fa-tags"></i>
+								</div>
+								<div class="state-value">
+									<div class="value">
+										<span id="asr6">230</span>
+									</div>
+									<div class="title">入住问题</div>
+								</div>
+							</div>
+						</div>
+					</div>
+		
+		<div class="row">
+			<div class="col-md-12">&nbsp;</div>
+		</div>
+		
+		<!-- 各状态链接 -->
+	<header class="panel-heading custom-tab turquoise-tab">
+		<ul class="nav nav-tabs" role="tablist" id="myTabs">
+			<li role="presentation"><a href="#PAY_WAITSTATE"
+				aria-controls="PAY_WAITSTATE" role="tab" data-toggle="tab">待支付 <span
+					class="badge" id="badge_pay">0</span> </a>
+			</li>
+			<li role="presentation" class="active"><a href="#GOTO_WAITSTATE"
+				aria-controls="GOTO_WAITSTATE" role="tab" data-toggle="tab">待派单<span
+					class="badge" id="badge_goto">0</span> </a>
+			</li>
+			<li role="presentation"><a href="#ACTION" aria-controls="DONE_STATE" role="tab" data-toggle="tab">执行中<span class="badge" id="badge_action">0</span> </a>
+			</li>
+			<li role="presentation"><a href="#DONE_STATE"
+				aria-controls="DONE_STATE" role="tab" data-toggle="tab">已完成<span
+					class="badge" id="badge_done">0</span> </a>
+			</li>
+			<li role="presentation"><a href="#END_STATE"
+				aria-controls="END_STATE" role="tab" data-toggle="tab">已关闭<span
+					class="badge" id="badge_end">0</span> </a>
+			</li>
+			<li role="presentation"><a href="#SHEND_STATE" aria-controls="END_STATE" role="tab" data-toggle="tab">售后查询</a>
+			</li>
+		</ul>
+       </header>
+       <div id="myTabContent" class="tab-content">
+		<!-- 待支付-->
+		<div class="tab-pane fade" id="PAY_WAITSTATE">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+						<div class="form-group tools"> 
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">新增订单 <span class="caret"></span></button>
+							<ul class="dropdown-menu" id="addul" style="min-width:100px">
+							</ul>
+						</div>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">服务类型:</label> <select
+								class="form-control" id="order_type" name="order_type">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">关键字:</label> 
+							<input type="text"
+								class="form-control" id="order_name" name="order_name"
+								placeholder="请填写关键字">
+						</div>
+						<span class="form-group tools"><a
+							href="javascript:;" class="fa fa-search yc_seach" id="search"
+							table="order_table">查询</a> </span>
+					</form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        		<table id="order_table" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+							<th></th>
+							<th></th>
+							<th>订单编码</th>
+							<th>类型</th>
+							<th>名称</th>
+							<th>预约时间</th>
+							<th>用户手机</th>
+							<th>用户名称</th>
+							<th>费用</th>
+							<th>状态</th>
+							<th></th>
+						</tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+	        </div>
+	        
+	        <!-- 客服派单-->
+		<div class="tab-pane fade  in active" id="GOTO_WAITSTATE">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+						<div class="form-group tools"> 
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">新增订单 <span class="caret"></span></button>
+							<ul class="dropdown-menu" id="addul1" style="min-width:100px">
+							</ul>
+						</div>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">服务类型:</label> <select
+								class="form-control" id="order_type1" name="order_type1">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">服务状态:</label> <select
+								class="form-control" id="order_status1" name="order_status1">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">关键字:</label> 
+							<input type="text"
+								class="form-control" id="order_name1" name="order_name1"
+								placeholder="请填写关键字">
+						</div>
+						<span class="form-group tools"><a
+							href="javascript:;" class="fa fa-search yc_seach" id="search1"
+							table="order_table1">查询</a> </span>
+							
+					</form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="order_table1" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+							<th></th>
+							<th></th>
+							<th>订单编码</th>
+							<th>类型</th>
+							<th>名称</th>
+							<th>预约时间</th>
+							<th>用户手机</th>
+							<th>用户名称</th>
+							<th>费用</th>
+							<th>状态</th>
+							<th></th>
+						</tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+	        </div>
+	        
+	    <div class="tab-pane fade " id="ACTION">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+						<div class="form-group">
+							<label for="exampleInputEmail2">服务类型:</label> <select
+								class="form-control" id="order_type2" name="order_type2">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">关键字:</label> 
+							<input type="text"
+								class="form-control" id="order_name2" name="order_name2"
+								placeholder="请填写关键字">
+						</div>
+						<span class="form-group tools"><a
+							href="javascript:;" class="fa fa-search yc_seach" id="search2"
+							table="order_table2">查询</a> </span>
+					</form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="order_table2" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+							<th></th>
+							<th></th>
+							<th>订单编码</th>
+							<th>类型</th>
+							<th>名称</th>
+							<th>预约时间</th>
+							<th>用户手机</th>
+							<th>用户名称</th>
+							<th>费用</th>
+							<th>状态</th>
+							<th>当前步骤</th>
+							<th></th>
+						</tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+	        </div>
+	        
+	        <!-- 已完成-->
+		<div class="tab-pane fade " id="DONE_STATE">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+						<div class="form-group">
+							<label for="exampleInputEmail2">服务类型:</label> <select
+								class="form-control" id="order_type3" name="order_type3">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+					   
+						<div class="form-group">
+							<label for="exampleInputEmail2">关键字:</label> 
+							<input type="text"
+								class="form-control" id="order_name3" name="order_name3"
+								placeholder="请填写关键字">
+						</div>
+						<span class="form-group tools"><a
+							href="javascript:;" class="fa fa-search yc_seach" id="search3"
+							table="order_table3">查询</a> </span>
+					</form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="order_table3" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+							<th></th>
+							<th></th>
+							<th>订单编码</th>
+							<th>类型</th>
+							<th>名称</th>
+							<th>预约时间</th>
+							<th>用户手机</th>
+							<th>用户名称</th>
+							<th>费用</th>
+							<th>状态</th>
+							<th></th>
+						</tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+	        </div>
+	        
+	        <!-- 已关闭-->
+		<div class="tab-pane fade " id="END_STATE">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+						<div class="form-group">
+							<label for="exampleInputEmail2">服务类型:</label> <select
+								class="form-control" id="order_type4" name="order_type4">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">关键字:</label> 
+							<input type="text"
+								class="form-control" id="order_name4" name="order_name4"
+								placeholder="请填写关键字">
+						</div>
+						<span class="form-group tools"><a
+							href="javascript:;" class="fa fa-search yc_seach" id="search4"
+							table="order_table4">查询</a> </span>
+					</form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="order_table4" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+							<th></th>
+							<th></th>
+							<th>订单编码</th>
+							<th>类型</th>
+							<th>名称</th>
+							<th>预约时间</th>
+							<th>用户手机</th>
+							<th>用户名称</th>
+							<th>费用</th>
+							<th>状态</th>
+							<th></th>
+						</tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+	        </div>
+	        <div class="tab-pane fade " id="SHEND_STATE">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+						<div class="form-group">
+							<label for="exampleInputEmail2">服务状态:</label> <select
+								class="form-control" id="order_status5" name="order_status5">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">服务类型:</label> <select
+								class="form-control" id="order_type5" name="order_type5">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">关键字:</label> 
+							<input type="text"
+								class="form-control" id="order_name5" name="order_name5"
+								placeholder="请填写关键字">
+						</div>
+						<span class="form-group tools"><a
+							href="javascript:;" class="fa fa-search yc_seach" id="search5"
+							table="order_table5">查询</a> </span>
+					</form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="order_table5" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+							<th></th>
+							<th></th>
+							<th>订单编码</th>
+							<th>类型</th>
+							<th>名称</th>
+							<th>预约时间</th>
+							<th>用户手机</th>
+							<th>用户名称</th>
+							<th>费用</th>
+							<th>状态</th>
+							<th>完成时间</th>
+							<th></th>
+						</tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+	        </div>
+	    </div>
+   	</section>
+</body>
+<script type="text/javascript" src="/html/js/order_flow/order_service_list2.js" ></script>
+<script type="text/javascript" src="/html/js/order_flow/order_service_list.js" ></script>
+<script type="text/javascript" src="/html/js/order_flow/order_service_list1.js" ></script>
+<script type="text/javascript" src="/html/js/order_flow/order_service_list3.js" ></script>
+<script type="text/javascript" src="/html/js/order_flow/order_service_list4.js" ></script> 
+<script type="text/javascript" src="/html/js/order_flow/order_service_list6.js" ></script> 
+</html>

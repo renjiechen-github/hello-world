@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>出租合约</title>
+</head>
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<form id="form2" class="form-horizontal adminex-form" role="form">
+				<div id="myTabContent" class="tab-content">
+					<div class="col-md-12">
+						<div class="panel" data-collapsed="0">
+							<div class="panel-body">
+								<div class="row">
+									<div class="form-group" >
+									<label class="col-md-2 control-label">所属房源：</label>
+									<div class="col-md-4">
+										<span id="house_name" class="form-control "></span> 
+										<input id="rank_id" name="rank_id" type="hidden" />
+										<input id="houseId" name="houseId" type="hidden" />
+										<input id="id" name="id" type="hidden" />
+									</div>
+
+									<label class="col-md-2 control-label">合约类型：</label>
+									<div class="col-md-4">
+										<span id="agreement_type" class="form-control "></span>
+									</div>
+									</div>
+									<div class="form-group" >
+									<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 合约名称：
+									</label>
+									<div class="col-md-4">
+										<input id="agreement_name" name="agreement_name"
+											class="form-control" dataType="Custom"
+											regexp="^([\u4e00-\u9fa5A-Za-z0-9-_]{1,})$" msg="请输入合法的合约名称！"
+											placeholder="请输入合约名称" type="text" />
+									</div>
+
+									<label class="col-md-2 control-label" style="display: none;">
+										<b style="color: red">*</b> 合约编号：
+									</label>
+									<div class="col-md-4" style="display: none;">
+										<input id="agreement_code"  
+											placeholder="请输入合约编号" name="agreement_code" maxlength="10"
+											class="form-control" type="text" />
+									</div>
+									<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 签约管家：
+									</label>
+									<div class="col-md-4">
+										<select id="manageId" name="manageId" dataType="Require"
+											msg="请选择签约管家！" class="form-control" msg="请选择管家"><option
+												value="">请选择...</option>
+										</select>
+									</div>
+									</div>
+									
+									<div class="form-group" >
+									<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 租客号码：
+									</label>
+									<div class="col-md-4">
+										<input id="mobile" name="mobile" msg="请填写11位数字格式租客号码"
+											dataType="Mobile" placeholder="请输入数字格式租客号码" maxlength="11"
+											class="form-control" type="text" />
+									</div>
+
+									<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 租客姓名：
+									</label>
+									<div class="col-md-4">
+										<input id="name" name="name" dataType="Require" msg="请输入租客姓名！" maxlength="5"
+											placeholder="请输入租客姓名" class="form-control" type="text" />
+									</div>
+									</div>
+									
+									<div class="form-group" >
+										<label class="col-md-2 control-label">
+											<b style="color: red">*</b> 身份证号：
+										</label>
+										<div class="col-md-4">
+											<input type="text"  name="certificateno" dataType="IdCard" msg="请输入合法的产权人身份证号码！"  id="certificateno"  placeholder="请输入身份证号码" value="" class="form-control inputChange2"/>
+										</div>
+									</div>
+									<div class="form-group" >
+									<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 合约租金：
+									</label>
+									<div class="col-md-4">
+										<input id="rankPrice" name="rankPrice" dataType="Double" maxlength="8"
+											msg="请填写合约租金！" class="form-control" type="number" />
+									</div>
+									<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 租期：
+									</label>
+									<div class="col-md-4">
+										<select id="rankDate" 
+											class="form-control" dataType="Require" name="rankDate"
+											msg="请选择租期"><option value="">请选择...</option>
+										</select>
+									</div>
+									</div><div class="form-group" >
+									<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 生效时间：
+									</label>
+									<div class="col-md-4">
+										<input id="validateDate" readonly="readonly" dataType="Require"
+											msg="请选择生效时间！" name="validateDate" class="form-control"
+											type="text" />
+									</div>
+									<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 付款方式：
+									</label>
+									<div class="col-md-4">
+										<select id="payType" name="payType" dataType="Require" 
+											msg="请选择付款方式！" class="form-control"><option
+												value="">请选择...</option>
+										</select>
+									</div>
+									</div><div class="form-group" >
+
+									<label class="col-md-2 control-label">
+										<b style="color: red">*</b> 附件上传：
+									</label>
+									<div class="col-md-8">
+										<div class="dropzone" id="myAwesomeDropzone"></div>
+										<div class="row"></div>
+										<input type="hidden" id="picPath" name="picPath" />
+									</div>
+									<div class="col-md-2"></div>
+									</div><div class="form-group" >
+									<label class="col-md-2 control-label">合约描述：</label>
+									<div class="col-md-8">
+										<textarea rows="6" class="form-control" id="agreementDes" name="agreementDes"></textarea>
+									</div>
+									<div class="col-md-2"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="text-center">
+					<br />
+					<button class="btn btn-info" id="house_sign_btn" type="button">确定提交</button>
+					<br />
+				</div>
+			</form>
+		</div>
+	</section>
+</body>
+<script type="text/javascript"
+	src="/html/adminX/js/dropzone/dropzone.js"></script>
+<script type="text/javascript"
+	src="/html/js/house/agreement/rank_agreement.js"></script>
+</html>

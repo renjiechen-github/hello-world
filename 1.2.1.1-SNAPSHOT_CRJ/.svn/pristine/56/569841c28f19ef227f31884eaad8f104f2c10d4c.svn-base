@@ -1,0 +1,630 @@
+package com.room1000.costImport.service.Impl;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import com.room1000.costImport.dao.CostImportMapper;
+import com.room1000.costImport.pojo.Constant;
+import com.room1000.costImport.pojo.CostImportHandle;
+import com.room1000.costImport.pojo.WegBean;
+import com.room1000.costImport.service.CostImportService;
+import com.room1000.costImport.util.CostImportUtil;
+import com.ycdc.core.base.BaseService;
+import com.ycdc.util.ExcelUtil;
+import com.ycdc.util.ReadExcelUtils;
+
+import net.sf.json.JSONArray;
+import pccom.common.util.DBHelperSpring;
+import pccom.common.util.StringHelper;
+import pccom.web.interfaces.Financial;
+
+/**
+ * 费用导入服务实现层
+ * @author chenrj
+ * @data 20180122
+ */
+@Service("CostImportService")
+public class CostImportServiceImpl extends BaseService implements CostImportService{
+
+	private static String perDayTime = new SimpleDateFormat("yyyyMMdd").format(new Date());
+	
+	@Autowired
+	private CostImportMapper mapper;
+	
+	@Autowired
+    DBHelperSpring db;
+
+    @Autowired
+    private Financial financial;
+	@Override
+	public Object queryCostImportHandle(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug(" queryCostImportHandle method init ");
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<String, Object>();
+		String handler = req.getAjaxValue(request, "handler");//操作人名字
+		String handlerPhone = req.getAjaxValue(request, "handlerPhone");//操作人手机号
+		String handleId = req.getAjaxValue(request, "handleId");//操作id
+		String handleTime = req.getAjaxValue(request, "handleTime");//操作时间
+		logger.debug(" 123123 "+handleTime);
+		if (null!=handleTime&&!"".equals(handleTime)) {
+			String beginTime = handleTime.substring(0, 10)+" 00:00:00";
+			String endTime = handleTime.substring(11, handleTime.length())+" 23:59:59";
+			params.put("beginTime", beginTime);
+			params.put("endTime", endTime);
+			logger.debug(" queryCostImportHandle params beginTime "+beginTime+"endTime "+endTime);
+		}
+		String iDisplayLength = req.getAjaxValue(request, "iDisplayLength");//每页显示的条数
+		String iDisplayStart = req.getAjaxValue(request, "iDisplayStart");//从第几行开始
+		params.put("handler", handler);
+		params.put("handlerPhone", handlerPhone);
+		params.put("handleId", handleId);
+		params.put("start", iDisplayStart);
+		params.put("pageSize", iDisplayLength);
+		logger.debug(" queryCostImportHandle params handler "+handler+" handlerPhone "+handlerPhone+" handleId "+handleId+"handleTime "+handleTime+" start "+iDisplayStart+" pageSize "+iDisplayLength);
+		try {
+			List<CostImportHandle> result = mapper.queryCostImportHandle(params);
+			for(CostImportHandle cih:result){
+				logger.debug(" 123"+cih.getType());
+				if ("12".equals(cih.getType())) {
+					cih.setType("电费导入");
+				}else if ("13".equals(cih.getType())) {
+					cih.setType("燃气费导入");
+				}else if ("11".equals(cih.getType())){
+					cih.setType("水费导入");
+				}
+			}
+			if (result.size()==1) {
+				CostImportHandle cih = result.get(0);
+				if (null!=cih.getId()) {
+					resultMap.put("data", JSONArray.fromObject(result));
+				}else{
+					resultMap.put("data", JSONArray.fromObject(new ArrayList<>()));
+				}
+			}else {
+				resultMap.put("data", JSONArray.fromObject(result));
+			}
+			resultMap.put("iDisplayLength", iDisplayLength);
+			resultMap.put("iDisplayStart", iDisplayStart);
+			resultMap.put("sEcho", req.getAjaxValue(request, "sEcho"));
+			
+			Map<String, Object> totalMap = new HashMap<>();
+			totalMap.put("handler", handler);
+			totalMap.put("handlerPhone", handlerPhone);
+			totalMap.put("handleId", handleId);
+			List<CostImportHandle> totalResult = mapper.queryCostImportHandle(params);//查询总记录数
+			logger.debug(" queryCostImportHandle params iTotalRecords "+totalResult.size());
+			resultMap.put("iTotalRecords", totalResult.size());
+			resultMap.put("iTotalDisplayRecords", totalResult.size());
+			resultMap.put("state", "1");
+			return resultMap;
+		} catch (Exception e) {
+			e.getMessage();
+			logger.error("queryCostImportHandle error "+e);
+			resultMap = new HashMap<String, Object>();
+			resultMap.put("state", "1");
+			return resultMap;
+		}
+	}
+
+	@Override
+	@Transactional
+	public Object checkExcelInfo(HttpServletRequest request, HttpServletResponse response,MultipartFile multfile) {
+		Date date = new Date();
+		logger.debug("checkExcelInfo init "+date);
+		String type = "";//费用导入类型（11水费12电费13燃气）
+		Map<String, Object> tempResultMap = null;
+		List<WegBean> wegs = new ArrayList<WegBean>();
+		List<WegBean> tempWegs = null;
+		String filePath = "";
+		int totalRows = 0 ;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		if (null==multfile||"".equals(multfile)) {
+			logger.debug(" no file empty ");
+			resultMap.put("state", "-4");
+			return resultMap;
+		}
+		String fileName = multfile.getOriginalFilename();
+		logger.debug(" fileName "+fileName);
+		//获取应存入临时表的最大handleId
+        String maxHandleId = getMaxHandleId();
+        logger.debug(" maxHandleId "+maxHandleId);
+        //限制每天最大导入次数小于10万
+        int maxImportNum =Integer.parseInt(maxHandleId.substring(8, maxHandleId.length()));
+        logger.debug(" maxImportNum "+maxImportNum);
+        if (maxImportNum>Constant.maxImportNum) {
+        	logger.debug(" maxImportNum error ");
+			resultMap.put("state", "99");
+			return resultMap;
+		}
+        ReadExcelUtils excelReader = new ReadExcelUtils(fileName,multfile);
+        try {
+        	totalRows = excelReader.getRowNum();
+        	//导入条数不得超过10000
+        	if (totalRows>Constant.maxTotalNum) {
+        		logger.debug(" totalRows error ");
+				resultMap.put("state", "9");
+				return resultMap;
+			}
+			String title[] = excelReader.readExcelTitle();//Excel表头内容
+			String staticTitle[] = Constant.EXCEL_TITLE;
+			Set<Object> tempSet = new TreeSet<Object>();
+			Set<Object> staticSet = new TreeSet<Object>();
+			for(String str:title){
+				tempSet.add(str);
+			}
+			for(String val:staticTitle){
+				staticSet.add(val);
+			}
+			resultMap.put("state", "1");//设置默认状态为成功
+			if (tempSet.size()>0&&staticSet.size()>0) {
+				//Excel表不为空且列数与模板相同
+				int resultInt = CostImportUtil.checkRepeatSet(tempSet, staticSet);
+				if (1==resultInt) {
+					Map<String,Object> contentResultMap = excelReader.readExcelContent();
+					LinkedHashMap<String, String> fieldMap = new LinkedHashMap<String, String>();
+					fieldMap.put("合同号", "agerId");
+					fieldMap.put("系统号", "sbCode");
+					fieldMap.put("辅助账房间", "roomName");
+					fieldMap.put("年", "year");
+					fieldMap.put("期", "month");
+					fieldMap.put("用量", "amount");
+					fieldMap.put("费用", "cost");
+					fieldMap.put("起", "startMeter");
+					fieldMap.put("止", "endMeter");
+					fieldMap.put("类型", "type");
+					tempResultMap = getExcelInfo(contentResultMap,fieldMap,maxHandleId);
+					if (null==tempResultMap.get("list")) {
+						logger.debug(" getExcelInfo error ");
+						resultMap.put("state", "0");
+						return resultMap;
+					}
+					//将解析的Excel表数据存入临时导入的表中
+					mapper.insertTempCostImport(tempResultMap);
+					//校验临时表中agerId和读数
+					tempWegs = new ArrayList<WegBean>();
+					tempWegs = checkAgerIdAndMeter(maxHandleId);
+					if (tempWegs.size()>0) {
+						wegs.addAll(tempWegs);
+						resultMap.put("data",wegs);
+						resultMap.put("state", "-2");
+						delTempCostImport(maxHandleId);
+						return resultMap;
+					}
+					//将临时表中agerId为空的根据老合约id翻译出来
+					mapper.updateAgerIdByOldAgerId();
+					//校验导入数据的开始时间大于已存在数据的结束时间
+					tempWegs = mapper.checkFirstAndLastDate(maxHandleId);
+					tempWegs = CostImportUtil.getErrorMsg(tempWegs, Constant.monthOverlapError);
+					if (tempWegs.size()>0) {
+						logger.debug(" month overlap error ");
+						wegs.addAll(tempWegs);
+						resultMap.put("data",wegs);
+						resultMap.put("state", "-2");
+					}
+					//校验期数
+					tempWegs = mapper.checkMonth(maxHandleId);
+					tempWegs = CostImportUtil.getErrorMsg(tempWegs, Constant.monthError);
+					if (tempWegs.size()>0) {
+						logger.debug(" month error ");
+						wegs.addAll(tempWegs);
+						resultMap.put("data",wegs);
+						resultMap.put("state", "-2");
+					}
+					//判断费用类型是否统一
+					int num = mapper.checkType(maxHandleId);
+					if (num>1) {
+						logger.debug(" type error ");
+						resultMap.put("state", "-3");//类型不统一错误
+						delTempCostImport(maxHandleId);
+						return resultMap;
+					}else {
+						type = mapper.queryType(maxHandleId);
+					}
+					//判断是否存在已导入到费用导入表的数据
+					Map<String,Object> params = new HashMap<String,Object>();
+					params.put("type", type);
+					params.put("maxHandleId", maxHandleId);
+					tempWegs = new ArrayList<WegBean>();
+					tempWegs = mapper.queryRepeatCostImportWithNormal(params);
+					tempWegs = CostImportUtil.getErrorMsg(tempWegs, Constant.existNormalRepeatError);
+					if (tempWegs.size()>0) {
+						logger.debug(" exist repeat info in normal table ");
+						wegs.addAll(tempWegs);
+						resultMap.put("data",wegs);
+						resultMap.put("state", "-2");
+					}
+					tempWegs = new ArrayList<WegBean>();
+					tempWegs = mapper.queryRepeatCostImport(params);
+					tempWegs = CostImportUtil.getErrorMsg(tempWegs, Constant.existRepeatError);
+				    //根据wegs结果判定是否存在重复数据，若存在则返回重复数据的集合
+				    if (tempWegs.size()>0) {
+						logger.debug(" exist repeat info ");
+						wegs.addAll(tempWegs);
+						resultMap.put("data", wegs);
+						resultMap.put("state", "-2");
+					}
+				    
+				    //校验临时表中新合约id(agerId)是否都在合约表中
+				    tempWegs = new ArrayList<WegBean>();
+				    tempWegs = mapper.queryAgerIdIsExist();
+				    tempWegs = CostImportUtil.getErrorMsg(tempWegs, Constant.noAgerIdError);
+				    if (tempWegs.size()>1) {
+				    	logger.debug(" agerId not exist ");
+				    	wegs.addAll(tempWegs);
+						resultMap.put("data", wegs);
+						resultMap.put("state", "-2");
+					}
+				    if ("1".equals(resultMap.get("state"))) {
+				    	System.out.println(" xitonglujing  "+request.getSession().getServletContext().getRealPath("/"));
+				    	filePath = CostImportUtil.saveTempFile(multfile.getInputStream(),fileName,request.getSession().getServletContext().getRealPath("/"));
+					}else{
+						delTempCostImport(maxHandleId);
+					}
+				    return resultMap;
+				}else {
+					//Excel表格第一列格式错误
+					logger.debug(" excel head error ");
+					resultMap.put("state", "-1");
+					return resultMap;
+				}
+			}else {
+				//Excel表为空
+				logger.debug(" excel empty error ");
+				resultMap.put("state", "-5");
+				return resultMap;
+			}
+		} catch (Exception e) {
+			delTempCostImport(maxHandleId);
+			e.printStackTrace();
+			e.getMessage();
+			logger.error(" getExcelInfo error "+e);
+			resultMap.put("state", "0");
+			return resultMap;
+		}finally {
+			resultMap.put("handleId", maxHandleId);
+			resultMap.put("totalRows",totalRows);
+			resultMap.put("filePath", filePath);
+		}
+	}
+
+	//===============================================导入预览辅助方法=============================================
+	/**
+	 * 获取Excel表中数据并解析成集合
+	 * @param result
+	 * @param fieldMap
+	 * @return Excel数据集合
+	 */
+	private static Map<String, Object> getExcelInfo(Map<String,Object> result,LinkedHashMap<String, String> fieldMap,String maxHandleId){
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		List<WegBean> wegs = new ArrayList<WegBean>();
+		String handleId = maxHandleId;
+		String month = "";
+		String stageDate = "";//期数对应时间戳
+		String year ="";//年份
+		String firstDate = "";//
+		String lastDate = "";
+        try {
+        	for (int i = 1; i <= result.size(); i++) {
+        		List<String> list = (List<String>) result.get(i+"");
+        		WegBean weg = new WegBean();
+        		weg.setHandleId(handleId);
+        		int index = 0;//从第0列开始
+        		//给对象中的字段赋值
+        		for(Entry<String, String> entry : fieldMap.entrySet()){
+        			//获取英文字段名
+        			String enNormalName=entry.getValue();
+        			String content=list.get(index);
+        			//给对象赋值
+        			CostImportUtil.setFieldValueByName(enNormalName, content, weg);
+        			index++;
+        		}
+        		month = weg.getMonth();
+             	year = weg.getYear();
+             	stageDate = year+"-"+(month.length()==1?"0"+weg.getMonth()+"-01":weg.getMonth())+"-01";
+             	firstDate = CostImportUtil.firstDate(stageDate, -2);
+             	lastDate = CostImportUtil.lastDate(stageDate);
+             	weg.setFirstDate(firstDate);
+             	weg.setLastDate(lastDate);
+             	weg.setSbCode(weg.getSbCode().replaceAll("[a-zA-Z]", ""));
+             	weg.setType(CostImportUtil.getType(weg.getType()));
+        		wegs.add(weg);
+        	}
+        	if (wegs.size()<1) {
+        		resultMap.put("list", null);
+			}else {
+				resultMap.put("list", wegs);
+			}
+		} catch (Exception e) {
+			resultMap.put("list", null);
+			e.getMessage();
+			e.printStackTrace();
+		}
+		return resultMap;
+	}
+
+	/**
+	 * 筛查起始读数与截止读数大小和合同号是否为空
+	 * @param tempTableName 临时表名
+	 * @param maxHandleId 操作id
+	 * @return 异常数据的集合
+	 */
+	private List<WegBean> checkAgerIdAndMeter(String maxHandleId){
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("maxHandleId", maxHandleId);
+		List<WegBean> agerWegs = new ArrayList<WegBean>();
+		List<WegBean> meterWegs = new ArrayList<WegBean>();
+		try {
+			agerWegs = mapper.queryAgerId(map);
+			agerWegs = CostImportUtil.getErrorMsg(agerWegs, Constant.agerIdError);
+			meterWegs = mapper.checkMeter(map);
+			meterWegs = CostImportUtil.getErrorMsg(meterWegs, Constant.meterError);
+			agerWegs.addAll(meterWegs);
+		} catch (Exception e) {
+			logger.debug(" checkExcelInfo  error ");
+		}
+		return agerWegs;
+	}
+	
+	
+	/**
+	 * 根据导入表和临时表中最大handleId获取handleId+1的值
+	 * @return
+	 */
+	private String getMaxHandleId(){
+		String nowDate = CostImportUtil.getNowDate("yyyyMMdd");
+		String partHandleId;
+		//赋值最新的时间
+		if (Long.parseLong(nowDate)>Long.parseLong(perDayTime)) {
+			perDayTime=nowDate;
+		}
+		String maxHandleId = mapper.queryMaxHandleId();
+		String tempMaxHandleId = mapper.queryTempMaxHandleId();
+		if (null==maxHandleId||"".equals(maxHandleId)) {//操作表中handleId查不到时
+			if (null!=tempMaxHandleId&&!"".equals(tempMaxHandleId)) {//临时表存在handleId
+				//最大handleId即为临时表最大handleId+1
+				maxHandleId =CostImportUtil.getHandleId(tempMaxHandleId);
+			}else {
+				//操作表与临时表的handleId均为空时获取最新的handleId
+				maxHandleId=CostImportUtil.getHandleId();
+			}
+		}else {//操作表中handleId存在时
+			if (null!=tempMaxHandleId&&!"".equals(tempMaxHandleId)) {//临时表存在handleId
+				//判断两个handleId大小并取大的一个
+				maxHandleId =Long.parseLong(maxHandleId)>Long.parseLong(tempMaxHandleId)?maxHandleId:tempMaxHandleId;
+				maxHandleId = CostImportUtil.getHandleId(maxHandleId);
+			}
+		}
+		partHandleId = maxHandleId.substring(0, 8);
+		//若当前时间大于handleId中的时间获取最新一天的初始handleId
+		if (Long.parseLong(partHandleId)<Long.parseLong(perDayTime)) {
+			return CostImportUtil.getHandleId();
+		}else {
+			Long t = Long.parseLong(maxHandleId)+1;
+			return t+"";
+		}
+	}
+	
+	//================================================费用导入===================================
+	@Override
+	@Transactional
+	public Object importCostInfo(HttpServletRequest request, HttpServletResponse response) {
+		Date date = new Date();
+		logger.debug(" importCostInfo init "+date);
+		String phone = this.getUser(request).getMobile();
+		String userName = this.getUser(request).getName();
+	    String filePath = req.getAjaxValue(request, "filePath"); 
+	    String ftpExcelPath = "";
+//	    String type = req.getAjaxValue(request, "type");
+	    String handleId = req.getAjaxValue(request, "handleId");
+	    logger.debug(" importCostInfo params handleId "+handleId+"  "+filePath);
+	    Map<String, Object> hParams = new HashMap<String, Object>();
+	    Map<String, Object> resultMap = new HashMap<String, Object>();
+	    try {
+	    	Map<String, Object> parmas = new HashMap<String, Object>();
+	    	parmas.put("handleId", handleId);
+	    	int totals = mapper.queryCostImportByHandleId(parmas);
+	    	if (totals<1) {
+	    		//handleId异常，临时表中查询不到数据
+	    		logger.debug(" importCostInfo no data error ");
+	    		resultMap.put("state", "0");
+	    	}else {
+	    		//将临时表数据插入到wegcost表中
+	    		int flag = mapper.insertCostImport(parmas);
+	    		logger.debug(" importCostInfo success "+flag);
+	    		if (flag>0) {
+	    			//生成水电燃明细
+	    			wegSplit(handleId);
+	    			int successNum = mapper.querySuccessNum(parmas);
+	    			int failedNum = mapper.queryFailedNum(parmas);
+	    			//上传原始导入文件
+	    			ftpExcelPath = CostImportUtil.upLoadWegCostFile(filePath);
+	    			if ("".equals(filePath)) {
+	    				logger.debug(" importCostInfo upLoadWegCostFile error");
+	    				resultMap.put("state", "0");
+	    				delCostImport(handleId);
+	    			}else {
+	    				hParams.put("handlerPhone", phone);
+	    				hParams.put("handler", userName);
+	    				hParams.put("handleId", handleId);
+	    				hParams.put("successNum", successNum);
+	    				hParams.put("failedNum", failedNum);
+	    				hParams.put("filePath", ftpExcelPath);
+	    				hParams.put("handleTime", CostImportUtil.getNowDate("yyyy-MM-dd HH-mm-ss"));
+	    				int wegHFlag = mapper.insertWegHandle(hParams);
+	    				logger.debug(" importCostInfo insertWegHandle result "+wegHFlag);
+	    				if (wegHFlag>0) {
+	    					resultMap.put("state", "1");
+	    				}else {
+	    					resultMap.put("state", "0");
+	    				}
+	    			}
+				}else {
+					resultMap.put("state", "0");
+				}
+	    		resultMap.put("totalRows", totals);
+	    	}
+	    	//删除临时表对应handleId的数据
+	    	delTempCostImport(handleId);
+	    	logger.debug(" filePath.substring "+filePath);
+	    	//删除本地创建的临时Excel
+	    	CostImportUtil.delTempFolder(filePath);
+	    	return resultMap;
+		} catch (Exception e) {
+			//删除临时表对应handleId的数据
+			delTempCostImport(handleId);
+			//删除正式表对应handleId的数据
+			delCostImport(handleId);
+			//删除本地创建的临时Excel
+			logger.debug(" filePath.substring "+filePath);
+			CostImportUtil.delTempFolder(filePath);
+			e.printStackTrace();
+			logger.debug(" importCostInfo error ");
+			resultMap.put("state", "0");
+    		return resultMap;
+		}
+	}
+	
+	
+	/**
+	 * 用户点击预览页的返回按钮或者成功导入后删除临时表中对应handleId的数据
+	 * @param handleId 操作id
+	 * @return 删除结果标识
+	 */
+	@Transactional
+	public void delTempCostImport(String handleId){
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("handleId", handleId);
+		int flag = mapper.delTempCostImport(params);
+		logger.debug(" delTempCostImport flag "+flag);
+	}
+
+	/**
+	 * 删除wegcost表中的数据
+	 * @param handleId 操作id
+	 */
+	@Transactional
+	public void delCostImport(String handleId){
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("handleId", handleId);
+		int flag = mapper.delCostImport(params);
+		logger.debug(" delCostImport flag "+flag);
+	}
+	
+	/**
+	 * 用户点击预览页返回按钮是进行删除临时表数据
+	 */
+	@Override
+	public void delTempCostImport(HttpServletRequest request, HttpServletResponse response) {
+		delTempCostImport(req.getAjaxValue(request, "handleId"));
+	}
+	
+	//=============================================下载导入结果================================
+	@Override
+	public Map<String, Object> downLoadCostImportResult(HttpServletRequest request, HttpServletResponse response) {
+		List<WegBean> wegs = null;
+		LinkedHashMap<String, String> fieldMap = new LinkedHashMap<String, String>();
+		fieldMap.put("roomName", "辅助账房间");
+		fieldMap.put("agerId", "合同号");
+		fieldMap.put("sbCode", "系统号");
+		fieldMap.put("year", "年");
+		fieldMap.put("month", "期");
+		fieldMap.put("startMeter", "起");
+		fieldMap.put("endMeter", "止");
+		fieldMap.put("amount", "用量");
+		fieldMap.put("cost", "费用");
+		fieldMap.put("type", "类型");
+		fieldMap.put("state", "标识");
+		fieldMap.put("remark", "备注");
+		String handleId = req.getAjaxValue(request, "handleId");
+		logger.debug(" downLoadCostImportResult param handleId "+handleId);
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("handleId", handleId);
+		try {
+			wegs = mapper.queryCostImport(params);
+			ExcelUtil.listToExcel(wegs, fieldMap, "Sheet1", 65535, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	//==============================================生成水电燃明细==============================
+	/**
+	 * 生成水电煤明细
+	 * @author leiyang(modify by chenrj)
+	 * @param handleId 操作id
+	 */
+	 public void wegSplit(String handleId) {
+	        System.out.println("com.modifyData.ModifyMobile.WaterSplitTest()::--------------------------------");
+	        logger.debug(" wegSplit init ");
+	        String resultRemark="";
+	        String sql = "SELECT * from yc_wegcost_tab where handleId =?";
+	        if (null==handleId||"".equals(handleId)) {
+	        	logger.debug(" wegSplit handleId empty error ");
+				return;
+			}
+	        List<Map<String, Object>> list = db.queryForList(sql,new Object[]{handleId});
+	        for (int i = 0; i < list.size(); i++) {
+	            Map<String, Object> map = list.get(i);
+	            String hth = StringHelper.get(map, "agerId");
+	            String upcp = StringHelper.get(map, "startMeter");
+	            String nowcp = StringHelper.get(map, "endMeter");
+	            String dushu = StringHelper.get(map, "amount");
+	            String cost = StringHelper.get(map, "cost");
+	            String type = StringHelper.get(map, "type");
+	            String id = StringHelper.get(map, "id");
+	            String firstDate = StringHelper.get(map, "firstDate");
+	            String lastDate = StringHelper.get(map, "lastDate");
+	            //检查对应房源合约是否存在有效的房源信息
+	            sql = "SELECT COUNT(1) FROM yc_agreement_tab a,yc_houserank_tab c,yc_agreement_tab d "
+	                    + "WHERE a.house_id = c.house_id "
+	                    + "  AND c.id = d.house_id "
+	                    + "  AND d.status NOT IN(2) "
+	                    + "  AND a.id = ?";
+	            if (db.queryForInt(sql, new Object[]{hth}) == 0) {
+	                sql = "update yc_wegcost_tab  a set a.state = 2 ,a.remark = '未查询到有效的合约信息' where a.id = ? ";
+	                db.update(sql, new Object[]{id});
+	            } else {
+	                Map<String, Object> params = new HashMap<String, Object>();
+	                try {
+	                    //电费 eMeter 燃气费 cardgas 水费 water
+	                	params.put("12".equals(type) ? "eMeter" : "13".equals(type) ? "cardgas" : "water", dushu + "$$" + cost + "$$" + (firstDate) + "#" + lastDate + "$$上期抄表：" + upcp + " 本期抄表：" + nowcp);//电费
+	                    params.put("agreement_id", hth);
+	                    params.put("operator", 96);
+	                    params.put("handleId", handleId);
+	                    int result = financial.jiaonashuidianfei(params, null);
+	                    resultRemark = CostImportUtil.getWegSplitMsg(result);
+	                    if (result == 1) {
+	                        sql = "update yc_wegcost_tab  a set a.state = 1 ,a.remark = ? where a.id = ? ";
+	                        db.update(sql, new Object[]{resultRemark, id});
+	                    } else {
+	                        sql = "update yc_wegcost_tab  a set a.state = 2 ,a.remark = ? where a.id = ? ";
+	                        db.update(sql, new Object[]{resultRemark, id});
+	                    }
+	                } catch (Exception e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        }
+	    }
+
+}

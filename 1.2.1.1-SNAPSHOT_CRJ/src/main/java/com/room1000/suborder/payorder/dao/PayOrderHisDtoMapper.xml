@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.suborder.payorder.dao.PayOrderHisDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.suborder.payorder.dto.PayOrderHisDto">
+    <!-- @mbg.generated -->
+    <id column="priority" jdbcType="INTEGER" property="priority" />
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="work_order_id" jdbcType="INTEGER" property="workOrderId" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="pay_ref_id" jdbcType="INTEGER" property="payRefId" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="staff_id" jdbcType="INTEGER" property="staffId" />
+    <result column="appointment_date" jdbcType="TIMESTAMP" property="appointmentDate" />
+    <result column="actual_dealer_id" jdbcType="INTEGER" property="actualDealerId" />
+    <result column="assigned_dealer_id" jdbcType="INTEGER" property="assignedDealerId" />
+    <result column="assigned_dealer_role_id" jdbcType="INTEGER" property="assignedDealerRoleId" />
+    <result column="attr_catg_id" jdbcType="INTEGER" property="attrCatgId" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="stateDate" />
+    <result column="update_person_id" jdbcType="INTEGER" property="updatePersonId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="comments" jdbcType="VARCHAR" property="comments" />
+    <result column="type_name" jdbcType="VARCHAR" property="typeName" />
+    <result column="staff_name" jdbcType="VARCHAR" property="staffName" />
+    <result column="actual_dealer_name" jdbcType="VARCHAR" property="actualDealerName" />
+    <result column="assigned_dealer_name" jdbcType="VARCHAR" property="assignedDealerName" />
+    <result column="assigned_dealer_role_name" jdbcType="VARCHAR" property="assignedDealerRoleName" />
+    <result column="state_name" jdbcType="VARCHAR" property="stateName" />
+    <result column="update_person_name" jdbcType="VARCHAR" property="updatePersonName" />
+    <collection property="subOrderValueList" ofType="com.room1000.suborder.payorder.dto.PayOrderValueHisDto">
+      <id column="value_id" jdbcType="INTEGER" property="id" />
+      <id column="value_priority" jdbcType="INTEGER" property="priority" />
+      <result column="value_sub_order_id" jdbcType="INTEGER" property="subOrderId" />
+      <result column="value_attr_id" jdbcType="INTEGER" property="attrId" />
+      <result column="value_attr_path" jdbcType="VARCHAR" property="attrPath" />
+      <result column="value_text_input" jdbcType="VARCHAR" property="textInput" />
+      <result column="value_attr_value_id" jdbcType="INTEGER" property="attrValueId" />
+    </collection>
+  </resultMap>
+  <select id="selectMaxPriority" parameterType="java.lang.Long" resultType="java.lang.Long">
+    select Max(PRIORITY) max_priority
+    from
+    pay_order_his
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    a.id, a.priority, a.code, a.work_order_id, a.type, a.pay_ref_id, a.created_date, a.staff_id, a.appointment_date,
+    a.actual_dealer_id,
+    a.assigned_dealer_id, a.assigned_dealer_role_id, a.attr_catg_id, a.state, a.state_date,
+    a.update_person_id, a.update_date,
+    a.comments, b.type_name, c.name staff_name, d.name actual_dealer_name, e.name
+    assigned_dealer_name, f.role_name assigned_dealer_role_name,
+    g.state_name, h.name update_person_name, i.id value_id,
+    i.priority value_priority, i.sub_order_id value_sub_order_id,
+    i.attr_id value_attr_id, i.attr_path value_attr_path,
+    i.text_input value_text_input, i.attr_value_id value_attr_value_id
+    from pay_order_his a
+    left join pay_order_type b on
+    a.type = b.type
+    left join yc_account_tab c on a.staff_id = c.id
+    left join yc_account_tab d on a.actual_dealer_id =
+    d.id
+    left join yc_account_tab e on a.assigned_dealer_id = e.id
+    left join yc_role_new_tab f on
+    a.assigned_dealer_role_id = f.role_id
+    left join sub_order_state g on a.state = g.state
+    left join yc_account_tab h on
+    a.update_person_id = h.id
+    left join pay_order_value_his i on a.priority = i.priority and a.id = i.sub_order_id
+    where
+    a.id = #{subOrderId,jdbcType=INTEGER}
+    and a.update_person_id is not null
+    order by a.priority
+  </select>
+</mapper>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>财务支出</title>
+	
+	<style type="text/css">
+		.bzh{
+			background-color: #f1b9bd !important;
+		}
+		.mx{
+			margin-top: 5px;
+		}
+		.mx th{
+			color: black;
+		}
+		.select2-dropdown{
+			width: 200px !important;
+		}
+		#project_table .details{
+			padding: 0px !important;
+		}
+		tr[num]{
+			cursor: pointer;
+		}
+	</style>
+
+</head>
+
+<body>
+       <section class="panel">
+        <div class="panel-body">
+        	 <section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+		        		<span class="form-group tools">
+			                <a href="javascript:;" class="fa fa-search yc_seach" table="project_table" >查询</a>
+			            </span>
+	                    <div class="form-group">
+	                        <label for="jstype">结算类型:</label>
+	                        <select class="form-control" id="jstype" name="jstype" >
+                                <option value="" >请选择...</option>
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="state">状态:</label>
+	                        <select class="form-control" id="state" name="state" >
+                                <option value="" >请选择...</option>
+                                <option value="1" >有效</option>
+                                <option value="0" >无效</option>
+                            </select>
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="xmname">查询条件:</label>
+	                        <input type="text" class="form-control" id="xmname" name="xmname" size="40" placeholder="项目名称，项目编号，手机号模糊查询">
+	                    </div>
+	                    <div class="form-group">
+	                        <label for="actiontime">更新时间:</label>
+	                        <input type="text" style="width: 275px" name="actiontime" readonly="readonly" id="actiontime" class="form-control" placeholder=""  class="span4"/>
+	                    </div>
+	                </form>
+		        </div>
+		    </section>
+	        <div class="adv-table">
+	        	<table id="project_table" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>
+			            	<th></th>
+			             	<th></th>
+			             	<th>项目编号</th>
+			                <th>项目名称</th>
+			                <th>结算类型</th>
+			                <th>计划收款</th>
+			                <th>计划付款</th>
+			                <th>实收款项</th>
+			                <th>实付款项</th>
+			                <th>更新时间</th>
+			                <th>状态</th>
+			                <th></th>
+			            </tr>
+			        </thead>
+			    </table>
+	        </div>
+	    </div>
+   	</section>
+   	<script type="text/javascript" src="/html/js/finance/project.js" ></script>
+</body>
+</html>

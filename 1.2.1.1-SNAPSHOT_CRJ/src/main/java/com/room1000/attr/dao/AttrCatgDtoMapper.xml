@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.attr.dao.AttrCatgDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.attr.dto.AttrCatgDto">
+    <!-- @mbg.generated -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="stateDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!-- @mbg.generated -->
+    id, name, code, type, state, state_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!-- @mbg.generated -->
+    select
+    <include refid="Base_Column_List" />
+    from attr_catg
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!-- @mbg.generated -->
+    select
+    <include refid="Base_Column_List" />
+    from attr_catg
+    where code = #{code,jdbcType=VARCHAR}
+  </select>
+  <resultMap id="IncludeChildrenResultMap" type="com.room1000.attr.dto.AttrCatgDto">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="stateDate" />
+    <collection column="{id=id}" property="attrCatgChildren" ofType="com.room1000.attr.dto.AttrCatgDto"
+      select="selectAttrCatgChildrenById"></collection>
+    <collection column="{id=id}" property="attrChildren" ofType="com.room1000.attr.dto.AttrDto" select="selectAttrChildrenById"></collection>
+  </resultMap>
+  <resultMap id="AttrResultMap" type="com.room1000.attr.dto.AttrDto">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="mandatory" jdbcType="VARCHAR" property="mandatory" />
+    <result column="unit_id" jdbcType="INTEGER" property="unitId" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="stateDate" />
+    <result column="comments" jdbcType="VARCHAR" property="comments" />
+    <collection column="{attrId=id}" property="attrValueList" ofType="com.room1000.attr.dto.AttrValueDto"
+      select="selectAttrValueChildrenById"></collection>
+  </resultMap>
+  <resultMap id="AttrValueResultMap" type="com.room1000.attr.dto.AttrValueDto">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="attr_id" jdbcType="INTEGER" property="attrId" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="value_mask" jdbcType="VARCHAR" property="valueMask" />
+    <result column="priority" jdbcType="INTEGER" property="priority" />
+  </resultMap>
+  <select id="selectAllChildrenById" parameterType="java.lang.Long" resultMap="IncludeChildrenResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from attr_catg
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAttrCatgChildrenById" resultMap="IncludeChildrenResultMap" parameterType="java.util.Map">
+    select
+    b.id, b.name, b.code, b.type, b.state, b.state_date
+    from attr_catg_children a left join attr_catg b on a.child_catg_id = b.id
+    where a.catg_id = #{id,jdbcType=INTEGER}
+    order by a.priority
+  </select>
+  <select id="selectAttrChildrenById" resultMap="AttrResultMap" parameterType="java.util.Map">
+    select
+    b.id, b.name, b.code, b.mandatory, b.unit_id, b.type, b.state,
+    b.state_date, b.comments
+    from attr_catg_children a left join attr b on a.child_attr_id = b.id
+    where a.catg_id = #{id,jdbcType=INTEGER}
+    order by a.priority
+  </select>
+  <select id="selectAttrValueChildrenById" resultMap="AttrValueResultMap" parameterType="java.util.Map">
+    select
+    a.id, a.attr_id, a.value, a.value_mask, a.priority
+    from attr_value a
+    where attr_id = #{attrId,jdbcType=INTEGER}
+    order by priority
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!-- @mbg.generated -->
+    delete from attr_catg
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.room1000.attr.dto.AttrCatgDto" useGeneratedKeys="true" keyProperty="id">
+    <!-- @mbg.generated -->
+    insert into attr_catg (id, name, code,
+    type, state, state_date
+    )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
+    #{code,jdbcType=VARCHAR},
+    #{type,jdbcType=CHAR}, #{state,jdbcType=CHAR}, #{stateDate,jdbcType=TIMESTAMP}
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.attr.dto.AttrCatgDto" useGeneratedKeys="true"
+    keyProperty="id">
+    <!-- @mbg.generated -->
+    insert into attr_catg
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      id,
+      <if test="catgName != null">
+        name,
+      </if>
+      <if test="catgCode != null">
+        code,
+      </if>
+      <if test="catgType != null">
+        type,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="stateDate != null">
+        state_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{id,jdbcType=INTEGER},
+      <if test="catgName != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="catgCode != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="catgType != null">
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=CHAR},
+      </if>
+      <if test="stateDate != null">
+        #{stateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.attr.dto.AttrCatgDto">
+    <!-- @mbg.generated -->
+    update attr_catg
+    <set>
+      <if test="catgName != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="catgCode != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="catgType != null">
+        type = #{type,jdbcType=CHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=CHAR},
+      </if>
+      <if test="stateDate != null">
+        state_date = #{stateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.attr.dto.AttrCatgDto">
+    <!-- @mbg.generated -->
+    update attr_catg
+    set name = #{name,jdbcType=VARCHAR},
+    code = #{code,jdbcType=VARCHAR},
+    type = #{type,jdbcType=CHAR},
+    state = #{state,jdbcType=CHAR},
+    state_date = #{stateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

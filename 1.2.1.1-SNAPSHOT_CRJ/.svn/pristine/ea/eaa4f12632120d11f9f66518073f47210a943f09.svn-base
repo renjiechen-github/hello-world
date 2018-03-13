@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<link rel="shortcut icon" href="#" type="image/png">
+<title>收房管理</title>
+<style type="text/css">
+.paddingClass {
+	padding: 1px 10px !important;
+}
+
+.ulClass {
+	min-width: 10px;
+}
+
+.head {
+	display: flex;
+	height: 50px;
+	line-height: 50px;
+	background-color: #ecb292;
+	width: 80%;
+	margin: 20px auto;
+}
+
+.leftdiv {
+	flex: 1;
+	text-align: center;
+	cursor: pointer;
+	border-right: 1px solid white;
+	color: white;
+	background-color: #ecb292;
+}
+
+.rightdiv {
+	flex: 1;
+	text-align: center;
+	cursor: pointer;
+	color: white;
+	background-color: #ecb292;
+}
+
+.movediv {
+	color: black;
+	background-color: #A0443F;
+}
+
+.modal-footer {
+	padding: 20px 1px 25px 10px;
+	margin-top: 15px;
+	text-align: right;
+	border-top: 1px solid #e5e5e5;
+}
+</style>
+</head>
+<body>
+	<section class="panel">
+		<div class="panel-body">
+			<section class="panel panel-info panel-seach">
+				<div class="panel-body">
+					<form class="form-inline" role="form">
+						<span class="form-group tools"> <a href="javascript:void(0);" class="fa fa-plus bnt_add">新增</a>
+						</span>
+						<div class="form-group">
+							<label for="exampleInputEmail2">所属区域:</label> 
+							<select class="form-control" multiple="multiple" id="areaid" name="areaid">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">商圈:</label> 
+							<select id="trading" class="form-control" multiple="multiple">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">状态:</label> <select class="form-control" id="status" name="status">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">发布状态:</label>
+							<!-- 
+							 -->
+							<select class="form-control" id="publish" name="publish">
+								<option value="">请选择...</option>
+							</select>
+						</div>
+					<!-- </form> -->
+					<br>
+					<!-- <form class="form-inline" role="form" style=""> -->
+						<div class="form-group">
+							<label for="exampleInputEmail2">创建时间:</label> <input type="text" style="width: 300px" name="createtime"
+								readonly="readonly" id="createtime" class="form-control" class="span4" />
+						</div>
+						<div class="form-group">
+							<label for="exampleInputEmail2">关键字:</label> <input type="text" class="form-control suitable" id="keyword"
+								name="keyword" placeholder="模糊查询名称，编码，地址，业主姓名">
+						</div>
+						<div class="form-group" style="cursor: pointer;">
+							<input type="checkbox" name="isSelf" id="isSelf" value="1" /><label id="myDiv">本人</label>
+						</div>
+						<div class="form-group" style="cursor: pointer;">
+							<input type="checkbox" name="kzhouse" id="kzhouse" value="1" /><label id="myDiv2">空置</label>
+						</div>
+						<span class="form-group tools"> <a href="javascript:;" class="fa fa-search yc_seach"
+							table="basehouse_table" id="serach">查询</a>
+						</span> 						
+					</form>
+				</div>
+			</section>
+			<div class="adv-table">
+				<table id="basehouse_table" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+							<th>房源编码</th>
+							<th>房源名称</th>
+							<th>房源地址</th>
+							<th>所属区域</th>
+							<th>商圈</th>
+							<th>小区名称</th>
+							<th>原始户型</th>
+							<th>开工后户型</th>
+							<th>业主</th>
+							<th>房源状态</th>
+							<th>发布状态</th>
+							<!--<th title="n:已住房间数,m:总房间数">入住情况(n/m)</th> -->
+							<th>入住</th>
+							<th>操作人</th>
+							<th></th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<div class="modal fade" id="my-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">房源编码YC514515151A555</h4>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<form id="forms" class="form-horizontal adminex-form " role="form">
+							<div class="form-group">
+								<label class="col-sm-2  control-label"><b style="color: red">*</b>房源面积：</label>
+								<div class="col-sm-3">
+									<input type="hidden" name="houseId" id="houseId" /> <input id="rankArea" class="form-control" msg="请填写房源面积"
+										dataType="Integer" maxlength="4"><input type="hidden" id="rankid">
+								</div>
+								<label class="col-sm-3  control-label"><b style="color: red">*</b>出租价格：</label>
+								<div class="col-sm-3">
+									<input id="fee" class="form-control" msg="请填写出租价格" dataType="double" maxlength="7">
+								</div>
+								<div class="col-sm-1"></div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2  control-label"><b style="color: red">*</b>匹配图片：</label>
+								<div class="col-sm-9">
+									<div id="roomadd" class="dropzone"></div>
+									<div class="row" id="append"></div>
+								</div>
+								<div class="col-sm-1"></div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2  control-label"><b style="color: red">*</b>图片上传：</label>
+								<div class="col-sm-9">
+									<div id="image"></div>
+									<div class="row"></div>
+								</div>
+								<div class="col-sm-1"></div>
+							</div>
+
+
+
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" onclick="baseHouse.rankseve()" id="rankseve">保存</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					</div>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+
+	<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModal">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="updateModalLabel"></h4>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<form id="forms" class="form-horizontal adminex-form " role="form">
+							<div class="form-group">
+								<label class="col-sm-2  control-label">房源发布价格：</label>
+								<div class="col-sm-3">
+									<input type="hidden" name="hideRankId" id="hideRankId" /> <input type="hidden" name="hideHouseId"
+										id="hideHouseId"> <span id="rankPriceSpan" class="form-control" name="rankPriceSpan"></span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2  control-label"><b style="color: red">*</b>调整价格：</label>
+								<div class="col-sm-3">
+									<input id="updateFee" class="form-control" msg="请填写新调整价格" dataType="double" maxlength="7">
+								</div>
+								<div class="col-sm-1"></div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" onclick="baseHouse.updateRankPrice()">保存</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					</div>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+
+</body>
+<script type="text/javascript" src="/html/js/house/houseInfo/baseHouse.js"></script>
+</html>

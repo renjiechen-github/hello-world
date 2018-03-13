@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop" 
+  xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+  <!-- aop切面用来记录*Service中各个方法的出入参内容，如果出入参是Dto，需要有重写toString方法 -->
+  <bean id="logger4ServiceBean" class="com.room1000.core.aop.LoggerAspect4Service" />
+  <bean id="logger4ControllerBean" class="com.room1000.core.aop.LoggerAspect4Controller" />
+
+  <aop:config>
+    <aop:aspect id="aspect4Service" ref="logger4ServiceBean">
+      <aop:pointcut id="loggerPointcut4Service" expression="execution(* com.room1000..service.impl.*Impl.*(..))" />
+      <aop:around pointcut-ref="loggerPointcut4Service" method="doInMethod" />
+    </aop:aspect>
+  </aop:config>
+
+  <aop:config>
+    <aop:aspect id="aspect4Controller" ref="logger4ControllerBean">
+      <aop:pointcut id="loggerPointcut4Controller" expression="execution(* com.room1000..controller.*.*(..))" />
+      <aop:around pointcut-ref="loggerPointcut4Controller" method="doInMethod" />
+    </aop:aspect>
+  </aop:config>
+
+</beans>

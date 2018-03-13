@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.suborder.ownercancelleaseorder.dao.OwnerCancelLeaseOrderHisDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.suborder.ownercancelleaseorder.dto.OwnerCancelLeaseOrderHisDto">
+    <!-- @mbg.generated -->
+    <id column="priority" jdbcType="INTEGER" property="priority" />
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="work_order_id" jdbcType="INTEGER" property="workOrderId" />
+    <result column="take_house_order_id" jdbcType="INTEGER" property="takeHouseOrderId" />
+    <result column="staff_id" jdbcType="INTEGER" property="staffId" />
+    <result column="created_date" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="appointment_date" jdbcType="TIMESTAMP" property="appointmentDate" />
+    <result column="node_name" jdbcType="VARCHAR" property="nodeName" />
+    <result column="actual_dealer_id" jdbcType="INTEGER" property="actualDealerId" />
+    <result column="assigned_dealer_id" jdbcType="INTEGER" property="assignedDealerId" />
+    <result column="assigned_dealer_role_id" jdbcType="INTEGER" property="assignedDealerRoleId" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="attr_catg_id" jdbcType="INTEGER" property="attrCatgId" />
+    <result column="state" jdbcType="CHAR" property="state" />
+    <result column="state_date" jdbcType="TIMESTAMP" property="stateDate" />
+    <result column="update_person_id" jdbcType="INTEGER" property="updatePersonId" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="comments" jdbcType="VARCHAR" property="comments" />
+    <result column="take_house_order_name" jdbcType="VARCHAR" property="takeHouseOrderName" />
+    <result column="state_name" jdbcType="VARCHAR" property="stateName" />
+    <result column="type_name" jdbcType="VARCHAR" property="typeName" />
+    <result column="actual_dealer_name" jdbcType="VARCHAR" property="actualDealerName" />
+    <result column="assigned_dealer_name" jdbcType="VARCHAR" property="assignedDealerName" />
+    <result column="update_person_name" jdbcType="VARCHAR" property="updatePersonName" />
+    <result column="assigned_dealer_role_name" jdbcType="VARCHAR" property="assignedDealerRoleName" />
+    <collection property="subOrderValueList" ofType="com.room1000.suborder.ownercancelleaseorder.dto.OwnerCancelLeaseOrderValueHisDto">
+      <id column="value_id" jdbcType="INTEGER" property="id" />
+      <id column="value_priority" jdbcType="INTEGER" property="priority" />
+      <result column="value_sub_order_id" jdbcType="INTEGER" property="subOrderId" />
+      <result column="value_attr_id" jdbcType="INTEGER" property="attrId" />
+      <result column="value_attr_path" jdbcType="VARCHAR" property="attrPath" />
+      <result column="value_text_input" jdbcType="VARCHAR" property="textInput" />
+      <result column="value_attr_value_id" jdbcType="INTEGER" property="attrValueId" />
+    </collection>
+  </resultMap>
+  <select id="selectMaxPriority" parameterType="java.lang.Long" resultType="java.lang.Long">
+    select Max(PRIORITY) max_priority
+    from
+    owner_cancel_lease_order_his
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    a.*,
+    b.name take_house_order_name,
+    c.state_name,
+    d.type_name,
+    f.name actual_dealer_name,
+    f.mobile actual_dealer_phone,
+    g.name assigned_dealer_name,
+    h.name update_person_name,
+    i.role_name
+    assigned_dealer_role_name,
+    j.id value_id,
+    j.priority value_priority,
+    j.sub_order_id value_sub_order_id,
+    j.attr_id
+    value_attr_id,
+    j.attr_path value_attr_path,
+    j.text_input value_text_input,
+    j.attr_value_id value_attr_value_id
+    from
+    owner_cancel_lease_order_his a
+    left join yc_agreement_tab b on a.take_house_order_id = b.id
+    left join sub_order_state c on a.state = c.state
+    left join
+    owner_cancel_lease_order_type d on a.type = d.type
+    left join yc_account_tab f on a.actual_dealer_id = f.id
+    left join
+    yc_account_tab g on a.assigned_dealer_id = g.id
+    left join yc_account_tab h on a.update_person_id = h.id
+    left join
+    yc_role_new_tab i on a.assigned_dealer_role_id = i.role_id
+    left join owner_cancel_lease_order_value_his j on
+    j.priority = a.priority and j.sub_order_id = a.id
+    where a.id = #{subOrderId,jdbcType=INTEGER}
+    and a.update_person_id
+    is not null
+    order by a.priority
+  </select>
+</mapper>

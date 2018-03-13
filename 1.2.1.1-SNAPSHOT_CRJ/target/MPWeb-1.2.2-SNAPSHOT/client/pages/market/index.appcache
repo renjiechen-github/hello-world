@@ -1,0 +1,10 @@
+CACHE MANIFEST
+# 2016-08-05 v1.0.16
+/client/pages/market/addhouse.html
+../../css/market/addhouse.min.css
+../../js/jquery-1.10.2.js
+../../js/common.client.js
+
+NETWORK:
+*
+FALLBACK:

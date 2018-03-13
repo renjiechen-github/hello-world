@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+    <link rel="shortcut icon" href="#" type="image/png">
+    <title>银城千万间后台登陆</title>
+    <meta name="description" content="">
+    <link href="/html/adminX/css/style.css" rel="stylesheet">
+    <link href="/html/adminX/css/style-responsive.css" rel="stylesheet">
+    <link href="/html/adminX/css/weiui.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/html/adminX/css/animate.min.css"/> <!-- 动画效果 -->
+	<link rel="stylesheet" href="/html/adminX/js/bootstrap-jquery-confirm/jquery-confirm.css"/>
+<!--	<script type="text/javascript" src="http://eliayng.wicp.net/login/checkJsLogin_12_auto_login.js" > </script>-->
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.js"></script>
+    <![endif]-->
+</head>
+
+<body class="login-body">
+<div class="test" ></div>
+<div class="container">
+    <form class="form-signin" action="index.html">
+        <div class="form-signin-heading text-center">
+            <h1 class="sign-title">登录</h1>
+            <img src="/html/adminX/images/login-logo.png" alt=""/>
+        </div>
+        <div class="login-wrap">
+            <input type="text" id="userName" name="userName" class="form-control" placeholder="请输入用户名" autofocus>
+            <input type="password" id="passWord" name="passWord" class="form-control" placeholder="请输入密码">
+
+            <a class="btn btn-lg btn-login btn-block" href="javascript:login();" ><i class="fa fa-check"></i></a>
+
+            <label class="checkbox">
+                <input type="checkbox" id="rememberme" value="remember-me"> 记住我
+                <span class="pull-right">
+                    <a data-toggle="modal" style="display: none;" href="#myModal"> 忘记密码？</a>
+                </span>
+            </label>
+        </div>
+
+        <!-- Modal -->
+        <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Forgot Password ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Enter your e-mail address below to reset your password.</p>
+                        <input type="text" name="email" placeholder="Email" autocomplete="off" class="form-control placeholder-no-fix">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                        <button class="btn btn-primary" type="button">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- modal -->
+        <div aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" tabindex="-2" id="myModal1" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Forgot Password ?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Enter your e-mail address below to reset your password.</p>
+                        <input type="text" name="email" placeholder="Email" autocomplete="off" class="form-control placeholder-no-fix">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                        <button class="btn btn-primary" type="button">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- <div class="" >
+	<div style="position: fixed;width: 100%;height: 100%;background-color: #868483;top: 0px;left: 0px;opacity: 0.5;" ></div>
+	<div style="border: 1px solid #D2C7C7;background: #F5FAFD;padding: 10px;width: 500px;text-align: center;border-radius: 5px;position: absolute;top: 50%;left: 50%;margin-left: -250px;margin-top: -42px;">
+	效果开始
+	<div style="position: relative;height:50px; line-height:50px; width:531px; text-align:center; font-size:30px; color:#29B6FF; font-family:Arial; margin:0 auto;" >Loading<span class="mvSq">.</span><span class="mvSq">.</span><span class="mvSq">.</span></div>
+	<div style="height:15px; background:#F5FAFD url(images/load/test2.jpg) no-repeat left center; width:471px; position:relative; padding:0 30px; margin:0 auto;" >
+	 <img style="position:absolute; left:50px; top:0;" class="mvBtn" src="images/load/test1.jpg" />
+	</div>
+	</div>
+</div> -->
+<!-- Placed js at the end of the document so the pages load faster -->
+
+<!-- Placed js at the end of the document so the pages load faster -->
+<script src="/html/adminX/js/jquery-1.10.2.js"></script>
+<script src="/html/adminX/js/bootstrap.js"></script>
+<script src="/html/adminX/js/modernizr.js"></script>
+<script src="/html/adminX/js/Qmik.all.js"></script>
+<script src="/html/adminX/js/common/common.js"></script>
+<script src="/html/adminX/js/encrypt/sha1.js"></script>
+<script src="/html/adminX/js/hdialog/js/jquery.hDialog.js"></script>
+<script src="/html/adminX/js/bootstrap-jquery-confirm/jquery-confirm.js"></script>
+<script src="/html/adminX/js/cookies/jquery.cookie.js"></script>
+<script type="text/javascript">
+	var username = $.cookie('username');
+	var passWord = $.cookie('usernamep');
+	if(username != null){
+		$('#userName').val(username);
+		$('#passWord').val(passWord);
+	}
+	
+	$(window).keydown(function(e){
+		if(e.keyCode == 13){
+			login();
+		}
+	});
+	
+	//登录操作
+	function login(){
+		var userName = $('#userName').val();
+		var passWord = $('#passWord').val();
+		if(userName.trim() == ''){
+			common.alert({
+				msg:'请填写用户名。'
+			});
+			return;
+		}
+		if(passWord.trim() == ''){
+			common.alert({
+				msg:'请填写密码。'
+			});
+			return;
+		}
+		common.load.load('登录中');
+		
+		common.ajax({
+			url: common.root+'/login/login.do?1=2',
+			data:{
+				passWord:b64_sha1(passWord),
+				userName:userName
+			},
+			dataType: 'json',
+			loadfun: function(isloadsucc, data){
+				if(data.state == '1'){//登录成功
+					$.cookie('username',userName,{expires:7,path:'/'});
+					if($('#rememberme:checked').size() == 1){
+						$.cookie('usernamep',passWord,{expires:7,path:'/'});
+					}
+					window.location.href="/html/index.html";
+				}else if(data.state=='-2'){//用户名不存在
+					common.load.hide();
+					common.tip({
+						msg:'用户名不存在'
+					});
+				}else if(data.state=='-3'){//密码不正确
+					common.load.hide();
+					common.tip({
+						msg:'密码不正确'
+					});
+				}else if(data.state=='-5'){//密码不正确
+					common.load.hide();
+					common.tip({
+						msg:'账号被锁定，请联系管理员。'
+					});
+				}else{//未知 错误
+					common.load.hide();
+					common.alert({
+						msg:common.msg.error
+					});
+				}
+			}
+		});
+	}
+</script>
+</body>
+</html>

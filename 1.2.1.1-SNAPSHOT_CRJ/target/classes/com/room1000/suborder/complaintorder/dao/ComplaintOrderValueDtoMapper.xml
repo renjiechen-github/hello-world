@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.suborder.complaintorder.dao.ComplaintOrderValueDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.suborder.complaintorder.dto.ComplaintOrderValueDto">
+    <!--
+    @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sub_order_id" jdbcType="INTEGER" property="subOrderId" />
+    <result column="attr_id" jdbcType="INTEGER" property="attrId" />
+    <result column="attr_path" jdbcType="VARCHAR" property="attrPath" />
+    <result column="text_input" jdbcType="VARCHAR" property="textInput" />
+    <result column="attr_value_id" jdbcType="INTEGER" property="attrValueId" />
+    <result column="attr_type" jdbcType="CHAR" property="attrType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+    @mbg.generated
+    -->
+    id, sub_order_id, attr_id, attr_path, text_input, attr_value_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+    @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from complaint_order_value
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByAttrPath" parameterType="com.room1000.suborder.complaintorder.dto.ComplaintOrderValueDto" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from complaint_order_value
+    where attr_path = #{attrPath,jdbcType=VARCHAR}
+    and sub_order_id = #{subOrderId,jdbcType=INTEGER}
+  </select>
+  <select id="selectBySubOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    a.id, a.sub_order_id, a.attr_id, a.attr_path, a.text_input, a.attr_value_id, b.type attr_type
+    from complaint_order_value a
+    left join attr b on a.attr_id = b.id
+    where sub_order_id = #{subOrderId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--
+    @mbg.generated
+    -->
+    delete from complaint_order_value
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteBySubOrderId" parameterType="java.lang.Long">
+    delete from complaint_order_value
+    where sub_order_id = #{subOrderId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.room1000.suborder.complaintorder.dto.ComplaintOrderValueDto" useGeneratedKeys="true" keyProperty="id">
+    <!--
+    @mbg.generated
+    -->
+    insert into complaint_order_value (id, sub_order_id, attr_id, 
+      attr_path, text_input, attr_value_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{subOrderId,jdbcType=INTEGER}, #{attrId,jdbcType=INTEGER}, 
+      #{attrPath,jdbcType=VARCHAR}, #{textInput,jdbcType=VARCHAR}, #{attrValueId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.suborder.complaintorder.dto.ComplaintOrderValueDto" useGeneratedKeys="true" keyProperty="id">
+    <!--
+    @mbg.generated
+    -->
+    insert into complaint_order_value
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="subOrderId != null">
+        sub_order_id,
+      </if>
+      <if test="attrId != null">
+        attr_id,
+      </if>
+      <if test="attrPath != null">
+        attr_path,
+      </if>
+      <if test="textInput != null">
+        text_input,
+      </if>
+      <if test="attrValueId != null">
+        attr_value_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="subOrderId != null">
+        #{subOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="attrId != null">
+        #{attrId,jdbcType=INTEGER},
+      </if>
+      <if test="attrPath != null">
+        #{attrPath,jdbcType=VARCHAR},
+      </if>
+      <if test="textInput != null">
+        #{textInput,jdbcType=VARCHAR},
+      </if>
+      <if test="attrValueId != null">
+        #{attrValueId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.suborder.complaintorder.dto.ComplaintOrderValueDto">
+    <!--
+    @mbg.generated
+    -->
+    update complaint_order_value
+    <set>
+      <if test="subOrderId != null">
+        sub_order_id = #{subOrderId,jdbcType=INTEGER},
+      </if>
+      <if test="attrId != null">
+        attr_id = #{attrId,jdbcType=INTEGER},
+      </if>
+      <if test="attrPath != null">
+        attr_path = #{attrPath,jdbcType=VARCHAR},
+      </if>
+      <if test="textInput != null">
+        text_input = #{textInput,jdbcType=VARCHAR},
+      </if>
+      <if test="attrValueId != null">
+        attr_value_id = #{attrValueId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.suborder.complaintorder.dto.ComplaintOrderValueDto">
+    <!--
+    @mbg.generated
+    -->
+    update complaint_order_value
+    set sub_order_id = #{subOrderId,jdbcType=INTEGER},
+      attr_id = #{attrId,jdbcType=INTEGER},
+      attr_path = #{attrPath,jdbcType=VARCHAR},
+      text_input = #{textInput,jdbcType=VARCHAR},
+      attr_value_id = #{attrValueId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

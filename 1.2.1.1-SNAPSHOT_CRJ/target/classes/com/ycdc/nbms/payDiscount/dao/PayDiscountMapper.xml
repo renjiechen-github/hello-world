@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.nbms.payDiscount.dao.PayDiscountMapper">
+	<resultMap type="com.ycdc.nbms.payDiscount.pojo.PayDiscount" id="DiscountMap">
+		<result column="ager_id" property="aId"/>
+		<result column="mobile" property="phone"/>
+		<result column="cost" property="cost"/>
+		<result column="cnt" property="num"/>
+		<result column="name" property="name"/>
+		<result column="code" property="code"/>
+		<result column="username_bk" property="userName"/>
+	</resultMap>
+	
+	<select id="queryPayCountList" parameterType="Map" resultMap="DiscountMap">
+		select a.mobile as phone,a.ager_id as aId,a.cost,a.cnt as num,b.`name`,b.`code`,c.userName
+		from yc_coupon_djf a
+		LEFT JOIN yc_agreement_tab b on a.ager_id = b.id
+		LEFT JOIN yc_userinfo_tab c on a.mobile = c.mobile
+		where 1=1
+		<if test="null!= phone and ''!=phone">
+		and a.mobile = #{phone}
+		</if>
+		<if test="null!= userName and ''!=userName">
+		and c.userName = #{userName}
+		</if>
+		<if test="aId!=null and ''!= aId">
+		and a.ager_id = #{aId}
+		</if>
+		<if test="null!= start and ''!=start">
+		LIMIT ${start},${pageSize}
+		</if>
+	</select>
+	<select id="queryIdByCode" parameterType="Map" resultType="String">
+		select a.id from yc_agreement_tab a
+		where 1=1
+		<if test="null!= code and ''!= code">
+		and a.`code` = #{code}
+		</if>
+	</select>
+	<update id="modifyPayDiscount" parameterType="Map">
+		update yc_coupon_djf a
+		 <trim prefix="set" suffixOverrides=",">
+		 	<if test="null!= cost and ''!= cost">
+		 		a.cost = #{cost},
+		 	</if>
+		 	<if test="null!= num and ''!= num">
+		 		a.cnt = #{num},
+		 	</if>
+		 </trim>
+		 where a.ager_id = #{aId} and a.mobile = #{phone}
+	</update>
+	<delete id="deletePayDiscount" parameterType="Map">
+		delete from yc_coupon_djf where ager_id = #{aId} and mobile = #{phone}
+	</delete>
+	<insert id="addPayDiscount" parameterType="Map">
+		insert into yc_coupon_djf (mobile,ager_id,cost,cnt) 
+		values (#{phone},#{aId},#{cost},#{num})
+	</insert>
+</mapper>

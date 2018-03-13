@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ycroom</groupId>
+    <artifactId>MPWeb</artifactId>
+    <version>1.2.2-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>${project.build.finalName}</name>
+    <description>银城千万间后台管理系统</description>
+	
+    <scm>
+        <connection>scm:svn:https://192.168.90.202/svn/SoftWare/Branches/maven/manager/1.2.1.1-SNAPSHOT_QRJ</connection>
+        <developerConnection>scm:svn:https://192.168.90.202/svn/SoftWare/Branches/maven/manager/1.2.1.1-SNAPSHOT_QRJ</developerConnection>
+    </scm>
+	
+    <!--spring版本 -->
+    <properties>
+        <spring.version>4.2.0.RELEASE</spring.version>
+        <atomikos.version>3.9.3</atomikos.version>
+        <logback.version>1.2.3</logback.version>
+        <activiti.version>5.21.0</activiti.version>
+        <branchName>${project.artifactId}_${project.version}</branchName>
+        <skip_jetty>true</skip_jetty>
+        <skip_tomcat>true</skip_tomcat>
+        <skip_test>true</skip_test>
+        <skip.tests>true</skip.tests>
+        <skip_compress>true</skip_compress>
+        <jsOutDir>/js/static</jsOutDir>
+        <cssOutDir>/css/static</cssOutDir>
+    </properties>
+        
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>public</name>
+            <url>http://192.168.90.202:8180/nexus-2.14.4-02/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>nexus</id>
+            <name>nexus</name>
+            <url>http://192.168.90.202:8180/nexus-2.14.4-02/content/groups/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <!-- 开发快照版本 -->
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>http://192.168.90.202:8180/nexus-2.14.4-02/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <!-- 正式版本 -->
+        <repository>
+            <id>releases</id>
+            <name>User Porject Release</name>
+            <url>http://192.168.90.202:8180/nexus-2.14.4-02/content/repositories/releases/</url>
+        </repository>
+        
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>localhost</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <!-- 本地测试环境  也是默认打包生成的环境-->
+            <properties>
+                <package.environment>localhost</package.environment>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                
+                <jdbc.url>jdbc:mysql://192.168.90.202:3306/room1000?user=root&amp;amp;password=ycqwj&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&amp;amp;zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true</jdbc.url>
+                <jdbc.username>root</jdbc.username>
+                <jdbc.password>ycqwj</jdbc.password>
+                
+<!--                <jdbc.url>jdbc:mysql://114.55.218.179:3306/room1000?user=ycroom&amp;amp;password=Room1000+&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&amp;amp;zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true</jdbc.url>
+                <jdbc.username>ycroom</jdbc.username>
+                <jdbc.password>Room1000+</jdbc.password>-->
+                
+<!--                <jdbc.url>jdbc:mysql://room1000.mysql.rds.aliyuncs.com:3306/ycroom?user=rdly&amp;amp;password=!Q2w3e4r&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&amp;amp;zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true</jdbc.url>
+                <jdbc.username>rdly</jdbc.username>
+                <jdbc.password>!Q2w3e4r</jdbc.password>-->
+                
+                <jdbc.initialSize>0</jdbc.initialSize>
+                <jdbc.maxActive>50</jdbc.maxActive>
+                <jdbc.maxIdle>20</jdbc.maxIdle>
+                <jdbc.minIdle>2</jdbc.minIdle>
+                <jdbc.maxWait>60000</jdbc.maxWait>
+                <is_test>true</is_test>
+                <logback.appender><![CDATA[<appender-ref ref="STDOUT" />]]></logback.appender>
+                <maven.corsFilter>
+                                    <![CDATA[
+                                        <filter>
+                                            <description>支持跨域请求cors</description>
+                                            <filter-name>CorsFilter</filter-name>
+                                            <filter-class>pccom.common.filter.CorsFilter</filter-class>
+                                          </filter>
+                                          <filter-mapping>
+                                            <filter-name>CorsFilter</filter-name>
+                                            <url-pattern>/*</url-pattern>
+                                          </filter-mapping>
+                                    ]]>
+                </maven.corsFilter>
+                <maven.YCQWJ_URL>http\://localhost\:8380/message/</maven.YCQWJ_URL>
+                <maven.logback>/Users/eliayng/Documents/logback/mp</maven.logback>
+                <maven.ROOTURL>http\://localhost\:8180/</maven.ROOTURL>
+            </properties>
+        </profile>
+        <profile>
+            <id>dev198</id>
+            <!-- 198测试环境 -->
+            <properties>
+                <package.environment>dev198</package.environment>
+<!--                <jdbc.url>jdbc:mysql://room1000.mysql.rds.aliyuncs.com:3306/testroom?user=ycroom&amp;amp;password=ycqwj_1000&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&amp;amp;zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true</jdbc.url>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.username>ycroom</jdbc.username>
+                <jdbc.password>ycqwj_1000</jdbc.password>-->
+                <jdbc.url>jdbc:mysql://114.55.218.179:3306/room1000?user=ycroom&amp;amp;password=Room1000+&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&amp;amp;zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true</jdbc.url>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.username>ycroom</jdbc.username>
+                <jdbc.password>Room1000+</jdbc.password>
+                <jdbc.initialSize>0</jdbc.initialSize>
+                <jdbc.maxActive>50</jdbc.maxActive>
+                <jdbc.maxIdle>20</jdbc.maxIdle>
+                <jdbc.minIdle>2</jdbc.minIdle>
+                <jdbc.maxWait>60000</jdbc.maxWait>
+                <is_test>true</is_test>
+                <logback.appender><![CDATA[<appender-ref ref="STDOUT" />]]></logback.appender>
+                <maven.corsFilter>
+                                    <![CDATA[
+                                        <filter>
+                                            <description>支持跨域请求cors</description>
+                                            <filter-name>CorsFilter</filter-name>
+                                            <filter-class>pccom.common.filter.CorsFilter</filter-class>
+                                          </filter>
+                                          <filter-mapping>
+                                            <filter-name>CorsFilter</filter-name>
+                                            <url-pattern>/*</url-pattern>
+                                          </filter-mapping>
+                                    ]]>
+                </maven.corsFilter>
+                <maven.YCQWJ_URL>http\://192.168.90.198\:8380/message/</maven.YCQWJ_URL>
+                <maven.logback>/luna/server/logback</maven.logback>
+            </properties>
+        </profile>
+        <profile>
+            <id>devsh</id>
+            <!-- 上海服务器测试环境 -->
+            <properties>
+                <package.environment>devsh</package.environment>
+                <jdbc.url>jdbc:mysql://localhost:3306/room1000?user=ycroom&amp;amp;password=Room1000+&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&amp;amp;zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true</jdbc.url>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.username>ycroom</jdbc.username>
+                <jdbc.password>Room1000+</jdbc.password>
+                <jdbc.initialSize>0</jdbc.initialSize>
+                <jdbc.maxActive>50</jdbc.maxActive>
+                <jdbc.maxIdle>20</jdbc.maxIdle>
+                <jdbc.minIdle>2</jdbc.minIdle>
+                <jdbc.maxWait>60000</jdbc.maxWait>
+                <is_test>false</is_test>
+                <logback.appender><![CDATA[<appender-ref ref="STDOUT" />]]></logback.appender>
+                <maven.corsFilter>
+                                    <![CDATA[
+                                        <filter>
+                                            <description>支持跨域请求cors</description>
+                                            <filter-name>CorsFilter</filter-name>
+                                            <filter-class>pccom.common.filter.CorsFilter</filter-class>
+                                          </filter>
+                                          <filter-mapping>
+                                            <filter-name>CorsFilter</filter-name>
+                                            <url-pattern>/*</url-pattern>
+                                          </filter-mapping>
+                                    ]]>
+                </maven.corsFilter>
+                <maven.YCQWJ_URL>http\://114.55.218.179\:8380/message/</maven.YCQWJ_URL>
+                <maven.logback>/luna/server/logback</maven.logback>
+                <maven.ROOTURL>http\://localhost\:8180/</maven.ROOTURL>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <!-- 真实环境 -->
+            <properties>
+                <package.environment>prod</package.environment>
+                <jdbc.url>jdbc:mysql://rm-bp1ud572tw5wls97m.mysql.rds.aliyuncs.com:3306/ycroom?user=room1000&amp;amp;password=Ycqwj_1000&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;characterSetResults=UTF-8&amp;amp;zeroDateTimeBehavior=convertToNull&amp;amp;autoReconnect=true</jdbc.url>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.username>room1000</jdbc.username>
+                <jdbc.password>Ycqwj_1000</jdbc.password>
+                <jdbc.initialSize>0</jdbc.initialSize>
+                <jdbc.maxActive>50</jdbc.maxActive>
+                <jdbc.maxIdle>20</jdbc.maxIdle>
+                <jdbc.minIdle>2</jdbc.minIdle>
+                <jdbc.maxWait>60000</jdbc.maxWait>
+                <is_test>false</is_test>
+                <logback.appender><![CDATA[<appender-ref ref="STDOUT" />]]></logback.appender>
+                <maven.corsFilter />
+                <maven.YCQWJ_URL>http\://121.40.165.132\:8380/message/</maven.YCQWJ_URL>
+                <maven.logback>/luna/server/logback</maven.logback>
+                <maven.ROOTURL>http\://localhost\:8187/</maven.ROOTURL>
+            </properties>
+        </profile>
+    </profiles>
+	
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <resources>  
+            <resource>  
+                <directory>src/main/java</directory>  
+                <includes>  
+                    <include>**/*.properties</include>  
+                    <include>**/*.xml</include>
+                </includes>  
+                <!-- 是否替换资源中的属性-->  
+                <filtering>false</filtering>  
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>**/urlrewrite.xml</exclude>
+                </excludes>
+                <!-- 是否替换资源中的属??? -->
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/urlrewrite.xml</include>
+                </includes>
+                <!-- 是否替换资源中的属??? -->
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/${project.build.finalName}/WEB-INF</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/webapp</directory>
+                <excludes>
+                    <exclude>**/*.woff</exclude>
+                    <exclude>*.cer</exclude>
+                </excludes>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/${project.build.finalName}</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/webapp</directory>
+                <includes>
+                    <include>**/*.woff</include>
+                    <include>*.cer</include>
+                </includes>
+                <filtering>false</filtering>
+                <targetPath>${project.build.directory}/${project.build.finalName}</targetPath>
+            </resource>
+            <!-- webapp放两个文件中主要是为了解决后面打包war的时候压缩的js与css后先后复制导致压缩的资源文件到不了war?? -->
+            <resource>
+                <directory>src/main/webapp</directory>
+                <excludes>
+                    <exclude>**/*.woff</exclude>
+                    <exclude>*.cer</exclude>
+                </excludes>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/resource</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/webapp</directory>
+                <includes>
+                    <include>**/*.woff</include>
+                    <include>*.cer</include>
+                </includes>
+                <filtering>false</filtering>
+                <targetPath>${project.build.directory}/resource</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                    <skip>${skip.tests}</skip>
+                    <skipTests>${skip_test}</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eliayng</groupId>
+                <artifactId>compress-maven-plugin</artifactId>
+                <version>1.0.5</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skip>${skip_compress}</skip>
+                    <poolNum>50</poolNum>
+                    <jsOutDir>${jsOutDir}</jsOutDir>
+                    <cssOutDir>${cssOutDir}</cssOutDir>
+                    <isCompressCss>false</isCompressCss>
+                    <isCompressHtml>false</isCompressHtml>
+                    <isCompressJs>false</isCompressJs>
+                    <isCompressSass>false</isCompressSass>
+                    是否监控编译class文件
+                    <isCompressClass>true</isCompressClass>
+                    是否复制资源文件 
+                    <isResourcesCopy>true</isResourcesCopy>
+                </configuration>
+            </plugin>
+            <!-- 指定使用jdk版本 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <encoding>UTF-8</encoding>
+                    <optimize>false</optimize>  
+                    <debug>false</debug>  
+                    <showDeprecation>false</showDeprecation>  
+                    <showWarnings>false</showWarnings>
+                    <excludes>
+                        <exclude>test</exclude>
+                        <exclude>webapp</exclude>
+                    </excludes>
+                    <!-- <compilerArguments>
+                        <verbose />
+                        <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
+                    </compilerArguments> -->
+                </configuration>
+            </plugin>
+            <plugin>  
+                <groupId>org.apache.maven.plugins</groupId>  
+                <artifactId>maven-war-plugin</artifactId>  
+                <version>3.1.0</version>
+                <configuration>  
+                    <version>3.0</version>
+                    <!-- 把class打包jar作为附件 -->
+                    <attachClasses>true</attachClasses>
+                    <webResources>  
+                        <!-- <resource>  
+                            <directory>target/compress</directory>
+                            <filtering>true</filtering>  
+                            <targetPath>/</targetPath>  
+                        </resource>  -->
+                    </webResources>  
+                </configuration>  
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                    <excludeTransitive>false</excludeTransitive>
+                    <stripVersion>true</stripVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- 源码打包 -->
+            <plugin>  
+                <artifactId>maven-source-plugin</artifactId>  
+                <version>2.4</version>  
+                <configuration>
+                    <includes>
+                		
+                    </includes>
+                </configuration>
+                <executions>  
+                    <execution>  
+                        <id>attach-sources</id>
+                        <goals>  
+                            <goal>jar-no-fork</goal>  
+                        </goals>  
+                    </execution>  
+                </executions>  
+            </plugin> 
+            <!-- 项目jar包插件 -->  
+            <plugin>  
+                <groupId>org.apache.maven.plugins</groupId>  
+                <artifactId>maven-jar-plugin</artifactId>  
+                <version>2.4</version>
+            </plugin>  
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.3.5</version>
+                <configuration>
+                    <configurationFile>${basedir}/src/main/resources/generatorConfig.xml</configurationFile>
+                    <overwrite>true</overwrite>
+                    <verbose>true</verbose>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>5.1.38</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.room</groupId>
+                        <artifactId>MPWeb</artifactId>
+                        <version>${project.version}</version>
+                        <classifier>classes</classifier>
+                        <!-- <type>war</type> -->
+                    </dependency>
+                    <dependency>
+                        <groupId>tk.mybatis</groupId>
+                        <artifactId>mapper</artifactId>
+                        <version>3.4.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin> 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skip>true</skip>
+                    <bootclasspath>src/main/java/com</bootclasspath>
+                    <encoding>UTF-8</encoding>
+                    <charset>UTF-8</charset>
+                    <docencoding>UTF-8</docencoding>
+                    <!-- <additionalparam>-Xdoclint:none</additionalparam> -->
+                </configuration>
+            </plugin>
+            <!-- 打包发布到私服，与svn进行结合进行项目管理 -->
+            <plugin>  
+                <groupId>org.apache.maven.plugins</groupId>  
+                <artifactId>maven-release-plugin</artifactId>  
+                <version>2.5.2</version>
+		     	
+                <configuration>
+                    <branchBase>https://192.168.90.202/svn/SoftWare/Branches/maven/manager</branchBase>
+                    <tagBase>https://192.168.90.202/svn/SoftWare/Tags/maven/manager</tagBase>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <checkModificationExcludes>
+                        <checkModificationExclude>.project</checkModificationExclude>
+                        <checkModificationExclude>.settings</checkModificationExclude>
+                        <checkModificationExclude>.classpath</checkModificationExclude>
+                        <checkModificationExclude>**\.project</checkModificationExclude>
+                        <checkModificationExclude>**\.settings</checkModificationExclude>
+                        <checkModificationExclude>**\.classpath</checkModificationExclude>
+                        <checkModificationExclude>*.bat</checkModificationExclude>
+                        <checkModificationExclude>*.log</checkModificationExclude>
+                        <checkModificationExclude>pom.xml.releaseBackup</checkModificationExclude>
+                    </checkModificationExcludes>
+                    <branchName>${branchName}</branchName> 
+                </configuration>  
+            </plugin>
+            <plugin>  
+                <artifactId>maven-resources-plugin</artifactId>  
+                <version>2.5</version>  
+                <configuration>    
+                    <encoding>UTF-8</encoding>    
+                </configuration>  
+            </plugin> 
+            <!-- 添加此插件以便启动jetty -->
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.1.0.M0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <stopKey>foo</stopKey>
+                    <reload>manual</reload>
+                    <stopPort>9999</stopPort>
+                    <httpConnector>
+                        <idleTimeout>0</idleTimeout>
+                        <port>8180</port>
+                    </httpConnector>
+                    <webApp>
+                        <contextPath>/</contextPath>
+                        <defaultsDescriptor>src/main/resources/webdefault.xml</defaultsDescriptor>
+                    </webApp>
+                    <skip>${skip_jetty}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-jetty</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <scanIntervalSeconds>0</scanIntervalSeconds>
+                            <daemon>true</daemon>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-jetty</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <port>8180</port>
+                    <path>/</path>
+                    <uriEncoding>UTF-8</uriEncoding>
+                    <finalName>/</finalName>
+                    <server>tomcat7</server>
+                    <skip>${skip_tomcat}</skip>
+                    <!--                    <warSourceDirectory>${project.build.directory}/${project.build.finalName}</warSourceDirectory>-->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+	
+    <dependencies>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alipay.api</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>20161129201425</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+            <version>${logback.version}</version>
+
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+
+        </dependency>
+        <dependency>
+            <groupId>org.logback-extensions</groupId>
+            <artifactId>logback-ext-spring</artifactId>
+            <version>0.1.4</version>
+
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.38</version>
+
+        </dependency>
+
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <!-- 打包的时候才生效 -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.servlet.jsp/jsp-api -->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.baidubce</groupId>
+            <artifactId>bce</artifactId>
+            <version>0.10.11</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/log4j/log4j -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ycqwj</groupId>
+            <artifactId>ycqwj</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.6.9</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/opensymphony/quartz-all -->
+        <!-- https://mvnrepository.com/artifact/opensymphony/quartz-all -->
+        <!-- https://mvnrepository.com/artifact/org.quartz-scheduler/quartz -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>17.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpasyncclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/proxool/proxool -->
+        <dependency>
+            <groupId>fakepath</groupId>
+            <artifactId>proxool</artifactId>
+            <version>0.9.0RC3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis.generator</groupId>
+            <artifactId>mybatis-generator-core</artifactId>
+            <version>1.3.5</version>
+        </dependency>
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.8.7</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.8.7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.8.7</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.2.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.4</version>
+            <classifier>jdk15</classifier>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <!-- <dependency> <groupId>com.baidubce</groupId> <artifactId>bce</artifactId> 
+        <version>0.10.11</version> </dependency> -->
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160810</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/net.sourceforge.jexcelapi/jxl -->
+        <dependency>
+            <groupId>net.sourceforge.jexcelapi</groupId>
+            <artifactId>jxl</artifactId>
+            <version>2.6.12</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/net.sf.jxls/jxls-core -->
+        <dependency>
+            <groupId>net.sf.jxls</groupId>
+            <artifactId>jxls-core</artifactId>
+            <version>1.0.5</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.12</version>
+        </dependency>
+        <dependency>
+            <groupId>fakepath</groupId>
+            <artifactId>bccs-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>fakepath</groupId>
+            <artifactId>bccs-api-lib</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.23</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.activiti/activiti-bpmn-model -->
+        <dependency>
+            <groupId>org.activiti</groupId>
+            <artifactId>activiti-bpmn-model</artifactId>
+            <version>${activiti.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.activiti/activiti-engine -->
+        <dependency>
+            <groupId>org.activiti</groupId>
+            <artifactId>activiti-engine</artifactId>
+            <version>${activiti.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.activiti/activiti-bpmn-converter -->
+        <dependency>
+            <groupId>org.activiti</groupId>
+            <artifactId>activiti-bpmn-converter</artifactId>
+            <version>${activiti.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.activiti</groupId>
+            <artifactId>activiti-image-generator</artifactId>
+            <version>${activiti.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.activiti</groupId>
+            <artifactId>activiti-process-validation</artifactId>
+            <version>${activiti.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.activiti</groupId>
+            <artifactId>activiti-spring</artifactId>
+            <version>${activiti.version}</version>
+        </dependency>				
+        <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.31</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.pagehelper/pagehelper -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/axis/axis -->
+        <dependency>
+            <groupId>axis</groupId>
+            <artifactId>axis</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>ca</groupId>
+            <artifactId>ca</artifactId>
+            <version>1.0</version>
+        </dependency>	
+        <!-- https://mvnrepository.com/artifact/org.jodd/jodd-http -->
+        <dependency>
+            <groupId>org.jodd</groupId>
+            <artifactId>jodd-http</artifactId>
+            <version>3.6.4</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.jpush.api</groupId>
+            <artifactId>jiguang-common</artifactId>
+            <version>1.0.1</version>
+        </dependency>	
+        <dependency>
+            <groupId>cn.jpush.api</groupId>
+            <artifactId>jpush-client</artifactId>
+            <version>3.2.16</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.geccocrawler/gecco -->
+        <dependency>
+            <groupId>com.geccocrawler</groupId>
+            <artifactId>gecco</artifactId>
+            <version>1.2.4</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.geccocrawler/gecco-spring -->
+        <dependency>
+            <groupId>com.geccocrawler</groupId>
+            <artifactId>gecco-spring</artifactId>
+            <version>1.2.4</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.belerweb/pinyin4j -->
+        <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+				
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.11.119</version>
+        </dependency>
+        <dependency>
+            <groupId>fakepath</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>1.11.119</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yc</groupId>
+            <artifactId>ycapi</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ycqwj</groupId>
+            <artifactId>ycqwjApi</artifactId>
+            <version>1.1.31-RELEASES</version>
+        </dependency>			
+        <dependency>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>emoji-java</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+    </dependencies>	
+</project>

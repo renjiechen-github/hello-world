@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.room1000.core.user.dao.StaffDtoMapper">
+  <resultMap id="BaseResultMap" type="com.room1000.core.user.dto.StaffDto">
+    <!--
+    @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="roleid" jdbcType="BIGINT" property="roleid" />
+    <result column="desc_text" jdbcType="VARCHAR" property="descText" />
+    <result column="create_time" jdbcType="DATE" property="createTime" />
+    <result column="relation" jdbcType="BIT" property="relation" />
+    <result column="passwd" jdbcType="VARCHAR" property="passwd" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="ipadress" jdbcType="VARCHAR" property="ipadress" />
+    <result column="equipment" jdbcType="VARCHAR" property="equipment" />
+    <result column="lastlogintime" jdbcType="TIMESTAMP" property="lastlogintime" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="headerImage" jdbcType="VARCHAR" property="headerimage" />
+    <result column="registrationid" jdbcType="VARCHAR" property="registrationid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--
+    @mbg.generated
+    -->
+    id, mobile, name, type, roleid, desc_text, create_time, relation, passwd, is_delete, 
+    updatetime, ipadress, equipment, lastlogintime, state, headerImage, registrationid
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--
+    @mbg.generated
+    -->
+    select 
+    <include refid="Base_Column_List" />
+    from yc_account_tab
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yc_account_tab
+    where name = #{name,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByCond" parameterType="com.room1000.core.user.dto.StaffDto" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yc_account_tab
+    <where>
+      <if test="id != null">
+        and id = #{id, jdbcType=BIGINT}
+      </if>
+      <if test="mobile != null">
+        and mobile = #{mobile, jdbcType=VARCHAR}
+      </if>
+      <if test="name != null">
+        and name = #{name, jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <select id="selectByAgreementId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    e.id, e.mobile, e.name, e.type, f.role_id roleid, e.desc_text, e.create_time, e.relation, e.passwd, e.is_delete, 
+    e.updatetime, e.ipadress, e.equipment, e.lastlogintime, e.state, e.headerImage, e.registrationid
+    from yc_agreement_tab a 
+  	left join yc_agreement_tab b on a.father_id = b.id
+  	left join yc_house_tab c on b.house_id = c.id
+  	left join yc_group_tab d on c.group_id = d.id
+  	left join cf_team_member_area tma on d.id=tma.area_id
+  	left join cf_team ct on ct.id=tma.team_id  
+  	left join yc_account_tab e on e.id = tma.user_id
+  	left join yc_account_role_tab f on e.id=f.user_id
+  	left join yc_data_permission ydp on ydp.role_id=f.role_id
+  	where a.id = #{id,jdbcType=BIGINT} and e.is_delete=1
+  	and ydp.type_id=1 and ydp.sub_type_id='A' 
+  	and ydp.assign_permission=1
+  	order by ct.team_level desc
+  </select>
+  <select id="selectByTakeHouseAgreementId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    e.id, e.mobile, e.name, e.type, e.roleid, e.desc_text, e.create_time, e.relation, e.passwd, e.is_delete, 
+    e.updatetime, e.ipadress, e.equipment, e.lastlogintime, e.state, e.headerImage, e.registrationid
+    from yc_agreement_tab b
+  left join yc_house_tab c on b.house_id = c.id
+  left join yc_group_tab d on c.group_id = d.id
+  left join cf_team_member_area tma on d.id = tma.area_id
+  left join yc_account_tab e on e.id = tma.user_id
+  where b.id = #{takeHouseOrderId,jdbcType=BIGINT}
+  and e.is_delete = 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--
+    @mbg.generated
+    -->
+    delete from yc_account_tab
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.room1000.core.user.dto.StaffDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into yc_account_tab (id, mobile, name, 
+      type, roleid, desc_text, 
+      create_time, relation, passwd, 
+      is_delete, updatetime, ipadress, 
+      equipment, lastlogintime, state, 
+      headerImage, registrationid
+      )
+    values (#{id,jdbcType=BIGINT}, #{mobile,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{roleid,jdbcType=BIGINT}, #{descText,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=DATE}, #{relation,jdbcType=BIT}, #{passwd,jdbcType=VARCHAR}, 
+      #{isDelete,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}, #{ipadress,jdbcType=VARCHAR}, 
+      #{equipment,jdbcType=VARCHAR}, #{lastlogintime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER}, 
+      #{headerimage,jdbcType=VARCHAR}, #{gId,jdbcType=BIGINT}, #{registrationid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.room1000.core.user.dto.StaffDto">
+    <!--
+    @mbg.generated
+    -->
+    insert into yc_account_tab
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="mobile != null">
+        mobile,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="roleid != null">
+        roleid,
+      </if>
+      <if test="descText != null">
+        desc_text,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="relation != null">
+        relation,
+      </if>
+      <if test="passwd != null">
+        passwd,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+      <if test="updatetime != null">
+        updatetime,
+      </if>
+      <if test="ipadress != null">
+        ipadress,
+      </if>
+      <if test="equipment != null">
+        equipment,
+      </if>
+      <if test="lastlogintime != null">
+        lastlogintime,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="headerimage != null">
+        headerImage,
+      </if>
+      <if test="registrationid != null">
+        registrationid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="mobile != null">
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="roleid != null">
+        #{roleid,jdbcType=BIGINT},
+      </if>
+      <if test="descText != null">
+        #{descText,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=DATE},
+      </if>
+      <if test="relation != null">
+        #{relation,jdbcType=BIT},
+      </if>
+      <if test="passwd != null">
+        #{passwd,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ipadress != null">
+        #{ipadress,jdbcType=VARCHAR},
+      </if>
+      <if test="equipment != null">
+        #{equipment,jdbcType=VARCHAR},
+      </if>
+      <if test="lastlogintime != null">
+        #{lastlogintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="headerimage != null">
+        #{headerimage,jdbcType=VARCHAR},
+      </if>
+      <if test="gId != null">
+        #{gId,jdbcType=BIGINT},
+      </if>
+      <if test="registrationid != null">
+        #{registrationid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.room1000.core.user.dto.StaffDto">
+    <!--
+    @mbg.generated
+    -->
+    update yc_account_tab
+    <set>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="roleid != null">
+        roleid = #{roleid,jdbcType=BIGINT},
+      </if>
+      <if test="descText != null">
+        desc_text = #{descText,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=DATE},
+      </if>
+      <if test="relation != null">
+        relation = #{relation,jdbcType=BIT},
+      </if>
+      <if test="passwd != null">
+        passwd = #{passwd,jdbcType=VARCHAR},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null">
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ipadress != null">
+        ipadress = #{ipadress,jdbcType=VARCHAR},
+      </if>
+      <if test="equipment != null">
+        equipment = #{equipment,jdbcType=VARCHAR},
+      </if>
+      <if test="lastlogintime != null">
+        lastlogintime = #{lastlogintime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="headerimage != null">
+        headerImage = #{headerimage,jdbcType=VARCHAR},
+      </if>
+      <if test="registrationid != null">
+        registrationid = #{registrationid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.room1000.core.user.dto.StaffDto">
+    <!--
+    @mbg.generated
+    -->
+    update yc_account_tab
+    set mobile = #{mobile,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      roleid = #{roleid,jdbcType=BIGINT},
+      desc_text = #{descText,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=DATE},
+      relation = #{relation,jdbcType=BIT},
+      passwd = #{passwd,jdbcType=VARCHAR},
+      is_delete = #{isDelete,jdbcType=INTEGER},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      ipadress = #{ipadress,jdbcType=VARCHAR},
+      equipment = #{equipment,jdbcType=VARCHAR},
+      lastlogintime = #{lastlogintime,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=INTEGER},
+      headerImage = #{headerimage,jdbcType=VARCHAR},
+      registrationid = #{registrationid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

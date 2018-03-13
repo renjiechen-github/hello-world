@@ -1,0 +1,88 @@
+package com.room1000.costImport.pojo;
+
+/**
+ * 费用导入操作表bean
+ * @author chenrj
+ * @data 20180122
+ */
+public class CostImportHandle {
+
+	private String id;
+	private String handleId;//操作id
+	private String handleTime;//操作时间
+	private String handler;//操作人名字
+	private String handlerPhone;//操作人手机号
+	private String remarks;//备注
+	private String type;//类型
+	private String count;//数量
+	private String filePath;
+	private String successNum;
+	private String fialedNum;
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getHandleId() {
+		return handleId;
+	}
+	public void setHandleId(String handleId) {
+		this.handleId = handleId;
+	}
+	public String getHandleTime() {
+		return handleTime;
+	}
+	public void setHandleTime(String handleTime) {
+		this.handleTime = handleTime;
+	}
+	public String getHandler() {
+		return handler;
+	}
+	public void setHandler(String handler) {
+		this.handler = handler;
+	}
+	public String getHandlerPhone() {
+		return handlerPhone;
+	}
+	public void setHandlerPhone(String handlerPhone) {
+		this.handlerPhone = handlerPhone;
+	}
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getCount() {
+		return count;
+	}
+	public void setCount(String count) {
+		this.count = count;
+	}
+	public String getFilePath() {
+		return filePath;
+	}
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+	public String getSuccessNum() {
+		return successNum;
+	}
+	public void setSuccessNum(String successNum) {
+		this.successNum = successNum;
+	}
+	public String getFialedNum() {
+		return fialedNum;
+	}
+	public void setFialedNum(String fialedNum) {
+		this.fialedNum = fialedNum;
+	}
+	
+}

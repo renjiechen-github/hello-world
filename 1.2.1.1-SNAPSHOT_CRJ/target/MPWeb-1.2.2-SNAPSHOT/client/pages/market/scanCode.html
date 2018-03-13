@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="../../js/common.client.js"></script>
+<!--     <style> -->
+<!--     	#myinfo:active{	background:#EBEBEB;} -->
+<!-- 		#myinfos:active{background:#EBEBEB;} -->
+<!--     </style> -->
+</head>
+<body>
+</body>
+   <script>
+   $(function(){
+	   njyc.phone.scanRQcode('dealAndCloseRQcode');
+   });
+   
+   // 如果想要在扫描二维码页面关闭此页面，请在方法中添加close关键字
+   function dealAndCloseRQcode(code)
+   {
+	   njyc.phone.showProgress('');
+	  njyc.phone.ajax({
+			url : njyc.phone.getSysInfo('serverPath') + '/mobile/houseMgr/dealRQcode.do',
+			dataType : 'json',
+			async:false,
+			data:{code:code,operId:njyc.phone.getSysInfo("userId")},
+			loadfun : function(isloadsucc, json) 
+			{
+				njyc.phone.closeProgress();
+				if (isloadsucc)
+				{
+					alert(json.msg); 
+					njyc.phone.closeWebView();
+				}
+				else
+				{
+					njyc.phone.showShortMessage('网络忙,请稍候重试!');
+					njyc.phone.closeWebView();
+				}	
+			}	
+	  });
+   }
+   
+  	
+   </script>   
+</body>
+</html>

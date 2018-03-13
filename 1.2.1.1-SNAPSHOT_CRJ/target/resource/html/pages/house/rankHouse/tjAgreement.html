@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="ThemeBucket">
+<link rel="shortcut icon" href="#" type="image/png">
+
+<title>合约退租</title>
+<style type="text/css">
+	.opensright{
+		z-index: 39891016  !important;
+	}
+</style>
+</head>
+
+<body>
+	<div class="panel-body">
+		<div class="col-md-12">
+			<form class="form-horizontal adminex-form" id="form1">
+				<div id="houseBaseInfo">
+					<div class="row">
+						<div class="form-group">
+							<label class="col-md-4 control-label">预约时间：</label>
+							<div class="col-md-6">
+								<input type="text" style="z-index:29891016;" readonly="readonly" class="form-control" id="tjDate" name="tjDate">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-4 control-label">退租类型：</label>
+							<div class="col-md-6">
+								<select class="form-control" id="tzType" name="tzType">
+								<option value="">请选择...</option>
+								<!-- 	<option value="A">正常退租</option>
+									<option value="B">已入住违约退租</option>
+									<option value="C">未入住违约退租</option> -->
+								</select>
+							</div>
+						</div>
+						</div>
+					</div>
+					<br/>
+				<div class="text-center">
+					<button class="btn btn-info" id="tj_btn" type="button">提交</button>
+					<br/>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="/html/js/house/rankHouse/tjAgreement.js"></script>
+</html>

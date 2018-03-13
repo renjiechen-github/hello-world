@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.nbms.coupon.dao.CouponDao">
+
+	<select id="selectQueryCoupon" parameterType="object" resultType="hashmap">
+		<![CDATA[
+		SELECT a.*,
+			(case when a.state = 1 then '有效' else '无效' end) state_name,
+			fn_getdictitemname('COUPON.CODE_TYPE',a.code_type) code_type_name,
+			fn_getdictitemname('COUPON.card_type',a.card_type) card_type_name,
+			fn_getdictitemname('COUPON.card_wx_state',a.wx_state) wx_state_name,
+			(case when a.isnew = 1 then '是' else '否' end) isnew_name,
+			DATE_FORMAT(a.oper_date,'%Y-%m-%d %T') operdate
+		FROM yc_coupon_info a 
+		]]>
+		<where>
+			<if test="map.code_type != null and map.code_type != ''">
+				and a.code_type = '${map.code_type}'
+			</if>	
+			<if test="map.card_type != null and map.card_type != ''">
+				and a.card_type = '${map.card_type}'
+			</if>	
+			<if test="map.wx_state != null and map.wx_state != ''">
+				and a.wx_state = '${map.wx_state}'
+			</if>
+			<if test="map.status != null and map.status != ''">
+				and a.state = '${map.status}'
+			</if>
+			<if test="map.name != null and map.name != ''">
+				and (a.card_id like '%${map.name}%' or a.title like '%${map.name}%' or a.accept_category like '%${map.name}%' or a.reject_category like '%${map.name}%' or a.notice like '%${map.name}%')
+			</if>
+			<if test="map.id != null and map.id != ''">
+				and a.id = #{map.id}
+			</if>
+		</where>
+	</select>
+	<select id="getCardCode" parameterType="object" resultType="string" >
+		SELECT a.remark FROM yc_dictionary_item a WHERE a.group_id = 'COUPON.CARD_TYPE' AND a.item_id = '${map.item_id}'
+	</select>
+	
+	<select id="getCardTypr" parameterType="object" resultType="string" >
+		SELECT a.item_id FROM yc_dictionary_item a WHERE a.remark = '${map.remark}' AND a.group_id = 'COUPON.CARD_TYPE'
+	</select>
+	
+	<!-- 获取微信对应的token值 -->
+	<select id="getWxServerToken" parameterType="object" resultType="string" >
+		SELECT a.wx_token FROM yc_wx_server_info a WHERE a.server_id = 'gh_c90f684b8bcc'
+	</select>
+	
+	<!-- 更新库存对应的状态信息 -->
+	<update id="updateCoupon" parameterType="object"  >
+		update yc_coupon_info a set a.${map.key} = '${map.value}' where a.id = '${map.id}'
+	</update>
+	
+	<insert id="addCoupon" parameterType="object" useGeneratedKeys="true" keyProperty="id"   >
+		INSERT INTO yc_coupon_info (
+		  code_type,
+		  logo_url, 
+		  color, 
+		  brand_name, 
+		  title, 
+		  notice, 
+		  description, 
+		  use_all_locations, 
+		  sku_quantity, 
+		  type, 
+		  begin_timestamp, 
+		  end_timestamp, 
+		  fixed_begin_term, 
+		  end_timestamp_, 
+		  use_custom_code, 
+		  bind_openid, 
+		  service_phone, 
+		  fixed_term, 
+		  get_limit, 
+		  can_share, 
+		  can_give_friend, 
+		  card_type, 
+		  rule_degree, 
+		  rule_can_use_with_other_discount, 
+		  rule_least_cost, 
+		  rule_discount, 
+		  accept_category, 
+		  reject_category,oper_id,isnew,reduce_cost,rule_start_month,deal_detail,sy_quantity,rule_month_cost)
+		  VALUES (
+		  #{map.code_type},
+		  #{map.logo_url},
+		  #{map.color},
+		  #{map.brand_name},
+		  #{map.title},
+		  #{map.notice},
+		  #{map.description},
+		  #{map.use_all_locations},
+		  #{map.sku_quantity},
+		  #{map.type},
+		  #{map.begin_timestamp},
+		  #{map.end_timestamp},
+		  #{map.fixed_begin_term},
+		  #{map.end_timestamp_},
+		  #{map.use_custom_code},
+		  #{map.bind_openid},
+		  #{map.service_phone},
+		  #{map.fixed_term},
+		  #{map.get_limit},
+		  #{map.can_share},
+		  #{map.can_give_friend},
+		  #{map.card_type},
+		  #{map.rule_degree},
+		  #{map.rule_can_use_with_other_discount},
+		  
+		  #{map.rule_least_cost},
+		  #{map.rule_discount},
+		  #{map.accept_category},
+		  #{map.reject_category},
+		  
+		  #{map.oper_id},#{map.isnew},#{map.reduce_cost},#{map.rule_start_month},#{map.deal_detail},#{map.sku_quantity},#{map.rule_month_cost}
+		  )
+	</insert>
+	<update id="modifyCoupon" parameterType="object" >
+		update yc_coupon_info a set
+			code_type = #{map.code_type},
+		  logo_url=#{map.logo_url},
+		  color=#{map.color},
+		  brand_name=#{map.brand_name},
+		  title=#{map.title},
+		  notice=#{map.notice},
+		  description=#{map.description},
+		  use_all_locations=#{map.use_all_locations},
+		  type=#{map.type},
+		  begin_timestamp=#{map.begin_timestamp},
+		  end_timestamp=#{map.end_timestamp},
+		  end_timestamp_=#{map.end_timestamp_},
+		  use_custom_code=#{map.use_custom_code},
+		  bind_openid=#{map.bind_openid},
+		  service_phone=#{map.service_phone},
+		  get_limit=#{map.get_limit},
+		  can_share=#{map.can_share},
+		  can_give_friend=#{map.can_give_friend},
+		  card_type=#{map.card_type},
+		  rule_degree=#{map.rule_degree},
+		  oper_id=#{map.oper_id},
+		  isnew=#{map.isnew},
+		  rule_start_month=#{map.rule_start_month}
+		  where a.id = #{map.id}
+	</update>
+	<select id="getDatacube" parameterType="object" resultType="hashmap" >
+		<![CDATA[
+		SELECT * FROM yc_coupon_datacube a WHERE a.ref_date <= #{map.statrTime} AND a.ref_date >= #{map.endTime} and a.card_id = #{map.card_id}
+		]]>
+	</select>
+	
+	<insert id="synDataCube" parameterType="object">
+		INSERT INTO yc_coupon_datacube(ref_date,
+  card_id ,
+  card_type ,
+  view_cnt ,
+  view_user ,
+  receive_cnt,
+  receive_user ,
+  verify_cnt ,
+  verify_user ,
+  given_cnt ,
+  given_user ,
+  expire_cnt ,
+  expire_user,view_friends_cnt,view_friends_user,receive_friends_cnt,receive_friends_user,verify_friends_cnt,verify_friends_user )
+  SELECT #{map.ref_date},
+		  #{map.card_id} ,
+		  #{map.card_type} ,
+		  #{map.view_cnt} ,
+		  #{map.view_user} ,
+		  #{map.receive_cnt},
+		  #{map.receive_user} ,
+		  #{map.verify_cnt} ,
+		  #{map.verify_user} ,
+		  #{map.given_cnt },
+		  #{map.given_user },
+		  #{map.expire_cnt} ,
+		  #{map.expire_user },#{map.view_friends_cnt},#{map.view_friends_user},#{map.receive_friends_cnt},#{map.receive_friends_user},#{map.verify_friends_cnt},#{map.verify_friends_user} from dual
+  WHERE NOT EXISTS(SELECT 1 from yc_coupon_datacube b WHERE b.card_id = #{map.card_id } AND b.ref_date = #{map.ref_date })
+	</insert>
+</mapper>

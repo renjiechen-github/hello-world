@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>我的</title>
+    <link rel="stylesheet" type="text/css" href="../../css/my.css"/>
+    <script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="../../js/common.client.js"></script>
+<!--     <style> -->
+<!--     	#myinfo:active{	background:#EBEBEB;} -->
+<!-- 		#myinfos:active{background:#EBEBEB;} -->
+<!--     </style> -->
+</head>
+<body>
+<div style="position: relative;margin-top: 20dp">
+	<div id="header">
+      <h3 style="padding-top: 15px;">我的</h3>
+    </div>
+</div>
+    <img src="../../images/00_2.jpg" style="width:100%;height:auto;"/>
+    <div id="info">
+    	<div style="padding:20px;">
+    		<div id="name"></div>    
+    		<div style="font-size:14px;">最后一次登录时间&nbsp;<span style="color:#d9733a;" class="lastDate"></span></div>
+    	</div>
+    </div>
+    <div style="margin-top:20px;" id="bigDiv">
+    	<div id="myinfo" class="myinfo">
+    		<div id="set">
+	    		<div id="logoa"><img src="../../images/userh_logo.png" style="width:23px;" /></div>
+	    		<div id="tit">我的信息</div>
+	    		<div id="mark"></div>
+    		</div>
+    	</div>
+    	<div id="myinfos" class="myResult">
+    		<div id="set">
+    			<div id="logob"><img src="../../images/detail.png" style="width:23px;" /></div>
+    			<div id="tit">我的绩效</div>
+    			<div id="mark"></div>
+    		</div>
+    	</div>
+    	<div id="myinfos" class="myHistory">
+    		<div id="set">
+    			<div id="logoc"><img src="../../images/details.png" style="width:23px;" /></div>
+    			<div id="tit">历史任务</div>
+    			<div id="mark"></div>
+    		</div>
+    	</div>
+    	<div id="myinfo" class="logOut">
+    		<div id="set">
+    			<div id="logoc"><img src="../../images/logOut.png" style="width:23px;" /></div>
+    			<div id="tit">退出登录</div>
+    			<div id="mark"></div>
+    		</div>
+    	</div>
+    	<!--
+    	<div id="myinfo" class="location">
+    		<div id="set">
+    			<div id="logoc"><img src="../../images/logOut.png" style="width:23px;" /></div>
+    			<div id="tit">退出登录</div>
+    			<div id="mark"></div>
+    		</div>
+    	</div>
+    	-->
+    </div> 
+   <script>
+   
+   $("#bigDiv div").hover(function(){
+ //  	$(this).css({"background":"#EBEBEB"});
+   },function(){
+ //  	$(this).css({"background":"#FFFFFF"});
+   });
+   $(function(){
+	   	$('.logOut').click(function(){
+	   		njyc.phone.logOut();
+	   	});
+	  
+	   	$('.location').click(function(){
+	   		njyc.phone.openWebKit('/client/pages/my/my2.html', "欢迎使用", 1, 0, '', 0, 0, '', '', '', '', 0);
+	   	});
+	   	
+	   	$('.myinfo').click(function(){
+	   		njyc.phone.eidtUserInfo();
+	   	});
+	  
+	   var userName = request.QueryString("userName");
+	   var loginDate = request.QueryString("loginDate");
+	   $('#name').html(decodeURI(userName));
+	   $('.lastDate').text(decodeURI(loginDate));
+   });
+   
+   var request = {  
+	 QueryString : function(val) 
+	 { 
+	 	var uri = window.location.search; 
+	 	var re = new RegExp("" +val+ "=([^&?]*)", "ig"); 
+	 	return ((uri.match(re))?(uri.match(re)[0].substr(val.length+1)):null);
+	 } 
+ 　} 
+  	
+   </script>   
+</body>
+</html>

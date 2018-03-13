@@ -1,0 +1,36 @@
+{
+	"card":{
+		"card_type":"DISCOUNT",
+		"discount":{
+			"base_info":{
+				"logo_url":"http://mmbiz.qpic.cn/mmbiz_jpg/bJ4HCJ97Ia0S4KuibafHK3uInyOaaCZpuZicuuOSVyK7RhrSxwBdRHaeZw3Nfu2SVN8XwYAsGRkxsN3Q3CluE9pw/0",
+				"brand_name":"银城千万间",
+				"code_type":"CODE_TYPE_BARCODE",
+				"title":"测试",
+				"color":"Color010",
+				"notice":"12",
+				"service_phone":"4008161000",
+				"description":"测试的",
+				"date_info":{
+					"type":"DATE_TYPE_FIX_TIME_RANGE",
+					"begin_timestamp":1478016059000,
+					"end_timestamp":1479484799000
+				},
+				"sku":{
+					"quantity":"12"
+				},
+				"get_limit":"1",
+				"can_share":"false",
+				"can_give_friend":"false",
+				"use_all_locations":"false"
+			},
+			"advanced_info":{
+				"use_condition":{
+					"can_use_with_other_discount":"true"
+				}
+			},
+			"discount":"12"
+		}
+	}
+}
+

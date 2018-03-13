@@ -1,0 +1,252 @@
+*{
+	margin: 0px;
+	padding: 0px;
+	font-family: 微软雅黑;
+}
+#banner{
+    width: 100%;
+    text-align: center;
+    position: fixed;
+    box-sizing: border-box;
+    padding: 15px 10px;
+    background-color: #bbbbbb;   
+    top:0px;
+    left:0px;
+    .inpy{ 
+	    margin-left: auto;
+	    margin-right: auto;
+	    display: -webkit-box;
+	    display: -webkit-flex;
+	    display: flex;
+	    .button-group{
+	    	-webkit-box-flex: 3;
+			-webkit-flex: 3;
+			flex: 3;
+			border: 1px solid black;
+		    select{
+		    	border-radius: initial;
+		    	width:100%;
+			    padding: 5px;
+			    border: 0px;
+			    color: black;
+			    font-family: 微软雅黑;
+			    height: 31px;
+			    font-size: 15px;
+			    -webkit-appearance: listbox;
+		     }
+	    }   
+		.inputdiv{
+			-webkit-box-flex: 6;
+			-webkit-flex: 6;
+			flex: 6;
+			border-top: 1px solid black;
+			border-bottom: 1px solid black;
+			input{
+				border-radius: initial;
+				width:100%;
+				padding-left: 5px;
+			    border-right: 0px;
+			    border-left: 0px;
+			    border: 0px;
+			    cursor: pointer;
+			    color: black;
+			    height: 31px;
+			    box-shadow: none;
+			}
+		}
+		.buttondiv{
+			-webkit-box-flex: 3;
+			-webkit-flex: 3;
+			flex: 3;
+			.button{
+				cursor: pointer;
+				border-color: black;
+		    	background-color: black;  
+		    	border: none;
+		    	font-family: 微软雅黑;
+		    	font-size: 15px;
+		    	color: white;
+		    	height: 33px;
+		    	width:100%;
+		    	padding: 3px;
+			}			
+		}
+		.rightdiv{
+			-webkit-box-flex: 1;
+		    -webkit-flex: 1;
+		    flex: 1;
+		    height: 33px;
+		    a{
+		    	text-decoration: initial;
+		    }		    
+		}
+	}
+	.hide{		
+		display: none;
+		width: 100%;
+		margin-top: 15px;		
+	    .hide2{
+		    display: -webkit-box;
+		    display: -webkit-flex;
+		    display: flex;
+		    text-align: center;
+		    .divflex{
+		    	-webkit-box-flex: 3;
+			    -webkit-flex: 3;
+			    flex: 3;
+		    }
+		    .divflex1{
+		    	-webkit-box-flex: 3;
+			    -webkit-flex: 3;
+			    flex: 3;
+		    }
+		    
+	    }
+		select{
+			border-radius: initial;
+		    padding: 5px;
+		    border: 0px;
+		    color: white;
+		    height: 31px;
+		    background-color: #bbbbbb;
+		    font-size: 15px;
+		    -webkit-appearance: initial;
+		    -webkit-box-flex: 3;
+		    -webkit-flex: 3;
+		    flex: 3;
+		}
+		em{
+		    font-style: normal;
+    		color: white;
+    		margin: 0 10px;
+    		-webkit-box-flex: 2;
+		    -webkit-flex: 2;
+		    flex: 2;
+		}
+	}
+}
+.body{	
+	font-size: 14px;
+	padding: 0px 2%;
+	box-sizing: border-box;
+    padding-top: 85px;
+    a{    	
+		text-decoration:none;
+		color:#717173;
+		-webkit-tap-highlight-color:rgba(0,0,0,0);
+		.div{
+			margin-bottom:5px;
+			margin-top:8px;
+			.space{
+			padding-bottom:2px !important;
+			}
+			.con{
+				padding: 0px 15px 3px;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				p{
+					overflow: hidden;
+				    text-overflow: ellipsis;
+				    display: -webkit-box;
+				    -webkit-box-orient: vertical;
+				    -webkit-line-clamp: 1;
+				}
+				.info{
+					-webkit-box-flex: 7;
+					-webkit-flex: 7;
+					flex: 7;
+					color:#717173;
+					padding-right: 10px;
+					p{
+						font-weight: bold;
+					}
+				}
+				.state{
+					-webkit-box-flex: 9;
+					-webkit-flex: 9;
+					flex: 9;
+					color:#717173;
+					p{
+						color:#717173;
+					}
+				}
+				.info1{
+					-webkit-box-flex: 1;
+					-webkit-flex: 1;
+					flex: 1;
+					padding-right: 10px;
+					img{
+						padding: 1px
+					}
+				}
+				.state1{
+					-webkit-box-flex: 2;
+					-webkit-flex: 2;
+					flex: 2;
+					color:#a98bd9;
+					padding: 1px 0px;
+					p{
+						float:right;
+					}
+					.housecolor0{
+						color:#45B78D;//待提交
+					}
+					.housecolor1{
+						color:#ED7210;//提交待审批
+					}
+					.housecolor2{
+						color:#A94F9A;//已生效
+					}
+					.housecolor3{
+						color:#C9478A;//已失效
+					}
+					.housecolor4{
+						color:#F8B62D;//撤销待审批
+					}
+					.housecolor5{
+						color:#fb5e3a;//结束待审批
+					} 
+					.housecolor6{
+						color:#d22a04;//合约已到期
+					}  
+				}
+			}
+		}		
+		hr{
+			border-bottom: 1px solid #dcdbdb;
+    		border-top: none;
+    		width: 95%;
+    		margin: 0 auto;
+		}	
+		.detail{
+			color:#717173;
+			padding: 0px 15px;
+			em{
+				font-style: normal;
+				color:#adadaf; 
+			}
+			.left{
+				float:left;			
+			}
+			.color1{
+				color:#aba9a9;
+			    padding: 1px 0px;
+				span{
+					color:#a22d10;
+				}
+				b{
+				    color: #ad7b6f;
+    				font-weight: normal;
+				}
+			}			
+		}
+	}	
+}
+.rot2{
+	-moz-transform:rotate(180deg);
+	 -webkit-transform:rotate(180deg); 
+	 transform:rotate(180deg); 
+	 filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=2); 
+	 -ms-filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+}

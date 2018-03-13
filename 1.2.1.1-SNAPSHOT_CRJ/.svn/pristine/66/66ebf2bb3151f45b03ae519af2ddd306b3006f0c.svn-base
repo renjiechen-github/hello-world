@@ -1,0 +1,142 @@
+* {
+	margin:0;
+	padding:0;
+}
+body {
+	background:#efefee;
+	font-family:微软雅黑;
+}
+#header {
+	width:auto;
+	text-align:center;
+	border-bottom:1px solid #c7c3c1;
+	padding:10px;
+	padding-top: 30px;
+}
+#incb {
+	width:100%;
+	height:50px;
+	border-bottom:1px solid #d3cfcd;
+	background:#fff;
+	color:#8b8a8a;
+	line-height:50px;
+}
+#tit {
+	float:left;
+	margin-left:10px;
+}
+#date {
+	float:right;
+	margin-right:10px;
+}
+#box {
+	height:80px;
+	display:-moz-box;
+	display:-webkit-box;
+	display:box;
+	border-bottom:1px solid #d3cfcd;
+	background:#fff;
+	color:#8b8a8a;
+}
+#ads {
+	-moz-box-flex: 1;
+	-webkit-box-flex: 1;
+	box-flex: 1;
+	width:75%;
+	height:80px;
+	background:;
+}
+#adsv {
+	-moz-box-flex: 1;
+	-webkit-box-flex: 1;
+	box-flex: 1;
+	width:25%;
+	height:80px;
+	background:;
+}
+#sname {
+	border-left:1px solid #d3cfcd;
+	float:right;
+	padding-left:8px;
+	margin:10px 10px auto auto;
+}
+#opt {
+	height:50px;
+	display:-moz-box;
+	display:-webkit-box;
+	display:box;
+}
+#no {
+	-moz-box-flex: 1;
+	-webkit-box-flex: 1;
+	box-flex: 1;
+	background: #fff;
+	text-align:center;
+	line-height:50px;
+	color:#8b8a8a;
+}
+#ok {
+	-moz-box-flex: 1;
+	-webkit-box-flex: 1;
+	box-flex: 1;
+	background:#fff;
+	text-align:center;
+	line-height:50px;
+	color:#8b8a8a;
+}
+
+#nav {
+	width:100%;
+	height:50px;
+	border-bottom:1px solid #d3cfcd;
+	background:#fff;
+	color:#8b8a8a;
+	line-height:50px;
+}
+#nav_s {
+	width:100%;
+	height:auto;
+	padding-bottom:10px;
+	display:-moz-box;
+	display:-webkit-box;
+	display:box;
+	height:auto;
+	padding-bottom:10px;
+	padding-top:10px;
+	border-bottom:1px solid #d3cfcd;
+	background:#fff;
+	color:#8b8a8a;
+}
+#lay {
+	width:75%;
+	background:#;
+	-moz-box-flex: 1;
+	-webkit-box-flex: 1;
+	box-flex: 1;
+}
+#lays {
+	width:25%;
+	height:80px;
+	background:;
+	-moz-box-flex: 1;
+	-webkit-box-flex: 1;
+	box-flex: 1;
+}
+#kname {
+	border-left:1px solid #d3cfcd;
+	float:right;
+	padding-left:8px;
+	margin:10px 10px auto auto;
+}
+#number {
+	width:100%;
+	height:50px;
+	background:#383635;
+	text-align:center;
+	line-height:50px;
+	color:#fff;
+}
+#addres_money {
+	margin:10px;
+	word-wrap: break-word;
+}

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+
+  <title>财务收入</title>
+  <style type="text/css">
+  	.bzh{
+  		background-color: #e68d8d !important;
+  	}
+  	.bzh td{
+  		background-color: #e68d8d !important;
+  		color: #fff;
+  	}
+  	.panel-body .form-group{
+  		margin-top: 5px;
+  	}
+  </style>
+</head>
+
+<body>
+	<section class="panel">
+		<form id="form2" class="form-horizontal adminex-form " role="form">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">卡券基本设置</h3>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>商户名字：</label>
+						<div class="col-sm-3">
+							<input id="brand_name" name="brand_name" type="text" value="银城千万间" dataType="Require" msg="请填写商户名字" placeholder="" title="请填写卡券使用提醒,字数上限16个字" maxlength="16" required />
+						</div>
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>卡券名称：</label>
+						<div class="col-sm-3">
+							<input id="name" name="name" type="text"  dataType="Require" msg="请填写卡券名" placeholder="请填写卡券名" maxlength="50" required />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>LOGO图标：</label>
+						<div class="col-sm-3">
+							<div class="row" >
+								<div class="col-sm-6" >
+									<input id="logo_url_" type="text" readonly="readonly" name="logo_url_" dataType="Require" msg="请选择LOGO图标" placeholder="请选择LOGO图标" value="" >
+									<input id="logo_url" style="position: absolute;top: 0px;left: 0px;opacity: 0;" name="logo_url" type="file" onchange="addCoupon.upladFile(this);"  required />
+								</div>
+								<div class="col-sm-6" >
+									<div id="imgyldiv" style="height:30px;width:30px;text-align: center;    margin-left: auto;" ></div>
+								</div>
+							</div>
+							<p class="ts" >注：上传的图片限制文件大小限制1MB，仅支持JPG、PNG格式</p>
+						</div>
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>客服电话：</label>
+						<div class="col-sm-3">
+							<input id="service_phone" name="service_phone" type="text" value="4008161000" dataType="Require" msg="请选择填写客服电话" maxlength="50" required />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>卡券类型：</label>
+						<div class="col-sm-3">
+							<select dataType="Require" msg="请选择卡券类型！" class="form-control m-bot15" id="card_type" name="card_type" onchange="addCoupon.selectCouponType(this);" >
+		                        <option value="">请选择...</option>
+		                    </select>
+						</div>
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>券面码型：</label>
+						<div class="col-sm-3">
+							<select dataType="Require" msg="请选择券面码型！" class="form-control m-bot15" id="code_type" name="code_type" >
+		                        <option value="" >请选择...</option>
+		                    </select>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label detaild" style="display: none;" ><b style="color: red">*</b>详情：</label>
+						<div class="col-sm-8 detaild" style="display: none;" >
+							<textarea type="text" style="width: 100%;" cols="" rows="5" id="deal_detail" name="deal_detail" title="请填写描述详情。" maxlength="1024" placeholder="请填写描述详情"  ></textarea>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label meiyuezjd" style="display: none;" ><b style="color: red">*</b>每月租金：</label>
+						<div class="col-sm-3 meiyuezjd" style="display: none;" >
+							<input type="text" id="rule_month_cost" name="rule_month_cost" title="请填写每月房租金额，如：12.01,注意此处填写的租金将不会再微信卡券上直接体现，请在<卡券使用说明>中注明每月金额。" placeholder=""  >
+						</div>
+						<label class="col-sm-2  control-label zhekoud" style="display: none;" ><b style="color: red">*</b>折扣额度：</label>
+						<div class="col-sm-3 zhekoud" style="display: none;" >
+							<input type="text" id="rule_discount" name="rule_discount" title="请填写1-99之间的数字,注意：此处填写的折扣额度规则：如填写了10到卡券中显示的折扣为9折，填写20卡券中显示的折扣为8折，以此类推。" maxlength="2" placeholder="请填写折扣额度"  >
+						</div>
+						<label class="col-sm-2  control-label daijind" style="display: none;" ><b style="color: red">*</b>减免金额：</label>
+						<div class="col-sm-3 daijind" style="display: none;" >
+							<input type="text" id="reduce_cost" name="reduce_cost" placeholder="请填减免金额" title="请填写金额，如：12.01" >
+						</div>
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>每人可领券的数量限制：</label>
+						<div class="col-sm-3">
+							<input id="get_limit" name="get_limit" placeholder="请填写每人可领券数量限制！默认每人领取1个。" title="请填写每人可领券数量限制！默认每人领取1个。" dataType="Number" Require="true" msg="请填写每人可领券数量限制！" value="1" >
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>库存：</label>
+						<div class="col-sm-3">
+							<input type="text" id="sku_quantity" name="sku_quantity" dataType="Number" Require="true" title="请填写库存数量，上限100000000" msg="请填写库存数量，上限100000000"  >
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">卡券领取页面是否可分享：</label>
+						<div class="col-sm-3">
+							<select id="can_share" name="can_share" >
+								<option value="0" >否</option>
+								<option value="1">是</option>
+							</select>
+						</div>
+						<label class="col-sm-2  control-label">卡券是否可转赠：</label>
+						<div class="col-sm-3">
+							<select id="can_give_friend" name="can_give_friend" >
+								<option value="0" >否</option>
+								<option value="1">是</option>
+							</select>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>卡券背景颜色：</label>
+						<div class="col-sm-3 " >
+							<select id="color" name="color" style="width:200px;" dataType="Require" msg="请选择卡片颜色！" >
+								<option value="" >请选择...</option>
+								<option value="Color010" >Color010--#63b359</option>
+								<option value="Color020" >Color020--#2c9f67</option>
+								<option value="Color030" >Color030--#509fc9</option>
+								<option value="Color040" >Color040--#5885cf</option>
+								<option value="Color050" >Color050--#9062c0</option>
+								<option value="Color060" >Color060--#d09a45</option>
+								<option value="Color070" >Color070--#e4b138</option>
+								<option value="Color080" >Color080--#ee903c</option>
+								<option value="Color081" >Color081--#f08500</option>
+								<option value="Color082" >Color082--#a9d92d</option>
+								<option value="Color090" >Color090--#dd6549</option>
+								<option value="Color100" >Color100--#cc463d</option>
+								<option value="Color101" >Color101--#cf3e36</option>
+								<option value="Color102" >Color102--#5E6671</option>
+							</select>
+						</div>
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>卡券使用提醒：</label>
+						<div class="col-sm-3 " >
+							<input id="notice" name="notice" style="width: 100%;" type="text" dataType="Require" msg="请填写卡券使用提醒,字数上限16个字符" placeholder="" title="请填写卡券使用提醒,字数上限16个字符" maxlength="16" required />
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label" id="labelkqyxq" ><b style="color: red">*</b>卡券有效期：</label>
+						<div class="col-sm-8">
+							<div class="row" >
+								<div class="col-sm-3" >
+									<input type="radio" id="se_time" onclick="addCoupon.selectTime(0);" class="setTime" name="se_time" value="0" >固定日期
+								</div>
+								<div class="col-sm-9">
+									<input type="text" style="width: 275px" name="begin_timestamp" readonly="readonly" id="begin_timestamp" title="时间将会在开始时间默认时间设置是00：00 结束时间默认是23：59" class="form-control" placeholder="2013-01-02 至 2013-01-02"  class="span4"/>
+								</div>
+							</div>
+							<br/>
+							<div class="row hidden" >
+								<div class="col-sm-3" >
+									<input type="radio" id="se_time" onclick="addCoupon.selectTime(1);" class="setTime" name="se_time" value="1" >领取后，
+								</div>
+								<div class="col-sm-9">
+									<input type="number" id="fixed_begin_term" title="请设置0-90之间的数" name="fixed_begin_term" pattern="[0-9]{2}" step="1" max="90" min="1" value="0" >天生效，有效天数<input type="number" id="fixed_term" name="fixed_term" pattern="[0-9]{2}" step="1" max="90" min="1" value="1" >
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>使用条件：</label>
+						<div class="col-sm-8">
+							<div>
+								<div class="row" id="rowZdxf" style="display: none;" >
+									<input type="checkbox" onclick="addCoupon.clickZdxf(this);" id="zdxf_c" name="zdxf_c" value="1" >最低消费  <b id="zdxfb" style="display: none;" >满<input size="5" type="number" min="0" title="请填写正数，请不要带小数点，在用户使用卡券时不进行体现" id="rule_least_cost" name="rule_least_cost" >元可用</b>
+								</div>
+								<div class="row" id="rowSyfw" style="display: none;" >
+									<input type="checkbox" onclick="addCoupon.clickSyfw(this);" id="syfw_c" name="syfw_c" value="0" >适用范围 
+									<b id="syfw" style="display: none;" >
+										适用商品<input maxlength="15" placeholder="" title="请输入最多15个字符进行说明" type="text" id="accept_category" name="accept_category" >
+										不适用商品<input maxlength="15" placeholder="" title="请输入最多15个字符进行说明" type="text" id="reject_category" name="reject_category" >
+									</b>
+								</div>
+							</div>
+							<div>
+								优惠共享:
+								<select id="rule_can_use_with_other_discount" name="rule_can_use_with_other_discount" >
+									<option value="true" >可与其他优惠券共享</option>
+									<option value="false" >不与其他优惠券共享</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2  control-label"><b style="color: red">*</b>卡券使用说明：</label>
+						<div class="col-sm-8">
+							<textarea id="description" dataType="Require" msg="请填写卡券使用说明,字数上限为230个字符。" style="width:100%;" name="description" rows="6" cols="" maxlength="230" placeholder="请填写卡券使用说明,字数上限为230个字符。" ></textarea>
+						</div>	
+						<div class="col-sm-2"></div>			
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">合约相关设置</h3>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-sm-2  control-label">作用类型：</label>
+						<div class="col-sm-8">
+							<div class="row" >
+								<div class="col-sm-12" >
+									<input type="radio" class="ruledegree" id="rule_degree" onclick="addCoupon.selectDegree(0);" name="rule_degree" value="0" >只作用在合约上，整体的满减等
+									<p class="ts" >注：选择该项是将满减等优惠券减免的金额针对合约整体的增减，如合约总额为：10000 ,优惠100 那合约总金额为9900元，会平均作用到每期的明细中</p>
+								</div>
+							</div>
+							<br/>
+							<div class="row" >
+								<div class="col-sm-12" >
+									<input type="radio" class="ruledegree" id="rule_degree" onclick="addCoupon.selectDegree(1);" name="rule_degree" value="1" >作用在合约明细上，针对某一月的金额增减,在第<input type="number" id="rule_degree_month" name="rule_degree_month" pattern="[0-9]{2}" step="1" max="90" min="1" value="1" >个月生效。
+									<p class="ts" >注：选择该项是将满减等优惠券减免的金额针对合约整体的增减，如合约总额为：10000 ,优惠100 那合约总金额为9900元，会平均作用到每期的明细中</p>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-2"></div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2  control-label">是否新租客使用：</label>
+						<div class="col-sm-8">
+							<select id="isnew" name="isnew" >
+								<option value="0" >否</option>
+								<option value="1">是</option>
+							</select>
+							<p class="ts" >说明：新租客定义：第一次签约并且是首次进行支付行为</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="text-center savebnt" style="padding-bottom: 10px;padding-top: 5px;" >
+		         <button class="btn btn-info" id="type_add_bnt" type="button" onclick="addCoupon.save();" >确定提交</button>
+	        </div>
+		</form>
+	</section>
+	<script type="text/javascript" src="/html/js/coupon/couponAdd.js" ></script>
+</body>
+</html>

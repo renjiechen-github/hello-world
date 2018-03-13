@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+  <style type="text/css">
+  	._common_user__ .selectall{
+  		display: none;
+  	}
+  	#_usercommon_ td{
+  		vertical-align: middle;
+  		padding: 0px !important;
+  		text-align: center;
+  	}
+  	._common_user__{
+  		margin-bottom:0px !important;
+  		box-shadow:none !important;
+  		-webkit-box-shadow:none !important;
+  	}
+  	._common_user__ .panel-body{
+  		padding:5px !important;
+  	}
+  	._common_user__ .dataTables_paginate.paging_bootstrap.pagination li a{
+  		padding: 5px !important;
+  	}
+  	._common_user__ .adv-table .dataTables_l{
+  		width:100%;
+  	}
+  </style>
+  <title>新增</title>
+
+</head>
+
+<body>
+       <section class="panel _common_user__">
+        <div class="panel-body">
+        	<section class="panel panel-info panel-seach">
+		        <div class="panel-body">
+		        	<form class="form-inline" role="form">
+	                    <div class="form-group">
+	                        <input type="text" class="form-control" id="username" style="width: 200px;" name="username" placeholder="输入名称或手机号模糊查询">
+	                    </div>
+	                    <div class="form-group tools">
+			            	<a href="javascript:;" class="fa fa-search yc_seach" table="_usercommon_" >查询</a>
+			            </div>
+	                </form>
+		        </div>
+		    </section>
+       	 	<div class="adv-table">
+	        	<table id="_usercommon_" class="display tablehover table table-bordered dataTable" cellspacing="0" width="100%">
+			        <thead>
+			            <tr>	
+			            	<th></th>
+			             	<th></th>
+			                <th>姓名</th>
+			                <th>手机号</th>
+			                <!-- <th>角色</th>
+			                <th>组织</th> -->
+			                <th></th>
+			                <!-- <th>银行回单</th> -->
+			            </tr>
+			        </thead>
+			    </table>
+	        </div>
+            <!-- <div class="text-center">
+		         <button class="btn btn-info" id="type_add_bnt" type="button">确定提交</button>&nbsp;&nbsp;&nbsp;
+		         <button class="btn btn-danger" onclick="layer.closeAll();" type="button">关闭页面</button>
+	         </div> -->
+	    </div>
+   	</section>
+   	<script type="text/javascript" src="/html/js/common/user.js" ></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ycdc.core.plugin.jpush.dao.IPushDao">
+	<insert id="insertJPushMsg" parameterType="com.ycdc.core.plugin.jpush.entity.PushMsgBean">
+		insert into
+		yc_jpush_msg_tab(regid,type,uname,msg,param,ifsend,model,delaydate)
+		values(#{alias},#{type},#{name},#{msg},#{extrasparam},#{ifSend},#{model},
+		<if test="delayDate!=null and delayDate!=''">
+		    str_to_date(#{delayDate},'%Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="delayDate ==null or delayDate ==''">
+		    date_format(now(),'%Y-%m-%d %H:%i:%s')
+		</if>
+		)
+	</insert>
+	<select id="selectPushList" parameterType="com.ycdc.core.plugin.jpush.controller.fo.JPushFo"
+		resultType="com.ycdc.core.plugin.jpush.entity.PushMsgBean">
+		select id,regid as regId,type,uname as name,delaydate as
+		delayDate,msg,param as extrasparam,ifsend as ifSend,model
+		from
+		yc_jpush_msg_tab
+		<where>
+			<if test="model!=null and model!=''">
+				model=#{model}
+			</if>
+			<if test="text!=null and text!=''">
+				and (msg like concat('%',#{text},'%') or uname like
+				concat('%',#{text},'%'))
+			</if>
+			<if test="ifSend>=0">
+				and ifsend=#{ifSend}
+			</if>
+			<if
+				test="beginTime!=null and beginTime!='' and endTime!=null and endTime!=''">
+				and delaydate between str_to_date(#{beginTime},'%Y-%m-%d') and
+				str_to_date(#{endTime},'%Y-%m-%d')
+			</if>
+		</where>
+		order by id
+		limit #{startPage},#{pageSize}
+	</select>
+	
+	<select id="selectSystemConf" resultType="map">
+		select a.value as value
+		from yc_systemparameter_tab a 
+		where a.key='JPUSH_SYSTEM_CONF'
+	</select>
+	
+</mapper>

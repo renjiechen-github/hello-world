@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>房源管理</title>
+  <meta charset="utf-8">
+  <meta http-equiv="cleartype" content="on">
+  <meta name="MobileOptimized" content="320">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+  <link rel="stylesheet" type="text/css" href="../../css/normalize.min.css"/>
+  <link rel="stylesheet" type="text/css" href="../../css/market/house.min.css"/>
+  <link rel="stylesheet" type="text/css" href="../../css/xcConfirm/xcConfirm.min.css"/>
+</head>
+<body>
+	<div class="divCenter">
+		<div class="bgDiv">
+			<div class="cirleDiv">张三</div>
+		</div>
+	</div>
+  <div id="banner">
+    <div class="inpy" >
+      <div class="button-group">
+        <select id="status" name="status">
+        </select>
+      </div>
+      <div class="inputdiv">
+        <input type="text" id="keyWord" >
+      </div>
+      <div class="buttondiv">
+        <button id="sreachBut" type="button" placeholder="模糊查询名称，编码，地址，
+
+业主姓名" class="button">搜索</button>
+      </div>
+      <div class="rightdiv" id="rightdiv">
+        <div id="myinfo" class="myinfo">
+          <img src="../../images/market/7.png" alt="" />
+        </div>
+      </div>
+    </div>
+    <div class="hide" id='hide1'>
+      <div class="hidediv">
+        <div class="divflex">
+          <select id="areaid" name="areaid">
+            <option value="">区域不限</option>
+          </select>
+        </div>
+        <div class="divflex1">
+          <em>|</em>
+        </div>
+        <div class="divflex2">
+          <select id="publish" name="publish">
+            <option value="">发布状态</option>
+          </select>
+        </div>
+        <div class="divflex4" style="display: none;">
+          <select id="contractManage" name="contractManage">
+            <option value="">管家</option>
+          </select>
+        </div>
+        <div class="divflex1">
+          <em>|</em>
+        </div>
+        <div class="divflex">
+          <select id="trading" name="trading">
+            <option value="">商圈</option>
+          </select>
+        </div>
+      </div>
+      <div class="hidediv">
+        <div class="empty"></div>
+        <div class="divflex3">
+          <input type="checkbox" id="checkbox_a1"  value="1" class="chk_1" />
+          <label for="checkbox_a1">本人</label>
+        </div>
+        <div class="divflex1 lineFlex">
+          <em>|</em>
+        </div>
+        <div class="divflex3 lineFlex">
+          <input type="checkbox" id="checkbox_a2" value="1" class="chk_1" />
+          <label for="checkbox_a2">空置</label>
+        </div>
+        <div class="empty"></div>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <!-- <a href="#" onclick="house_list.openDialog(this);return false;">
+        <div class="div">
+            <div class="con space">
+                <div class="info"><p>天正天御溪岸1栋824</p></div>
+                <div class="state"><p>精</p><i class="mark"></i></div>
+            </div>
+            <div class="detail">
+                <p>16FP025JN0180216FP02&nbsp;<span class="color1">(江宁区)
+
+</span></p>
+                <p class="color1">4室2厅2卫&nbsp;&nbsp;&nbsp;70㎡&nbsp;&nbsp;<em>|
+
+</em>&nbsp;&nbsp;<span>徐小凤(业主)</span></p>
+            </div>
+            <div class="con">
+                <div class="info1"><p>房源状态</p></div>
+                <div class="state1"><p class="housecolor0">待提交</p></div>
+                <div class="info1"><p >发布状态</p></div>
+                <div class="state1"><p class="publishcolor0">未发布</p></div>
+            </div>
+            <hr>
+        </div>
+    </a>
+    <a href="#" onclick="house_list.openDialog(this);return false;">
+        <div class="div">
+            <div class="con space">
+                <div class="info"><p>天正天御溪岸1栋824</p></div>
+                <div class="state"><p>精</p><i class="mark"></i></div>
+            </div>
+            <div class="detail">
+                <p>16FP025JN0180216FP02&nbsp;<span class="color1">(江宁区)
+
+</span></p>
+                <p class="color1">4室2厅2卫&nbsp;&nbsp;&nbsp;70㎡&nbsp;&nbsp;<em>|
+
+</em>&nbsp;&nbsp;<span>徐小凤(业主)</span></p>
+            </div>
+            <div class="con">
+                <div class="info1"><p>房源状态</p></div>
+                <div class="state1"><p class="housecolor0">待提交</p></div>
+                <div class="info1"><p >发布状态</p></div>
+                <div class="state1"><p class="publishcolor0">未发布</p></div>
+            </div>
+            <hr>
+        </div>
+    </a>
+    <a href="#" onclick="house_list.openDialog(this);return false;">
+        <div class="div">
+            <div class="con space">
+                <div class="info"><p>天正天御溪岸1栋824</p></div>
+                <div class="state"><i class="mark1"></i></div>
+            </div>
+            <div class="detail">
+                <p>16FP025JN0180216FP02&nbsp;<span class="color1">(江宁区)
+
+</span></p>
+                <p class="color1">4室2厅2卫&nbsp;&nbsp;&nbsp;70㎡&nbsp;&nbsp;<em>|
+
+</em>&nbsp;&nbsp;<span>徐小凤(业主)</span></p>
+            </div>
+            <div class="con">
+                <div class="info1"><p>房源状态</p></div>
+                <div class="state1"><p class="housecolor0">待提交</p></div>
+                <div class="info1"><p >发布状态</p></div>
+                <div class="state1"><p class="publishcolor0">未发布</p></div>
+            </div>
+            <hr>
+        </div>
+    </a>	 -->
+  </div>
+</div>
+<div class="fixdiv">
+   <img src="../../images/market/add.png" alt="" />
+  </div>
+  <script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="../../js/common.client.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../js/xcConfirm/xcConfirm.js"></script>
+<script type="text/javascript" src="../../js/house_info/house_list.js"></script> 
+</body>
+</html>

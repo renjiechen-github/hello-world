@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>房源管理</title>
+    <link rel="stylesheet" type="text/css" href="../../css/normalize.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/market/house_agre_detail.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/uploadImage/uploadImage.min.css"/>  
+<link rel="stylesheet" type="text/css" href="../../css/preImage/lightbox.min.css"/>  
+</head>
+
+<body>	
+	<div class="body">	
+		<div class="row">
+			<div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>房源名称</p>
+		            </div>
+		        	<div class="weui_cell_ft"><p id="house_name"></p></div>
+		        </div>
+		    </div>
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>房源编码</p>
+		            </div>
+		        	<div class="weui_cell_ft"><p id="house_code"></p></div>
+		        </div>
+		    </div>		    
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>房　　型</p>
+		            </div>
+		        	<div class="weui_cell_ft">
+	        			<p id="house_hx">一卫</p>      		
+		        	</div>
+	        	</div>
+	        </div>
+	        <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>房屋面积</p>
+		            </div>
+		        	<div class="weui_cell_ft2"><p id="house_arear"></p></div>
+		        	<div class="weui_cell_bd weui_cell_primary">
+		               <p>楼　　层</p>
+		            </div>
+		        	<div class="weui_cell_ft2"><p id="house_floor"></p></div>
+		        </div>
+		    </div>
+		    <div class="weui_cells">
+		     	<div class="weui_cell">
+		            <div class="weui_cell_bd weui_cell_primary">
+		               <p>出租方式</p>
+		            </div>
+		        	<div class="weui_cell_ft2"><p id="house_czfs"></p></div>
+		        	<div class="weui_cell_bd weui_cell_primary">
+		               <p>出租单价</p>
+		            </div>
+		        	<div class="weui_cell_ft2"><p id="house_price"></p></div>
+		        </div>
+		    </div> 
+		    <div class="weui_cell">
+			    <div  class="upload">
+			    	<input type="hidden" name="picSize" id="picSize" value="4" />
+			    	<ul class="ipost-list ui-sortable js_fileList"></ul>
+			    </div>	
+		    </div>	   		    		    
+		</div>
+	<!-- 	<div class="sf_contract">
+			<div class="division">
+				<div class="left">
+				<hr>
+				</div>
+				<div class="center">
+					↓&nbsp;收房合同
+				</div>
+				<div class="right">
+				<hr>
+				</div>			
+			</div>
+			<div class="divPadding">
+				<div class="titleDiv" onclick="publish_house.openOrHidden(this,'div0')">	
+					<input type="hidden" value="5507" name="id">
+					<input type="hidden" value="" name="images">
+					<input type="hidden" value="0" name="numberInput"> 
+					<span class="leftSpan"><p>莲花新城1栋2单元304</p><p p class="color2">16FP025XW03184A5507</p></span> 
+					<span class="rightSpan"><p>合租</p><p class="color1">已生效</p></span>&nbsp;&nbsp;				
+				</div>
+				<div class="textDiv">
+					<div class="lefeDiv">老刘发</div>
+					<div class="rightDiv">12345678906</div>
+					<div class="lefeDiv">管家</div>
+					<div class="rightDiv">张菲菲</div>
+		    	</div>
+	    	</div>	
+		 </div> -->
+		<div class="cz_contract">
+			<div id="rankAgreenmentList"></div>
+		</div>
+	</div>	        
+<script type="text/javascript" src="../../js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../js/common.client.js"></script>
+<script type="text/javascript" src="../../js/preImage/lightbox-2.6.js"></script>
+<script type="text/javascript" src="../../js/house_info/house_agre_detail.js"></script>
+
+</body>
+</html>

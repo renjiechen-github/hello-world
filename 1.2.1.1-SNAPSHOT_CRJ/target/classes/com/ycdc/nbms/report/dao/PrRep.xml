@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ycdc.nbms.report.dao.PrRepDao">
+
+	<!-- 查询总金额 -->
+	<select id="getCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "cost",
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null 
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m')
+	</select>
+	
+	<!-- 查询租金 -->
+	<select id="getLeaseCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "lease_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=1
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询物业费 -->
+	<select id="getEstateCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "estate_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=2
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 	
+	</select>
+	
+	<!-- 查询退款 -->
+	<select id="getRefundCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "refund_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=3
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 	 
+	</select>
+	
+	<!-- 查询待缴费 -->
+	<select id="getWaitCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "wait_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=4
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询押金 -->
+	<select id="getDepositCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "deposit_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=5
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询服务费 -->
+	<select id="getServiceCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "service_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=6
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询家居 -->
+	<select id="getHomeCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "home_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=7
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询家电 -->
+	<select id="getApplianceCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "appliance_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=8
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询装修 -->
+	<select id="getDecorateCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "decorate_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=9
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询其他 -->
+	<select id="getOtherCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "other_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=10	
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询水费 -->
+	<select id="getWaterCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "water_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=11	
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询电费 -->
+	<select id="getElectricCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "electric_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=12
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询燃气费 -->
+	<select id="getGasCost" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as "gas_cost", 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+				and cost is not null and plat_time is not null
+				and category=13
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 按分类查询 -->
+	<select id="getCategoryData" parameterType="map" resultType="hashmap">
+		select 
+		round(ifnull(sum(cost),0)) / 10000 as #{key}, 
+		date_format(plat_time, '%Y-%m') as "time"
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				date_format(plat_time, '%Y-%m') >= #{start_date} and 
+				date_format(plat_time, '%Y-%m') <= #{end_date}
+			  and cost is not null and plat_time is not null
+			  and category=#{category}	
+			]]>
+		</where>
+		group by date_format(plat_time, '%Y-%m') 
+		order by date_format(plat_time, '%Y-%m') 
+	</select>
+	
+	<!-- 查询应收、应付款项 -->
+	<select id="getViewCost" parameterType="map" resultType="hashmap">
+		select 
+		count(1) as #{key2},
+		round(ifnull(sum(cost),0) / 10000,2) as #{key1}
+		from ${table_name}
+		<where>
+			<![CDATA[ 
+				plat_time <= #{date}
+				and cost is not null and plat_time is not null				
+			]]>
+			and status in(0,3) and isdelete = 1
+		</where>
+	</select>
+	
+</mapper>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="ThemeBucket">
+  <link rel="shortcut icon" href="#" type="image/png">
+  <title>财务支出</title>
+</head>
+
+<body>
+    <section class="panel">
+    	<div class="panel-body">
+             <form role="form">
+                 <div class="form-group">
+                     <label for="exampleInputPassword1">原始密码</label>
+                     <input type="password" class="form-control" id="passWord" placeholder="请输入原始密码">
+                 </div>
+                 <div class="form-group">
+                     <label for="exampleInputPassword1">新密码</label>
+                     <input type="password" class="form-control" id="newpassWord" placeholder="请输入至少8位新密码">
+                 </div>
+                 <div class="form-group">
+                     <label for="exampleInputPassword1">再次输入新密码</label>
+                     <input type="password" class="form-control" id="aginpassWord" placeholder="请再次输入新密码">
+                 </div>
+                 <button type="button" onclick="modifyPass.save();" class="btn btn-primary">确定修改</button>
+             </form>
+    	</div>    
+   	</section>
+   	<script type="text/javascript">
+   		var modifyPass={
+   			save:function(){
+   				var passWord = $('#passWord').val();
+	   			var newpassWord = $('#newpassWord').val();
+	   			var aginpassWord = $('#aginpassWord').val();
+	   			if(passWord == '' || newpassWord == '' || aginpassWord == ''){
+	   				common.tip({
+	   					msg:'请输入密码'
+	   				});
+	   				return;
+	   			}
+	   			if(newpassWord.length < 8){
+	   				common.tip({
+	   					msg:'新密码需至少8位数'
+	   				});
+	   				return;
+	   			}
+	   			if(newpassWord != aginpassWord){
+	   				common.tip({
+	   					msg:'两次新密码输入不一致'
+	   				});
+	   				return;
+	   			}
+	   			//alert(b64_sha1(passWord));
+	   			common.alert({
+	   				msg:'确定需要修改密码吗？',
+	   				confirm:true,
+	   				fun:function(action){
+	   					if(action){
+	   						common.ajax({
+							 	url:common.root+'/login/modifypass.do',
+							 	data:{
+							 		passWord:b64_sha1(passWord),
+							 		newpassWord:newpassWord,
+							 		aginpassWord:aginpassWord
+							 	},
+								dataType: 'json',
+								loadfun: function(isloadsucc, data){
+									if(isloadsucc){
+										if(data.state == 1){
+											common.alert({
+												msg:'密码修改成功。',
+												fun:function(){
+													common.closeWindow('modifypass');
+												}
+											});
+										}else if(data.state == -3){
+											common.alert({
+												msg:'请输入正确的原始密码。'
+											});
+										}else if(data.state == -4){
+											common.alert({
+												msg:'请输入原始密码。'
+											});
+										}else if(data.state == -5){
+											common.alert({
+												msg:'两次新密码输入不一致。'
+											});
+										}else if(data.state == -6){
+											common.alert({
+												msg:'新密码不能与原始密码一致。'
+											});
+										}else if(data.state == -7){
+											common.alert({
+												msg:'请输入新密码。'
+											});
+										}else{
+											common.alert({
+												msg:common.msg.error
+											});
+										}
+									}else{
+										common.alert({
+											msg:common.msg.error
+										});
+									}
+								}
+							});
+	   					}
+	   				}
+	   			});
+   			}
+   		}
+   	</script>
+</body>
+</html>

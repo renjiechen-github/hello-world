@@ -1,0 +1,120 @@
+package pccom.web.action.house.group;
+
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import pccom.web.action.BaseController;
+import pccom.web.server.house.group.GroupService;
+
+@Controller
+public class GroupController extends BaseController
+{
+	@Autowired
+	public GroupService groupService;
+	/**
+	 * 小区查询
+	 * @author 刘飞
+	 * @param response
+	 * @throws ServiceException 
+	 */
+	@RequestMapping (value = "group/getList.do")
+	public void getList(HttpServletRequest request, HttpServletResponse response) {
+		groupService.getList(request,response);
+	}
+
+  /**
+   * 按照区域id，查询小区信息
+   * @author 孙诚明
+   * @param response
+   */
+  @RequestMapping (value = "group/getGroupInfoByAreaId.do")
+  public void getGroupInfoByAreaId(HttpServletRequest request, HttpServletResponse response) {
+    this.writeJsonData(groupService.getGroupInfoByAreaId(request,response), response);
+  }
+
+	/**
+	 * 小区房源关系查询
+	 * @author 刘飞
+	 * @param response
+	 * @throws ServiceException 
+	 */
+	@RequestMapping (value = "grouproom/getRoom.do")
+	public void getRoom(HttpServletRequest request, HttpServletResponse response) {
+		this.writeJsonData(groupService.getRoom(request,response), response);
+	} 
+	
+	
+	/**
+	 * 小区房源关系查询
+	 * @author 刘飞
+	 * @param response
+	 * @throws ServiceException 
+	 */
+	@RequestMapping (value = "group/queryHouseFlow.do")
+	public void queryHouseFlow(HttpServletRequest request, HttpServletResponse response) {
+		this.writeJsonData(groupService.HouseFlow(request,response), response);
+	} 
+	
+	/**
+	 * 小区新增
+	 * @author 刘飞
+	 * @param response
+	 * @throws ServiceException 
+	 * @throws javax.xml.rpc.ServiceException 
+	 */
+	@RequestMapping (value = "group/create.do")
+	public void create(HttpServletRequest request, HttpServletResponse response) {
+		this.writeJsonData(groupService.groupSave(request,response), response);
+	} 
+
+	/**
+	 * 修改审批通过
+	 * @author 刘飞
+	 * @param response
+	 * @throws ServiceException 
+	 * @throws javax.xml.rpc.ServiceException 
+	 */
+	@RequestMapping (value = "group/approveOk.do")
+	public void approveOk(HttpServletRequest request, HttpServletResponse response) {
+		this.writeJsonData(groupService.approveOk(request,response), response);
+	} 
+	/**
+	 * 修改审批拒绝
+	 * @author 刘飞
+	 * @param response
+	 * @throws ServiceException 
+	 * @throws javax.xml.rpc.ServiceException 
+	 */
+	@RequestMapping (value = "group/approveNO.do")
+	public void approveNO(HttpServletRequest request, HttpServletResponse response) {
+		this.writeJsonData(groupService.approveNO(request,response), response);
+	} 
+	
+	/**
+	 * 小区修改
+	 * @author 刘飞
+	 * @param response
+	 * @throws IOException 
+	 * @throws ServiceException 
+	 */
+	@RequestMapping (value = "group/update.do")
+	public void update(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		this.writeJsonData(groupService.groupUpdate(request,response), response);
+	} 
+	/**
+	 * 小区删除
+	 * @author 刘飞
+	 * @param response
+	 * @throws ServiceException 
+	 */
+	@RequestMapping (value = "group/delete.do")
+	public void delete(HttpServletRequest request, HttpServletResponse response) {
+		this.writeJsonData(groupService.groupDelete(request,response), response);
+	} 
+	
+}

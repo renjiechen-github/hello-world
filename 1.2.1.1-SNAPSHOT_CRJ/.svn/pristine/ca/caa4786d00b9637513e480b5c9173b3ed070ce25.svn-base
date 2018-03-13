@@ -1,0 +1,11 @@
+is_test=${is_test}
+isSendMsm=1
+WATCHFILE=D\:\\work\\MPWeb\\WebRoot\\MPWeb_new\\WEB-INF\\classes\\pccom\\common,D\:\\work\\MPWeb\\WebRoot\\MPWeb_new\\WEB-INF\\classes\\pccom\\common
+root=/MPWeb_new
+push_android_api_key=VpScdA58qgUnjAV8UIBRS1RP
+push_android_secret_key=gj40qtMdFi8fTCaM8fbYoAXqVLF6ZmZp
+push_ios_api_key=
+push_ios_secret_key=\u3000
+YCQWJ_API=ycqwj
+YCQWJ_URL=${maven.YCQWJ_URL}
+ROOTURL=${maven.ROOTURL}

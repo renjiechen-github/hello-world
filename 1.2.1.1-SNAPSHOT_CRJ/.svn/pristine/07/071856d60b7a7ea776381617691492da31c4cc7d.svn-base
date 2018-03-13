@@ -1,0 +1,14 @@
+* { margin:0px; padding:0px; }
+body { background:transparent url('images/bg.gif') repeat scroll left top;font-size:14px; }
+ul, li, p, h1, h2, h3, div, label, input, form { list-style:none; padding:0px; margin:0px; }
+#header { width:600px; margin:20px auto 0; color:#ffffff; background:transparent url('images/header1.jpg') repeat-x scroll left top; height:90px; line-height:90px; font-size:20px; overflow:hidden; }
+#header p { padding-left:15px; font-weight:bold; }
+#header p span.date { float:right; padding-right:15px; font-size:14px; padding-top:10px; font-weight:normal; }
+.content { width:596px; _height:430px; min-height:430px; margin:0 auto; border:2px solid #AAAA00; border-top:none; background-color:#FFFFFF; overflow:hidden; }
+.toggle { width:450px; margin:20px auto; }
+.toggle dl dt { background:#F4FFF4 url('images/bg_toggle_up.gif') no-repeat scroll 8px 14px; height:40px; width:450px; line-height:40px; font-size:16px; font-weight:bold; color:#006600; cursor:pointer; margin:8px 0; padding-left:25px; display:block; }
+.toggle dl dt.current { background:#F4FFF4 url('images/bg_toggle_down.gif') no-repeat scroll 8px 14px; }
+.toggle dl dd { padding-left:10px; line-height:24px; }
+.toggle dl dd h2 { font-size:15px; }
+.toggle dl dd ul { padding-bottom:12px; }
+.toggle dl dd ul li { list-style:decimal inside none; }
